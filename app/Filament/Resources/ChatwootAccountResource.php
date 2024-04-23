@@ -7,6 +7,7 @@ use App\Filament\Resources\ChatwootAccountResource\RelationManagers;
 use App\Models\ChatwootAccount;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\FormsComponent;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ChatwootAccountResource extends Resource
 {
+    protected static ?string $navigationGroup = 'Chatwoot';
+
     protected static ?string $model = ChatwootAccount::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -22,6 +25,7 @@ class ChatwootAccountResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
+            Forms\Components\TextInput::make('id'),
             Forms\Components\TextInput::make('name')->required(),
             Forms\Components\TextInput::make('domain'),
             Forms\Components\TextInput::make('support_email')->email(),

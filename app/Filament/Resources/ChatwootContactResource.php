@@ -16,6 +16,8 @@ use Rinvex\Country\CountryLoader;
 
 class ChatwootContactResource extends Resource
 {
+    protected static ?string $navigationGroup = 'Chatwoot';
+
     protected static ?string $model = ChatwootContact::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -33,11 +35,10 @@ class ChatwootContactResource extends Resource
         });
 
         return $form->schema([
+            Forms\Components\TextInput::make('id')->integer()->unique(ignoreRecord: true),
             Forms\Components\Select::make('chatwoot_account_id')
                 ->relationship('account', 'name') // Assuming 'name' is the display field for accounts
-                ->searchable()
                 ->label('Account'),
-            Forms\Components\Toggle::make('blocked'),
             Forms\Components\DateTimePicker::make('last_activity_at')->nullable()->disabled(),
             Forms\Components\TextInput::make('name')->nullable(),
             Forms\Components\TextInput::make('middle_name')->nullable(),
@@ -45,19 +46,16 @@ class ChatwootContactResource extends Resource
             Forms\Components\TextInput::make('email')->email()->unique(ignoreRecord: true)->nullable(),
             Forms\Components\TextInput::make('phone_number')->nullable(),
             Forms\Components\TextInput::make('location')->nullable(),
-            Forms\Components\Select::make('country_code')
+            Forms\Components\Select::make('country_code')->nullable()
                 ->label('Country Code')
                 ->options($countries)
                 ->searchable()
                 ->placeholder('Select a country')
-                ->rules('required', 'exists:rinvex_countries,country_code'),
-            Forms\Components\TextInput::make('identifier')->nullable()->disabled(),
-            Forms\Components\KeyValue::make('additional_attributes')->nullable()->disabled(),
-            Forms\Components\KeyValue::make('custom_attributes')->nullable()->disabled(),
-            Forms\Components\Select::make('contact_type')->options([
-                0 => 'Type 0',
-                1 => 'Type 1', // Add more types as needed
-            ])->nullable()->disabled(),
+                ->rules('exists:rinvex_countries,country_code'),
+            Forms\Components\TextInput::make('identifier')->nullable()->disabled()->hidden(),
+            Forms\Components\KeyValue::make('additional_attributes')->nullable()->disabled()->hidden(),
+            Forms\Components\KeyValue::make('custom_attributes')->nullable()->disabled()->hidden(),
+            Forms\Components\Checkbox::make('blocked'),
         ]);
     }
 
@@ -70,14 +68,7 @@ class ChatwootContactResource extends Resource
                 Tables\Columns\TextColumn::make('phone_number'),
                 Tables\Columns\TextColumn::make('last_activity_at')->dateTime(),
                 Tables\Columns\TextColumn::make('location'),
-                Tables\Columns\IconColumn::make('blocked')->icons([
-                    'heroicon-o-lock-closed' => true,
-                    'heroicon-o-lock-open' => false,
-                ])
-                    ->colors([
-                        'danger' => true,
-                        'info' => false,
-                    ]),
+                Tables\Columns\CheckboxColumn::make('blocked'),
             ])
             ->filters([
                 //

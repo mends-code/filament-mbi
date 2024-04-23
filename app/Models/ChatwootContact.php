@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 class ChatwootContact extends BaseModel
 {
@@ -12,9 +11,9 @@ class ChatwootContact extends BaseModel
     protected $table = 'chatwoot_contacts';
 
     protected $fillable = [
-        'name', 'email', 'phone_number', 'additional_attributes',
+        'id', 'chatwoot_account_id', 'name', 'email', 'phone_number', 'additional_attributes',
         'identifier', 'custom_attributes', 'last_activity_at',
-        'contact_type', 'middle_name', 'last_name', 'location', 
+        'contact_type', 'middle_name', 'last_name', 'location',
         'country_code', 'blocked'
     ];
 
@@ -30,7 +29,7 @@ class ChatwootContact extends BaseModel
      */
     public function account()
     {
-        return $this->belongsTo(ChatwootAccount::class);
+        return $this->belongsTo(ChatwootAccount::class, 'chatwoot_account_id');
     }
 
     /**

@@ -4,28 +4,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class AddAccountIdToContacts extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::table('chatwoot_contacts', function (Blueprint $table) {
             $table->foreignId('chatwoot_account_id')->nullable()->constrained('chatwoot_accounts')->onDelete('set null');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::table('chatwoot_contacts', function (Blueprint $table) {
-            // First, drop the foreign key constraint
-            $table->dropForeign(['chatwoot_account_id']);
-            // Then, drop the column
-            $table->dropColumn('chatwoot_account_id');
+            $table->dropConstrainedForeignId('chatwoot_account_id');
         });
     }
-};
+}

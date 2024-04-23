@@ -14,13 +14,12 @@ return new class extends Migration
         Schema::create('chatwoot_contacts', function (Blueprint $table) {
             $table->integer('id')->primary();  // Set as primary key, manually managed
             $table->string('name')->nullable()->default('');
-            $table->string('email')->nullable()->unique();
+            $table->string('email')->nullable();
             $table->string('phone_number')->nullable();
             $table->jsonb('additional_attributes')->nullable()->default('{}');
             $table->string('identifier')->nullable();
             $table->jsonb('custom_attributes')->nullable()->default('{}');
             $table->timestamp('last_activity_at')->nullable();
-            $table->integer('contact_type')->nullable()->default(0);
             $table->string('middle_name')->nullable()->default('');
             $table->string('last_name')->nullable()->default('');
             $table->string('location')->nullable()->default('');
