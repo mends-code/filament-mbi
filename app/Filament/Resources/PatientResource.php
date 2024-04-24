@@ -12,12 +12,25 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
 
 class PatientResource extends Resource
 {
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return sprintf('%s %s | %s', $record->first_name, $record->last_name, $record->birthdate);
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['first_name', 'last_name', 'birthdate'];
+    }
+
+    protected static ?string $navigationGroup = 'Medical Documentation';
+
     protected static ?string $model = Patient::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user-plus';
 
     public static function form(Form $form): Form
     {
@@ -30,7 +43,9 @@ class PatientResource extends Resource
                 ->label('Last Name'),
             Forms\Components\DatePicker::make('birthdate')
                 ->required()
-                ->label('Birthdate'),
+                ->label('Birthdate')
+                ->native(false)
+                ->displayFormat('d mm Y'),
         ]);
     }
 

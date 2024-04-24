@@ -13,7 +13,7 @@ class CreatePatientsTable extends Migration
     public function up()
     {
         Schema::create('patients', function (Blueprint $table) {
-            $table->ulid('id')->primary(); // Laravel 9.x supports this method for defining ULID columns
+            $table->id();
             $table->string('first_name');
             $table->string('last_name');
             $table->date('birthdate');

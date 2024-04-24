@@ -7,20 +7,32 @@ use App\Filament\Resources\ChatwootContactResource\RelationManagers;
 use App\Models\ChatwootContact;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Rinvex\Country\CountryLoader;
+use Illuminate\Database\Eloquent\Model;
 
 class ChatwootContactResource extends Resource
 {
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return sprintf('%s | %s | %s', $record->name, $record->email, $record->phone_number);
+    }
+                
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['id', 'name', 'email', 'phone_number'];
+    }
+    
     protected static ?string $navigationGroup = 'Chatwoot';
 
     protected static ?string $model = ChatwootContact::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     public static function form(Form $form): Form
     {
@@ -86,7 +98,7 @@ class ChatwootContactResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\PatientsRelationManager::class,
         ];
     }
 

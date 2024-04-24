@@ -31,6 +31,13 @@ class ChatwootContact extends BaseModel
     {
         return $this->belongsTo(ChatwootAccount::class, 'chatwoot_account_id');
     }
+    /**
+     * The patients that belong to the contact.
+     */
+    public function patients()
+    {
+        return $this->belongsToMany(Patient::class, 'chatwoot_contacts_patients', 'chatwoot_contact_id', 'patient_id');
+    }
 
     /**
      * Get the full name of the contact.
