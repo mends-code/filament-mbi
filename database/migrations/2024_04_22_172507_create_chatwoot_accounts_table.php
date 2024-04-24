@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('chatwoot_accounts', function (Blueprint $table) {
             $table->integer('id')->primary();  // Set as primary key, manually managed
             $table->timestamps(); // Created_at and updated_at
+            $table->softDeletes();
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->unsignedBigInteger('updated_by')->nullable()->index();        
             $table->string('name');

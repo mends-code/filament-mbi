@@ -10,10 +10,11 @@ class EditChatwootAccount extends EditRecord
 {
     protected static string $resource = ChatwootAccountResource::class;
 
-    protected function getHeaderActions(): array
+    protected function getActions(): array
     {
         return [
             Actions\DeleteAction::make(),
+            Actions\RestoreAction::make(),
         ];
     }
 }

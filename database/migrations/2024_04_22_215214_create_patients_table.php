@@ -18,6 +18,7 @@ class CreatePatientsTable extends Migration
             $table->string('last_name');
             $table->date('birthdate');
             $table->timestamps();
+            $table->softDeletes();
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->unsignedBigInteger('updated_by')->nullable()->index();
         });

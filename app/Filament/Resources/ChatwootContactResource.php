@@ -22,12 +22,12 @@ class ChatwootContactResource extends Resource
     {
         return sprintf('%s | %s | %s', $record->name, $record->email, $record->phone_number);
     }
-                
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['id', 'name', 'email', 'phone_number'];
     }
-    
+
     protected static ?string $navigationGroup = 'Chatwoot';
 
     protected static ?string $model = ChatwootContact::class;
@@ -47,7 +47,7 @@ class ChatwootContactResource extends Resource
         });
 
         return $form->schema([
-            Forms\Components\TextInput::make('id')->integer()->unique(ignoreRecord: true),
+            Forms\Components\TextInput::make('id')->integer()->required()->unique(ignoreRecord: true),
             Forms\Components\Select::make('chatwoot_account_id')
                 ->relationship('account', 'name') // Assuming 'name' is the display field for accounts
                 ->label('Account'),
@@ -83,15 +83,17 @@ class ChatwootContactResource extends Resource
                 Tables\Columns\CheckboxColumn::make('blocked'),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                    Tables\Actions\RestoreBulkAction::make(),
+                ])
             ]);
     }
 

@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
 abstract class BaseModel extends Model
 {
+    use SoftDeletes;
     /**
      * The "booting" method of the model.
      */

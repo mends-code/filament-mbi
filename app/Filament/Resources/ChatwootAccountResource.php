@@ -15,7 +15,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ChatwootAccountResource extends Resource
+
 {
+
     protected static ?string $navigationGroup = 'Chatwoot';
 
     protected static ?string $model = ChatwootAccount::class;
@@ -25,12 +27,12 @@ class ChatwootAccountResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\TextInput::make('id'),
+            Forms\Components\TextInput::make('id')->integer()->required()->unique(ignoreRecord: true),
             Forms\Components\TextInput::make('name')->required(),
             Forms\Components\TextInput::make('domain'),
             Forms\Components\TextInput::make('support_email')->email(),
             Forms\Components\KeyValue::make('custom_attributes'),
-            ]);
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -41,15 +43,17 @@ class ChatwootAccountResource extends Resource
             Tables\Columns\TextColumn::make('support_email'),
         ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                    Tables\Actions\RestoreBulkAction::make(),
+                ])
             ]);
     }
 
@@ -67,5 +71,13 @@ class ChatwootAccountResource extends Resource
             'create' => Pages\CreateChatwootAccount::route('/create'),
             'edit' => Pages\EditChatwootAccount::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }
