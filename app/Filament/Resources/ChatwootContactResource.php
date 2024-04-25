@@ -38,7 +38,7 @@ class ChatwootContactResource extends Resource
     {
         $countries = collect(CountryLoader::countries())->mapWithKeys(function ($country) {
             $label = sprintf(
-                "%s %s - %s",
+                "%s",
                 $country['emoji'],
                 $country['iso_3166_1_alpha2'],
                 $country['name'],
@@ -47,10 +47,10 @@ class ChatwootContactResource extends Resource
         });
 
         return $form->schema([
-            Forms\Components\TextInput::make('id')->integer()->required()->unique(ignoreRecord: true),
+            Forms\Components\TextInput::make('id')->integer()->disabled(),
             Forms\Components\Select::make('chatwoot_account_id')
                 ->relationship('account', 'name') // Assuming 'name' is the display field for accounts
-                ->label('Account'),
+                ->label('Account')->disabled(),
             Forms\Components\DateTimePicker::make('last_activity_at')->nullable()->disabled(),
             Forms\Components\TextInput::make('name')->nullable(),
             Forms\Components\TextInput::make('middle_name')->nullable(),
@@ -64,9 +64,7 @@ class ChatwootContactResource extends Resource
                 ->searchable()
                 ->placeholder('Select a country')
                 ->rules('exists:rinvex_countries,country_code'),
-            Forms\Components\TextInput::make('identifier')->nullable()->disabled()->hidden(),
-            Forms\Components\KeyValue::make('additional_attributes')->nullable()->disabled()->hidden(),
-            Forms\Components\KeyValue::make('custom_attributes')->nullable()->disabled()->hidden(),
+            Forms\Components\TextInput::make('identifier')->nullable(),
             Forms\Components\Checkbox::make('blocked'),
         ]);
     }
@@ -83,18 +81,10 @@ class ChatwootContactResource extends Resource
                 Tables\Columns\CheckboxColumn::make('blocked'),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
-                ])
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array

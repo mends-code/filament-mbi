@@ -8,6 +8,8 @@ class Patient extends BaseModel
 {
     use HasFactory;
 
+    protected $table = 'mbi_filament.patients';
+
     protected $fillable = [
         'id', 'first_name', 'last_name', 'birthdate'
     ];

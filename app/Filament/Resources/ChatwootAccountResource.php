@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ChatwootAccountResource extends Resource
 
 {
-
+    
     protected static ?string $navigationGroup = 'Chatwoot';
 
     protected static ?string $model = ChatwootAccount::class;
@@ -42,9 +42,7 @@ class ChatwootAccountResource extends Resource
             Tables\Columns\TextColumn::make('domain'),
             Tables\Columns\TextColumn::make('support_email'),
         ])
-            ->filters([
-                Tables\Filters\TrashedFilter::make(),
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),

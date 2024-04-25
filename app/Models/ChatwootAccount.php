@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class ChatwootAccount extends BaseModel
+class ChatwootAccount extends Model
 {
     use HasFactory;
+
+    protected $table = 'mbi_chatwoot.accounts';
 
     protected $fillable = [
         'id', 'name', 'domain', 'support_email', 'custom_attributes'

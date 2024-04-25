@@ -3,17 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class ChatwootContact extends BaseModel
+class ChatwootContact extends Model
 {
     use HasFactory;
 
-    protected $table = 'chatwoot_contacts';
+    protected $table = 'mbi_chatwoot.contacts';
 
     protected $fillable = [
-        'id', 'chatwoot_account_id', 'name', 'email', 'phone_number', 'additional_attributes',
-        'identifier', 'custom_attributes', 'last_activity_at',
-        'contact_type', 'middle_name', 'last_name', 'location',
+        'name', 'email', 'phone_number',
+        'identifier', 'custom_attributes', 'middle_name', 'last_name', 'location',
         'country_code', 'blocked'
     ];
 
@@ -29,7 +29,7 @@ class ChatwootContact extends BaseModel
      */
     public function account()
     {
-        return $this->belongsTo(ChatwootAccount::class, 'chatwoot_account_id');
+        return $this->belongsTo(ChatwootAccount::class, 'account_id');
     }
     /**
      * The patients that belong to the contact.
