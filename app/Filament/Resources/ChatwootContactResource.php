@@ -76,7 +76,7 @@ class ChatwootContactResource extends Resource
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\TextColumn::make('email'),
                 Tables\Columns\TextColumn::make('phone_number'),
-                Tables\Columns\TextColumn::make('last_activity_at')->dateTime(),
+                Tables\Columns\TextColumn::make('last_activity_at')->dateTime()->sortable(),
                 Tables\Columns\TextColumn::make('location'),
                 Tables\Columns\CheckboxColumn::make('blocked'),
             ])
