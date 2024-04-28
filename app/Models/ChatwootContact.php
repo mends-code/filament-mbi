@@ -3,12 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class ChatwootContact extends Model
+class ChatwootContact extends BaseModelChatwoot
 {
-    use HasFactory;
-
+    
     protected $table = 'mbi_chatwoot.contacts';
 
     protected $fillable = [
@@ -18,8 +16,8 @@ class ChatwootContact extends Model
     ];
 
     protected $casts = [
-        'additional_attributes' => 'array',
-        'custom_attributes' => 'array',
+        'additional_attributes' => 'json',
+        'custom_attributes' => 'json',
         'last_activity_at' => 'datetime',
         'blocked' => 'boolean',
     ];
@@ -39,19 +37,4 @@ class ChatwootContact extends Model
         return $this->belongsToMany(Patient::class, 'chatwoot_contacts_patients', 'chatwoot_contact_id', 'patient_id');
     }
 
-    /**
-     * Get the full name of the contact.
-     */
-    public function getFullNameAttribute()
-    {
-        return "{$this->first_name} {$this->last_name}";
-    }
-
-    /**
-     * Ensure emails are stored lowercase.
-     */
-    public function setEmailAttribute($value)
-    {
-        $this->attributes['email'] = strtolower($value);
-    }
 }

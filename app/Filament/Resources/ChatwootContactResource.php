@@ -38,53 +38,58 @@ class ChatwootContactResource extends Resource
     {
         $countries = collect(CountryLoader::countries())->mapWithKeys(function ($country) {
             $label = sprintf(
-                "%s",
+                "%s %s",
                 $country['emoji'],
                 $country['iso_3166_1_alpha2'],
-                $country['name'],
             );
-            return [$country['iso_3166_1_alpha2'] => $label];
+            return [$country['name'] => $label];
         });
 
-        return $form->schema([
-            Forms\Components\TextInput::make('id')->integer()->disabled(),
-            Forms\Components\Select::make('chatwoot_account_id')
-                ->relationship('account', 'name') // Assuming 'name' is the display field for accounts
-                ->label('Account')->disabled(),
-            Forms\Components\DateTimePicker::make('last_activity_at')->nullable()->disabled(),
-            Forms\Components\TextInput::make('name')->nullable(),
-            Forms\Components\TextInput::make('middle_name')->nullable(),
-            Forms\Components\TextInput::make('last_name')->nullable(),
-            Forms\Components\TextInput::make('email')->email()->unique(ignoreRecord: true)->nullable(),
-            Forms\Components\TextInput::make('phone_number')->nullable(),
-            Forms\Components\TextInput::make('location')->nullable(),
-            Forms\Components\Select::make('country_code')->nullable()
-                ->label('Country Code')
-                ->options($countries)
-                ->searchable()
-                ->placeholder('Select a country')
-                ->rules('exists:rinvex_countries,country_code'),
-            Forms\Components\TextInput::make('identifier')->nullable(),
-            Forms\Components\Checkbox::make('blocked'),
-        ]);
+        return $form
+            ->schema([
+                Forms\Components\TextInput::make('id')->integer()->disabled(),
+                Forms\Components\Select::make('chatwoot_account_id')
+                    ->relationship('account', 'name') // Assuming 'name' is the display field for accounts
+                    ->label('Account')->disabled(),
+                Forms\Components\DateTimePicker::make('last_activity_at')->nullable()->disabled(),
+                Forms\Components\TextInput::make('name')->nullable(),
+                Forms\Components\TextInput::make('middle_name')->nullable(),
+                Forms\Components\TextInput::make('last_name')->nullable(),
+                Forms\Components\TextInput::make('email')->nullable()->email(),
+                Forms\Components\TextInput::make('phone_number')->nullable(),
+                Forms\Components\TextInput::make('location')->nullable(),
+                Forms\Components\Select::make('country_code')->nullable()
+                    ->options($countries)
+                    ->searchable()
+                    ->placeholder('Select a country'),
+                Forms\Components\TextInput::make('identifier')->nullable(),
+                Forms\Components\Checkbox::make('blocked'),
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\TextColumn::make('phone_number'),
-                Tables\Columns\TextColumn::make('last_activity_at')->dateTime()->sortable(),
-                Tables\Columns\TextColumn::make('location'),
-                Tables\Columns\CheckboxColumn::make('blocked'),
+                Tables\Columns\TextColumn::make('id')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('name')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('email')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('phone_number')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('last_activity_at')->dateTime()->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('country_code')->sortable()->searchable(),
+                Tables\Columns\CheckboxColumn::make('blocked')->sortable(),
             ])
             ->filters([
+                Tables\Filters\TernaryFilter::make('last_activity_at')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereNotNull('last_activity_at'),
+                        false: fn (Builder $query) => $query->whereNull('last_activity_at'),
+                        blank: fn (Builder $query) => $query, // In this example, we do not want to filter the query when it is blank.
+                    )
             ])
-            ->actions([
-            ])
-            ->bulkActions([]);
+            ->actions([])
+            ->bulkActions([])
+            ->persistFiltersInSession();
     }
 
     public static function getRelations(): array

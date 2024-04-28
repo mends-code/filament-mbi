@@ -2,16 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 class Patient extends BaseModel
 {
-    use HasFactory;
 
     protected $table = 'mbi_filament.patients';
 
     protected $fillable = [
-        'id', 'first_name', 'last_name', 'birthdate'
+        'first_name', 'last_name', 'birthdate'
     ];
     /**
      * The chatwoot contacts that belong to the patient.

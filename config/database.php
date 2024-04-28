@@ -92,6 +92,9 @@ return [
             'prefix_indexes' => true,
             'search_path' => env('PGSQL_SEARCH_PATH', 'public'),
             'sslmode' => 'prefer',
+            'options' => ([
+                PDO::ATTR_PERSISTENT => env('PGSQL_ATTR_PERSISTANT', true),
+            ]),
         ],
 
         'sqlsrv' => [
