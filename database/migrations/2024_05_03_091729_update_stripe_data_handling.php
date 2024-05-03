@@ -5,24 +5,57 @@ use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up()
     {
-        // Create or replace the function that processes event insertions
+        // Function to populate 'created' column from existing object data
+        DB::unprepared("
+            CREATE OR REPLACE FUNCTION update_created_column()
+            RETURNS VOID AS $$
+            DECLARE
+                rec RECORD;
+            BEGIN
+                FOR rec IN SELECT id, data FROM mbi_stripe.objects LOOP
+                    IF (rec.data->'created') IS NOT NULL THEN
+                        UPDATE mbi_stripe.objects
+                        SET created = (rec.data->'created')::BIGINT
+                        WHERE id = rec.id;
+                    END IF;
+                END LOOP;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            -- Execute the function immediately to update existing rows
+            SELECT update_created_column();
+            DROP FUNCTION update_created_column();
+        ");
+
+        // Modify the existing function to handle 'created' field upon insertion
         DB::unprepared("
             CREATE OR REPLACE FUNCTION mbi_stripe.process_event_insertion()
             RETURNS TRIGGER AS $$
             DECLARE
                 obj_id BIGINT;
                 latest_event RECORD;
+                created_ts BIGINT;
             BEGIN
                 -- Check for an existing object with the same stripe_id as the event's stripe_object_id
                 SELECT id INTO obj_id FROM mbi_stripe.objects
                 WHERE stripe_id = NEW.stripe_object_id;
 
+                -- Handle creation time if available
+                IF (NEW.data->'object'->>'created') IS NOT NULL THEN
+                    created_ts := (NEW.data->'object'->>'created')::BIGINT;
+                ELSE
+                    created_ts := NULL;
+                END IF;
+
                 IF obj_id IS NULL THEN
                     -- Create a new object if it does not exist
-                    INSERT INTO mbi_stripe.objects (stripe_id, object_type, data, livemode, updated_at)
-                    VALUES (NEW.stripe_object_id, NEW.data->'object'->>'object', NEW.data->'object', NEW.livemode, CURRENT_TIMESTAMP)
+                    INSERT INTO mbi_stripe.objects (stripe_id, object_type, data, livemode, created, updated_at)
+                    VALUES (NEW.stripe_object_id, NEW.data->'object'->>'object', NEW.data->'object', NEW.livemode, created_ts, CURRENT_TIMESTAMP)
                     RETURNING id INTO obj_id;
                 END IF;
 
@@ -46,19 +79,13 @@ return new class extends Migration
             END;
             $$ LANGUAGE plpgsql;
         ");
-
-        // Create a trigger to execute the function after inserting an event
-        DB::unprepared("
-            CREATE OR REPLACE TRIGGER after_insert_stripe_event
-            AFTER INSERT ON mbi_stripe.events
-            FOR EACH ROW
-            EXECUTE FUNCTION mbi_stripe.process_event_insertion();
-        ");
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down()
     {
-        DB::unprepared("DROP TRIGGER IF EXISTS after_insert_stripe_event ON mbi_stripe.events;");
-        DB::unprepared("DROP FUNCTION IF EXISTS mbi_stripe.process_event_insertion;");
+        DB::unprepared("DROP FUNCTION IF EXISTS update_created_column;");
     }
 };

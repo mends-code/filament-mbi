@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class CreateStripeObjectsTable extends Migration
 {
@@ -10,10 +11,12 @@ class CreateStripeObjectsTable extends Migration
     {
         Schema::create('mbi_stripe.objects', function (Blueprint $table) {
             $table->id();
-            $table->string('stripe_id')->unique()->nullable()->default(null); //rare case of objects without ids
+            $table->string('stripe_id')->unique()->nullable();
             $table->string('object_type');
             $table->jsonb('data');
             $table->boolean('livemode');
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable();
         });
     }
 

@@ -53,8 +53,6 @@ class ChatwootContactResource extends Resource
                     ->label('Account')->disabled(),
                 Forms\Components\DateTimePicker::make('last_activity_at')->nullable()->disabled(),
                 Forms\Components\TextInput::make('name')->nullable(),
-                Forms\Components\TextInput::make('middle_name')->nullable(),
-                Forms\Components\TextInput::make('last_name')->nullable(),
                 Forms\Components\TextInput::make('email')->nullable()->email(),
                 Forms\Components\TextInput::make('phone_number')->nullable(),
                 Forms\Components\TextInput::make('location')->nullable(),

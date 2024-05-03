@@ -34,7 +34,7 @@ class ChatwootContact extends BaseModelChatwoot
      */
     public function patients()
     {
-        return $this->belongsToMany(Patient::class, 'chatwoot_contacts_patients', 'chatwoot_contact_id', 'patient_id');
+        return $this->belongsToMany(Patient::class, 'mbi_filament.chatwoot_contacts_patients', 'chatwoot_contact_id', 'patient_id');
     }
 
 }
