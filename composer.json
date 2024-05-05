@@ -12,6 +12,7 @@
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
         "nesbot/carbon": "^3.3",
+        "predis/predis": "^2.2",
         "rinvex/countries": "^9.0",
         "staudenmeir/eloquent-json-relations": "^1.1"
     },
