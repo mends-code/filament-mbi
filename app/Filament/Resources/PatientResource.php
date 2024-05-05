@@ -76,7 +76,8 @@ class PatientResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                 ])
-            ]);
+            ])
+            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', 'null'));
     }
 
     public static function getRelations(): array

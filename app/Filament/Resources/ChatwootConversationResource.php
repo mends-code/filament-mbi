@@ -42,11 +42,8 @@ class ChatwootConversationResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->bulkActions([])
+            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', 'null'));
     }
 
     public static function getRelations(): array
@@ -60,8 +57,6 @@ class ChatwootConversationResource extends Resource
     {
         return [
             'index' => Pages\ListChatwootConversations::route('/'),
-            'create' => Pages\CreateChatwootConversation::route('/create'),
-            'edit' => Pages\EditChatwootConversation::route('/{record}/edit'),
         ];
     }
 }

@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 
 class ChatwootContact extends BaseModelChatwoot
 {
-    
+
     protected $table = 'mbi_chatwoot.contacts';
 
     protected $fillable = [
@@ -18,8 +18,9 @@ class ChatwootContact extends BaseModelChatwoot
     protected $casts = [
         'additional_attributes' => 'json',
         'custom_attributes' => 'json',
-        'last_activity_at' => 'datetime',
+        'last_activity_at' => 'timestamp',
         'blocked' => 'boolean',
+        'identifier' => 'string',
     ];
 
     /**
@@ -34,7 +35,17 @@ class ChatwootContact extends BaseModelChatwoot
      */
     public function patients()
     {
-        return $this->belongsToMany(Patient::class, 'mbi_filament.chatwoot_contacts_patients', 'chatwoot_contact_id', 'patient_id');
+        return $this->belongsToMany(Patient::class, 'mbi_filament.chatwoot_contacts_patients', 'chatwoot_contact_id', 'patient_id')->withTimestamps();
+    }
+
+    public function customer()
+    {
+        return $this->belongsToMany(StripeCustomer::class, 'mbi_filament.chatwoot_contact_stripe_customer', 'chatwoot_contact_id', 'stripe_customer_id')->withTimestamps();
+    }
+
+    public function getLastActivityAtAttribute($value)
+    {
+        return $value ? Carbon::parse($value, 'UTC')->timezone('Europe/Warsaw') : null;
     }
 
 }

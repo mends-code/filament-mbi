@@ -42,7 +42,8 @@ class ChatwootAccountResource extends Resource
             Tables\Columns\TextColumn::make('domain'),
             Tables\Columns\TextColumn::make('support_email'),
         ])
-            ->filters([]);
+            ->filters([])
+            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', 'null'));
     }
 
     public static function getRelations(): array

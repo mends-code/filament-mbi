@@ -55,7 +55,7 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->unsavedChangesAlerts()
-            ->databaseTransactions()
+            ->spa()
             ->plugin(
                 SpatieLaravelTranslatablePlugin::make()
                     ->defaultLocales(['pl', 'en']),

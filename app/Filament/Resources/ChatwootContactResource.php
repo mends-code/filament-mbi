@@ -7,6 +7,7 @@ use App\Filament\Resources\ChatwootContactResource\RelationManagers;
 use App\Models\ChatwootContact;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\FormsComponent;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -60,8 +61,12 @@ class ChatwootContactResource extends Resource
                     ->options($countries)
                     ->searchable()
                     ->placeholder('Select a country'),
-                Forms\Components\TextInput::make('identifier')->nullable(),
-                Forms\Components\Checkbox::make('blocked'),
+                Forms\Components\Checkbox::make('blocked')->disabled(),
+                Forms\Components\Select::make('customer')
+                    ->relationship(
+                        titleAttribute: 'stripe_id',
+                    )
+                    ->searchable(['stripe_id'])
             ]);
     }
 
@@ -69,13 +74,11 @@ class ChatwootContactResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('name')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('email')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('phone_number')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('last_activity_at')->dateTime()->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('country_code')->sortable()->searchable(),
-                Tables\Columns\CheckboxColumn::make('blocked')->sortable(),
+                Tables\Columns\TextColumn::make('name')->searchable(),
+                Tables\Columns\TextColumn::make('email')->searchable(),
+                Tables\Columns\TextColumn::make('phone_number')->searchable(),
+                Tables\Columns\TextColumn::make('customer.stripe_id')->badge()->color('gray')->searchable(),
+                Tables\Columns\TextColumn::make('last_activity_at')->since()->sortable(),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('last_activity_at')
@@ -83,11 +86,16 @@ class ChatwootContactResource extends Resource
                         true: fn (Builder $query) => $query->whereNotNull('last_activity_at'),
                         false: fn (Builder $query) => $query->whereNull('last_activity_at'),
                         blank: fn (Builder $query) => $query, // In this example, we do not want to filter the query when it is blank.
-                    )
+                    )->default(true)
             ])
-            ->actions([])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+            ])
             ->bulkActions([])
-            ->persistFiltersInSession();
+            ->persistFiltersInSession()
+            ->defaultSort('last_activity_at', 'desc')
+            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', 'null'));
     }
 
     public static function getRelations(): array
@@ -101,8 +109,6 @@ class ChatwootContactResource extends Resource
     {
         return [
             'index' => Pages\ListChatwootContacts::route('/'),
-            'create' => Pages\CreateChatwootContact::route('/create'),
-            'edit' => Pages\EditChatwootContact::route('/{record}/edit'),
         ];
     }
 }
