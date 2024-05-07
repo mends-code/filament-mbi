@@ -1,43 +1,43 @@
-# Use an official PHP runtime as a parent image with Apache
-FROM php:8.2-apache
+# Use PHP with Apache as the base image
+FROM php:8.2-apache as web
 
-# Set working directory
-WORKDIR /var/www/html
-
-# Install system dependencies
+# Install Additional System Dependencies
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libpq-dev \
+    libzip-dev \
     zip \
-    unzip \
-    git \
-    curl
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install PHP extensions
-RUN docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd
-
-# Enable Apache mod_rewrite
+# Enable Apache mod_rewrite for URL rewriting
 RUN a2enmod rewrite
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql zip
 
-# Copy existing application directory contents
+# Set Apache DocumentRoot to point to Laravel's public directory
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+
+# Update Apache configuration files to use the new DocumentRoot
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
+    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Copy the application code
 COPY . /var/www/html
 
-# Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www/html
+# Set the working directory
+WORKDIR /var/www/html
 
-# Change ownership of the storage and bootstrap cache directories
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Expose port 80
+# Install project dependencies
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+
+# Set permissions for Laravel's storage and cache directories
+RUN chown -R www-data:www-data storage bootstrap/cache
+
+# Expose the HTTP port
 EXPOSE 80
 
-# Start Apache server in the foreground
+# Start Apache in the foreground
 CMD ["apache2-foreground"]
