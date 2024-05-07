@@ -49,7 +49,10 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return str_ends_with($this->email, '@mends.eu') && $this->hasVerifiedEmail();
+        $allowedDomains = explode(',', env('FILAMENT_EMAIL_DOMAINS', '')); // Get domains from .env, default to an empty string
+        $userDomain = substr($this->email, strpos($this->email, '@') + 1); // Extract the domain from the email
+
+        return in_array($userDomain, $allowedDomains); // Check if the user's domain is in the list of allowed domains
     }
 
 }
