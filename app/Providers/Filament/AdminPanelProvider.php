@@ -58,7 +58,6 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->sidebarCollapsibleOnDesktop()
-            ->spa()
             ->plugin(
                 SpatieLaravelTranslatablePlugin::make()
                     ->defaultLocales(['pl', 'en']),
