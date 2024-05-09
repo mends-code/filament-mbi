@@ -14,9 +14,7 @@ RUN apt-get update && apt-get install -y \
 RUN a2enmod rewrite
 
 # Install PHP extensions
-
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
-
 RUN docker-php-ext-install pdo_pgsql zip intl opcache
 
 # Set Apache DocumentRoot to point to Laravel's public directory
@@ -29,31 +27,15 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 # Copy the application code
 COPY . /var/www/html
 
+# Copy configuration files
+COPY ./docker/config/performance-tuning.conf /etc/apache2/conf-available/performance-tuning.conf
+COPY ./docker/config/opcache-recommended.ini /usr/local/etc/php/conf.d/opcache-recommended.ini
+
+# Enable Apache performance tuning configuration
+RUN a2enconf performance-tuning
+
 # Set the working directory
 WORKDIR /var/www/html
-
-RUN echo '\
-    <IfModule mpm_prefork_module> \
-    StartServers 5 \
-    MinSpareServers 5 \
-    MaxSpareServers 10 \
-    MaxRequestWorkers 150 \
-    MaxConnectionsPerChild 3000 \
-    </IfModule>\n \
-    <IfModule mod_rewrite.c> \
-    KeepAlive On \
-    MaxKeepAliveRequests 100 \
-    KeepAliveTimeout 5 \
-    </IfModule>\n' > /etc/apache2/conf-available/performance-tuning.conf && a2enconf performance-tuning
-
-RUN { \
-    echo 'opcache.memory_consumption=256'; \
-    echo 'opcache.interned_strings_buffer=16'; \
-    echo 'opcache.max_accelerated_files=7963'; \
-    echo 'opcache.revalidate_freq=2'; \
-    echo 'opcache.fast_shutdown=1'; \
-    echo 'opcache.enable_cli=1'; \
-    } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
