@@ -13,41 +13,31 @@ RUN apt-get update && apt-get install -y \
 # Enable Apache mod_rewrite for URL rewriting
 RUN a2enmod rewrite
 
+# Disable Event and Worker MPMs, enable Prefork MPM
+RUN a2dismod mpm_event mpm_worker && a2enmod mpm_prefork
+
 # Install PHP extensions
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
 RUN docker-php-ext-install pdo_pgsql zip intl opcache
 
 # Set Apache DocumentRoot to point to Laravel's public directory
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-
-# Update Apache configuration files to use the new DocumentRoot
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Copy the application code
+# Copy the application code and configuration files
 COPY . /var/www/html
-
-# Copy configuration files
 COPY ./docker/config/performance-tuning.conf /etc/apache2/conf-available/performance-tuning.conf
 COPY ./docker/config/opcache-recommended.ini /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 # Enable Apache performance tuning configuration
 RUN a2enconf performance-tuning
 
-# Disable Prefork and Worker MPMs, and enable Event MPM
-RUN a2dismod mpm_prefork mpm_worker && a2enmod mpm_event
-
-RUN a2enmod cache && a2enmod cache_disk
-
-RUN a2enmod deflate
-
 # Set the working directory
 WORKDIR /var/www/html
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Install project dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
 # Set permissions for Laravel's storage and cache directories
