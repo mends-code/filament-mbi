@@ -15,8 +15,7 @@
         "nesbot/carbon": "^3.3",
         "owenvoke/blade-fontawesome": "^2.6",
         "predis/predis": "^2.2",
-        "rinvex/countries": "^9.0",
-        "staudenmeir/eloquent-json-relations": "^1.1"
+        "rinvex/countries": "^9.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13",
