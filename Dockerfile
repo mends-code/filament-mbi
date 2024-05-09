@@ -34,6 +34,13 @@ COPY ./docker/config/opcache-recommended.ini /usr/local/etc/php/conf.d/opcache-r
 # Enable Apache performance tuning configuration
 RUN a2enconf performance-tuning
 
+# Disable Prefork and Worker MPMs, and enable Event MPM
+RUN a2dismod mpm_prefork mpm_worker && a2enmod mpm_event
+
+RUN a2enmod cache && a2enmod cache_disk
+
+RUN a2enmod deflate
+
 # Set the working directory
 WORKDIR /var/www/html
 
