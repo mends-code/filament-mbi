@@ -24,7 +24,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Expose port 8000
-EXPOSE 8000
+EXPOSE 8000 80
 
 # Use a custom script to start Swoole server
 COPY ./start-swoole.sh /usr/local/bin/start-swoole
