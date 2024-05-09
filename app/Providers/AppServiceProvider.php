@@ -29,9 +29,11 @@ class AppServiceProvider extends ServiceProvider
         Modal::closeButton(false);
         Table::configureUsing(function (Table $table): void {
             $table
-                ->paginationPageOptions([5, 10, 25]);
+                ->paginationPageOptions([5, 10, 25])
+                ->defaultPaginationPageOption(5)
+                ->deferLoading()
+                ->persistFiltersInSession()
+                ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', 'null'));
         });
-        
-        
     }
 }

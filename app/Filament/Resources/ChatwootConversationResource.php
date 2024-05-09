@@ -45,8 +45,7 @@ class ChatwootConversationResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()
             ])
-            ->bulkActions([])
-            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', 'null'));
+            ->bulkActions([]);
     }
 
     public static function infolist(Infolist $infolist): Infolist
