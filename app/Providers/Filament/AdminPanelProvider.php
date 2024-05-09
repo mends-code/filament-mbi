@@ -19,6 +19,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Laravel\Socialite\Contracts\User as SocialiteUserContract;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -61,7 +63,7 @@ class AdminPanelProvider extends PanelProvider
                 SpatieLaravelTranslatablePlugin::make()
                     ->defaultLocales(['pl', 'en']),
             )
-            ->spa()
+            ->darkMode(false)
             ->plugin(
                 FilamentSocialitePlugin::make()
                     ->setProviders([
@@ -75,7 +77,7 @@ class AdminPanelProvider extends PanelProvider
                             'outlined' => false,
                         ],
                     ])
-
+                    ->setRegistrationEnabled(fn (?Authenticatable $user) => (bool) $user)
             );
     }
 }
