@@ -32,15 +32,20 @@ COPY . /var/www/html
 # Set the working directory
 WORKDIR /var/www/html
 
+RUN { \
+        echo 'opcache.memory_consumption=256'; \
+        echo 'opcache.interned_strings_buffer=16'; \
+        echo 'opcache.max_accelerated_files=7963'; \
+        echo 'opcache.revalidate_freq=2'; \
+        echo 'opcache.fast_shutdown=1'; \
+        echo 'opcache.enable_cli=1'; \
+    } > /usr/local/etc/php/conf.d/opcache-recommended.ini
+
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install project dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
-
-RUN php artisan config:cache
-
-RUN php artisan view:cache
 
 # Set permissions for Laravel's storage and cache directories
 RUN chown -R www-data:www-data storage bootstrap/cache
