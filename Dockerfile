@@ -32,6 +32,21 @@ COPY . /var/www/html
 # Set the working directory
 WORKDIR /var/www/html
 
+RUN echo '\
+<IfModule mpm_prefork_module> \
+    StartServers 5 \
+    MinSpareServers 5 \
+    MaxSpareServers 10 \
+    MaxRequestWorkers 150 \
+    MaxConnectionsPerChild 3000 \
+</IfModule> \
+<IfModule mod_rewrite.c> \
+    KeepAlive On \
+    MaxKeepAliveRequests 100 \
+    KeepAliveTimeout 5 \
+</IfModule>' >> /etc/apache2/conf-available/performance-tuning.conf \
+ && a2enconf performance-tuning
+
 RUN { \
         echo 'opcache.memory_consumption=256'; \
         echo 'opcache.interned_strings_buffer=16'; \
