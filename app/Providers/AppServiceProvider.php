@@ -14,7 +14,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $loader = \Illuminate\Foundation\AliasLoader::getInstance();
+        $loader->alias('Debugbar', \Barryvdh\Debugbar\Facades\Debugbar::class);
     }
 
     /**
@@ -31,9 +32,7 @@ class AppServiceProvider extends ServiceProvider
             $table
                 ->paginationPageOptions([5, 10, 25])
                 ->defaultPaginationPageOption(5)
-                ->deferLoading()
-                ->persistFiltersInSession()
-                ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', 'null'));
+                ->persistFiltersInSession();
         });
     }
 }
