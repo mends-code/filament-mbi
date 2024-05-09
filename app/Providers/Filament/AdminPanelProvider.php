@@ -74,9 +74,6 @@ class AdminPanelProvider extends PanelProvider
                             'color' => 'primary',
                             // (optional) Button style override, default: true (outlined).
                             'outlined' => false,
-                            'client_id' => env('GOOGLE_CLIENT_ID'),
-                            'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-                            'redirect' => env('GOOGLE_REDIRECT_URI')
                         ],
                     ])
 
