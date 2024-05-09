@@ -17,7 +17,7 @@ RUN a2enmod rewrite
 
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
 
-RUN docker-php-ext-install pdo_pgsql zip intl
+RUN docker-php-ext-install pdo_pgsql zip intl opcache
 
 # Set Apache DocumentRoot to point to Laravel's public directory
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
