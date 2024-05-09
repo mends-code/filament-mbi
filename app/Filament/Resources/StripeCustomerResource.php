@@ -32,12 +32,12 @@ class StripeCustomerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('data.id')->badge()->color('gray')->label('Stripe ID')->searchable(),
-                Tables\Columns\TextColumn::make('data.name')->label('Name')->searchable(),
+                Tables\Columns\TextColumn::make('stripe_id')->badge()->color('gray')->label('Stripe ID')->searchable(),
+                Tables\Columns\TextColumn::make('data.name')->label('Name'),
                 Tables\Columns\TextColumn::make('contact.id'),
-                Tables\Columns\TextColumn::make('data.email')->label('Email')->searchable(),
-                Tables\Columns\TextColumn::make('data.currency')->badge()->color('info')->label('Currency')->searchable(),
-                Tables\Columns\TextColumn::make('data.created')->label('Created At')->searchable()->sortable()->since(),
+                Tables\Columns\TextColumn::make('data.email')->label('Email'),
+                Tables\Columns\TextColumn::make('data.currency')->badge()->color('info')->label('Currency'),
+                Tables\Columns\TextColumn::make('data.created')->label('Created At')->sortable()->since(),
             ])
             ->filters([
                 //

@@ -6,7 +6,9 @@ use App\Filament\Resources\ChatwootConversationResource\Pages;
 use App\Filament\Resources\ChatwootConversationResource\RelationManagers;
 use App\Models\ChatwootConversation;
 use Filament\Forms;
+use Filament\Infolists;
 use Filament\Forms\Form;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -22,29 +24,42 @@ class ChatwootConversationResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                //
-            ]);
-    }
-
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('id')->badge()->color('gray')->sortable(),
+                Tables\Columns\TextColumn::make('account.name'),
+                Tables\Columns\TextColumn::make('contact.name'),
+                Tables\Columns\TextColumn::make('last_activity_at')->since()->sortable(),
+                Tables\Columns\TextColumn::make('created_at')->since()->sortable(),
+                Tables\Columns\TextColumn::make('contact_last_seen_at')->since()->sortable(),
+                Tables\Columns\TextColumn::make('agent_last_seen_at')->since()->sortable(),
+                Tables\Columns\TextColumn::make('assignee_last_seen_at')->since()->sortable(),
+                Tables\Columns\TextColumn::make('first_reply_created_at')->since()->sortable(),
+                Tables\Columns\TextColumn::make('waiting_since')->since()->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
             ])
             ->bulkActions([])
             ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', 'null'));
     }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\TextEntry::make('id')->badge()->color('gray'),
+                Infolists\Components\TextEntry::make('account.name'),
+                Infolists\Components\TextEntry::make('contact.name'),
+
+            ]);
+    }
+
 
     public static function getRelations(): array
     {

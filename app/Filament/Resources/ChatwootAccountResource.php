@@ -8,6 +8,8 @@ use App\Models\ChatwootAccount;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\FormsComponent;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -24,26 +26,28 @@ class ChatwootAccountResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-queue-list';
 
-    public static function form(Form $form): Form
-    {
-        return $form->schema([
-            Forms\Components\TextInput::make('id')->integer()->required()->unique(ignoreRecord: true)->disabled(),
-            Forms\Components\TextInput::make('name')->required()->disabled(),
-            Forms\Components\TextInput::make('domain')->disabled(),
-            Forms\Components\TextInput::make('support_email')->email()->disabled(),
-        ]);
-    }
-
     public static function table(Table $table): Table
     {
         return $table->columns([
-            Tables\Columns\TextColumn::make('id'),
+            Tables\Columns\TextColumn::make('id')->badge()->color('gray')->sortable(),
             Tables\Columns\TextColumn::make('name'),
-            Tables\Columns\TextColumn::make('domain'),
             Tables\Columns\TextColumn::make('support_email'),
         ])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+            ])
             ->filters([])
             ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', 'null'));
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Components\TextEntry::make('id')->badge()->color('gray'),
+                Components\TextEntry::make('name'),
+                Components\TextEntry::make('support_email'),
+            ]);
     }
 
     public static function getRelations(): array
@@ -57,8 +61,6 @@ class ChatwootAccountResource extends Resource
     {
         return [
             'index' => Pages\ListChatwootAccounts::route('/'),
-            'create' => Pages\CreateChatwootAccount::route('/create'),
-            'edit' => Pages\EditChatwootAccount::route('/{record}/edit'),
         ];
     }
 

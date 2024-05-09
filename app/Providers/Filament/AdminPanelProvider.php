@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -18,6 +19,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Laravel\Socialite\Contracts\User as SocialiteUserContract;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -54,11 +57,29 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->unsavedChangesAlerts()
+            ->sidebarCollapsibleOnDesktop()
             ->spa()
             ->plugin(
                 SpatieLaravelTranslatablePlugin::make()
                     ->defaultLocales(['pl', 'en']),
+            )
+            ->plugin(
+                FilamentSocialitePlugin::make()
+                    ->setProviders([
+                        'google' => [
+                            'label' => 'Google',
+                            // Custom icon requires an additional package, see below.
+                            'icon' => 'fab-google',
+                            // (optional) Button color override, default: 'gray'.
+                            'color' => 'primary',
+                            // (optional) Button style override, default: true (outlined).
+                            'outlined' => false,
+                            'client_id' => env('GOOGLE_CLIENT_ID'),
+                            'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+                            'redirect' => env('GOOGLE_REDIRECT_URI')
+                        ],
+                    ])
+
             );
     }
 }

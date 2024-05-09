@@ -16,7 +16,7 @@ class AddJsonIndexesToStripeObjectsTable extends Migration
     {
         Schema::table('mbi_stripe.objects', function (Blueprint $table) {
             // Adding a GIN index on the JSONB data column for efficient JSON operations
-            $table->index(['data'], 'stripe_objects_data_gin_idx', 'gin');
+            $table->index(['data'], 'mbi_stripe_objects_data_index', 'gin');
         });
     }
 
@@ -28,7 +28,7 @@ class AddJsonIndexesToStripeObjectsTable extends Migration
     public function down()
     {
         Schema::table('mbi_stripe.objects', function (Blueprint $table) {
-            $table->dropIndex('stripe_objects_data_gin_idx');
+            $table->dropIndex(['data']);
         });
     }
 }
