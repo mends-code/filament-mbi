@@ -8,17 +8,15 @@
         "php": "^8.2",
         "dutchcodingcompany/filament-socialite": "^1.4",
         "filament/filament": "^3.2",
-        "filament/spatie-laravel-translatable-plugin": "^3.2",
         "filament/widgets": "^3.2",
         "laravel/framework": "^11.0",
+        "laravel/horizon": "^5.24",
         "laravel/octane": "^2.3",
         "laravel/tinker": "^2.9",
         "nesbot/carbon": "^3.3",
         "owenvoke/blade-fontawesome": "^2.6",
         "predis/predis": "^2.2",
-        "rinvex/countries": "^9.0",
-        "spiral/roadrunner-cli": "^2.6.0",
-        "spiral/roadrunner-http": "^3.3.0"
+        "rinvex/countries": "^9.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13",

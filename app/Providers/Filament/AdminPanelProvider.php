@@ -59,10 +59,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->sidebarCollapsibleOnDesktop()
             ->topNavigation()
-            ->plugin(
-                SpatieLaravelTranslatablePlugin::make()
-                    ->defaultLocales(['pl', 'en']),
-            )
             ->spa()
             ->plugin(
                 FilamentSocialitePlugin::make()
