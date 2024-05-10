@@ -1,11 +1,10 @@
-# Use the official FrankenPHP image
 FROM dunglas/frankenphp
 
-# Copy the PHP extension installer for any additional extensions
+# Copy the PHP extension installer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-# Install any necessary PHP extensions not included in the base image
-RUN install-php-extensions @composer pgsql pdo_pgsql zip intl opcache brotli pcntl
+# Install necessary PHP extensions
+RUN install-php-extensions @composer pdo_pgsql pgsql opcache brotli mbstring openssl
 
 # Copy Composer from the official Composer image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -16,11 +15,11 @@ COPY . /app
 # Set the working directory to your application
 WORKDIR /app
 
-# Install Composer dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Ensure files are owned by the web server user
+# Update permissions
 RUN chown -R www-data:www-data /app
+
+# Install Composer dependencies with verbose output
+RUN composer install --no-dev --optimize-autoloader -vvv
 
 # Set the entrypoint to use Laravel Octane with FrankenPHP
 ENTRYPOINT ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=8000"]
