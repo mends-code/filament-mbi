@@ -12,6 +12,8 @@ use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
 use Filament\SpatieLaravelTranslatablePlugin;
+use Filament\Support\View\Components\Modal;
+use Filament\Tables\Table;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -59,7 +61,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->sidebarCollapsibleOnDesktop()
             ->topNavigation()
-            ->spa()
+            ->spa(env('FILAMENT_SPA', true))
+            ->favicon(asset('favicon.svg'))
             ->plugin(
                 FilamentSocialitePlugin::make()
                     ->setProviders([
@@ -75,5 +78,14 @@ class AdminPanelProvider extends PanelProvider
                     ])
                     ->setRegistrationEnabled(fn (?Authenticatable $user) => (bool) $user)
             );
+        Modal::closedByClickingAway(false);
+        Modal::closeButton(false);
+        Table::configureUsing(function (Table $table): void {
+            $table
+                ->paginationPageOptions([5, 10, 25])
+                ->defaultPaginationPageOption(5)
+                ->persistFiltersInSession()
+                ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null));
+        });
     }
 }
