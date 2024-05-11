@@ -84,8 +84,7 @@ class AdminPanelProvider extends PanelProvider
             $table
                 ->paginationPageOptions([5, 10, 25])
                 ->defaultPaginationPageOption(5)
-                ->persistFiltersInSession()
-                ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null));
+                ->persistFiltersInSession();
         });
     }
 }

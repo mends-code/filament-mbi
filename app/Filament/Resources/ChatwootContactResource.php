@@ -98,6 +98,8 @@ class ChatwootContactResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([])
+            ->recordAction(null)
+            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null))
             ->defaultSort('last_activity_at', 'desc');
     }
 

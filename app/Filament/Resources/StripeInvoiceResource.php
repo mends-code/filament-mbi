@@ -90,7 +90,9 @@ class StripeInvoiceResource extends Resource
             ->bulkActions([
                 // Define bulk actions here
             ])
-            ->defaultSort('created', 'desc');
+            ->defaultSort('created', 'desc')
+            ->recordAction(null)
+            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null));
     }
 
     public static function infolist(Infolist $infolist): Infolist

@@ -48,7 +48,9 @@ class StripeCustomerResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([]),
             ])
-            ->defaultSort('data.created', 'desc');
+            ->defaultSort('data.created', 'desc')
+            ->recordAction(null)
+            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null));
     }
 
     public static function getRelations(): array
