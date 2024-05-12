@@ -67,7 +67,7 @@ class PatientResource extends Resource
             ])
             ->actions([
                 Tables\Actions\DeleteAction::make(),
-                Tables\Actions\EditAction::make()->modalSubmitAction(),
+                Tables\Actions\EditAction::make()->modalSubmitAction( ),
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),
                 Tables\Actions\ViewAction::make(),
