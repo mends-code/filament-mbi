@@ -31,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('')
+            ->path('admin')
             ->login()
             ->colors([
                 'primary' => Color::Cyan,
@@ -58,7 +58,6 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->sidebarCollapsibleOnDesktop()
-            ->topNavigation()
             ->spa(env('FILAMENT_SPA', true))
             ->favicon(asset('favicon.svg'))
             ->plugin(
