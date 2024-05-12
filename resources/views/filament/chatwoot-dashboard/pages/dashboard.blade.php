@@ -1,3 +1,3 @@
 <x-filament-panels::page>
-    @include('components.chatwoot_data')
+    @include('filament.chatwoot-dashboard.components.chatwoot-data')
 </x-filament-panels::page>
