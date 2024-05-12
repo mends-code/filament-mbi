@@ -12,6 +12,18 @@ class ChatwootDataHandlerController extends Controller
         $eventData = $request->json()->all();
         Log::info('Received Chatwoot data:', $eventData);
 
+        // Store data in session
+        session(['chatwootData' => $eventData]);
+
         return response()->json(['status' => 'Data processed successfully']);
+    }
+
+    public function displayData()
+    {
+        // Retrieve data from session
+        $data = session('chatwootData', []);
+
+        // Return a view and pass the data to it
+        return view('displayData', ['data' => $data]);
     }
 }

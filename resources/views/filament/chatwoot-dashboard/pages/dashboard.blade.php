@@ -43,4 +43,10 @@
 
 </head>
 <x-filament-panels::page>
+    <h1>Received Data from Chatwoot</h1>
+    @if (!empty($data))
+        <pre>{{ json_encode($data, JSON_PRETTY_PRINT) }}</pre>
+    @else
+        <p>No data received yet.</p>
+    @endif
 </x-filament-panels::page>
