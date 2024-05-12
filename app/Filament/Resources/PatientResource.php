@@ -67,6 +67,7 @@ class PatientResource extends Resource
             ])
             ->actions([
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()->modalSubmitAction(),
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),
                 Tables\Actions\ViewAction::make(),
@@ -77,6 +78,7 @@ class PatientResource extends Resource
                     Tables\Actions\RestoreBulkAction::make(),
                 ])
             ])
+            ->headerActions([])
             ->recordAction(null)
             ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null));
     }
