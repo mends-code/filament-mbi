@@ -78,7 +78,7 @@ class ChatwootContactResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->badge()->color('gray')->sortable(),
+                Tables\Columns\TextColumn::make('id')->badge()->color('gray')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable(),
                 Tables\Columns\TextColumn::make('phone_number')->searchable(),
