@@ -24,6 +24,6 @@ class ChatwootDataHandlerController extends Controller
         $data = session('chatwootData', []);
 
         // Return a view and pass the data to it
-        return view('displayData', ['data' => $data]);
+        return view('filament.chatwoot-dashboard.pages.dashboard', ['data' => $data]);
     }
 }
