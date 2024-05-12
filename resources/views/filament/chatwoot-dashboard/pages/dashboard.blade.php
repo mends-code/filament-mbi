@@ -1,5 +1,4 @@
 <head>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
         function isJSONValid(str) {
             try {
@@ -12,7 +11,7 @@
 
         window.addEventListener("message", function(event) {
             // Check the origin of the data
-            if (event.origin !== "https://expected-chatwoot-domain.com") {
+            if (event.origin !== "https://chat.mends.eu") {
                 console.error("Invalid origin: data received from unauthorized source.");
                 return;
             }
