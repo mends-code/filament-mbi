@@ -1,6 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ChatwootDataHandlerController;
+use App\Http\Controllers\ChatwootDataController;
 
-Route::post('/filament/api/chatwoot-data-handler', [ChatwootDataHandlerController::class, 'handle']);
-Route::get('/display-chatwoot-data', [ChatwootDataHandlerController::class, 'displayData']);
+Route::post('/api/chatwoot/app-context/store', [ChatwootDataController::class, 'store']);
+Route::get('/api/chatwoot/app-context/fetch', [ChatwootDataController::class, 'fetch']);
