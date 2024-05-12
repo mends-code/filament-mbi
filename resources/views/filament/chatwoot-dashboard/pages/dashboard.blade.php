@@ -24,6 +24,8 @@
 
             const eventData = JSON.parse(event.data);
 
+            console.log(JSON.stringify(eventData));
+
             fetch('/filament/api/chatwoot-data-handler', {
                     method: 'POST',
                     headers: {
@@ -34,8 +36,8 @@
                     body: JSON.stringify(eventData)
                 })
                 .then(response => response.json())
-                .then(data => console.log('Success:', JSON.stringify(data)))
-                .catch(error => console.error('Error:', JSON.stringify(error)));
+                .then(data => console.log('Success:', data))
+                .catch(error => console.error('Error:', error));
         });
     </script>
 
