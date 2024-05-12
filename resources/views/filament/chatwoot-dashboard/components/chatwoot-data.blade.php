@@ -26,7 +26,7 @@
 
                 console.log(JSON.stringify(eventData));
 
-                // Updated route for storing data
+                // Store data immediately and fetch once confirmed stored
                 fetch('/api/chatwoot/app-context/store', {
                     method: 'POST',
                     headers: {
@@ -36,12 +36,14 @@
                     body: JSON.stringify(eventData)
                 })
                 .then(response => response.json())
-                .then(data => console.log('Success:', data))
+                .then(data => {
+                    console.log('Success:', data);
+                    fetchData(); // Fetch data right after it's confirmed stored
+                })
                 .catch(error => console.error('Error:', error));
             });
 
             function fetchData() {
-                // Updated route for fetching data
                 fetch('/api/chatwoot/app-context/fetch')
                     .then(response => response.json())
                     .then(data => {
@@ -53,9 +55,6 @@
                     })
                     .catch(error => console.error('Error fetching data:', error));
             }
-
-            // Poll the server every 5 seconds
-            setInterval(fetchData, 5000);
         </script>
     </head>
     <h1>Received Data from Chatwoot</h1>
