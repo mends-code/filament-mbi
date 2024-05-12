@@ -39,14 +39,27 @@
                 .then(data => console.log('Success:', data))
                 .catch(error => console.error('Error:', error));
         });
+
+        function fetchData() {
+            fetch('/display-chatwoot-data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.status === 'success') {
+                        // Assuming the data is returned as JSON
+                        document.getElementById('data-display').innerHTML = JSON.stringify(data.data, null, 2);
+                    } else {
+                        console.error('Failed to fetch data');
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Poll the server every 5 seconds
+        setInterval(fetchData, 5000);
     </script>
 
 </head>
 <x-filament-panels::page>
     <h1>Received Data from Chatwoot</h1>
-    @if (!empty($data))
-        <pre>{{ json_encode($data, JSON_PRETTY_PRINT) }}</pre>
-    @else
-        <p>No data received yet.</p>
-    @endif
+    <pre id="data-display">Waiting for data...</pre>
 </x-filament-panels::page>
