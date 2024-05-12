@@ -1,4 +1,5 @@
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
         function isJSONValid(str) {
             try {
