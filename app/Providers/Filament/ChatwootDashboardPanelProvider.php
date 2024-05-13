@@ -26,6 +26,8 @@ class ChatwootDashboardPanelProvider extends PanelProvider
             ->id('chatwoot-dashboard')
             ->path('chatwoot-dashboard')
             ->login()
+            ->profile()
+            ->passwordReset()
             ->colors([
                 'primary' => '#1f93ff',
             ])
