@@ -6,6 +6,7 @@ use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use App\Http\Middleware\SetChatwootDashboardAppMode;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -39,11 +40,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([
-            ])
+            ->pages([])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            ->widgets([
-            ])
+            ->widgets([])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -54,6 +53,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SetChatwootDashboardAppMode::class
             ])
             ->authMiddleware([
                 Authenticate::class,
@@ -76,6 +76,10 @@ class AdminPanelProvider extends PanelProvider
                     ])
                     ->setRegistrationEnabled(fn (?Authenticatable $user) => (bool) $user)
             );
+    }
+
+    public function boot(): void
+    {
         Modal::closedByClickingAway(false);
         Modal::closeButton(false);
         Table::configureUsing(function (Table $table): void {
