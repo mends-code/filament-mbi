@@ -25,6 +25,7 @@ class ChatwootDashboardPanelProvider extends PanelProvider
         return $panel
             ->id('chatwoot-dashboard')
             ->path('chatwoot-dashboard')
+            ->login()
             ->colors([
                 'primary' => '#1f93ff',
             ])

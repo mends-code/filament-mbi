@@ -1,4 +1,3 @@
-<x-filament::page>
     <head>
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <script>
@@ -28,19 +27,20 @@
 
                 // Store data immediately and fetch once confirmed stored
                 fetch('/api/chatwoot/app-context/store', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify(eventData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data);
-                    fetchData(); // Fetch data right after it's confirmed stored
-                })
-                .catch(error => console.error('Error:', error));
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content')
+                        },
+                        body: JSON.stringify(eventData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                        fetchData(); // Fetch data right after it's confirmed stored
+                    })
+                    .catch(error => console.error('Error:', error));
             });
 
             function fetchData() {
@@ -59,4 +59,3 @@
     </head>
     <h1>Received Data from Chatwoot</h1>
     <pre id="data-display">Waiting for data...</pre>
-</x-filament::page>
