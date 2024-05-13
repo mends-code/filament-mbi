@@ -2,7 +2,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
@@ -16,10 +19,10 @@
         "nesbot/carbon": "^3.3",
         "owenvoke/blade-fontawesome": "^2.6",
         "predis/predis": "^2.2",
+        "barryvdh/laravel-debugbar": "^3.13",
         "rinvex/countries": "^9.0"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.13",
         "fakerphp/faker": "^1.23",
         "laravel/dusk": "^8.2",
         "laravel/pint": "^1.13",
