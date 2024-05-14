@@ -2,14 +2,14 @@
 
 namespace App\Filament\Pages;
 
-use Filament\Forms\Components\DatePicker;
+use App\Models\ChatwootContact;
+use App\Models\StripeCustomer;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components;
 use Filament\Pages\Dashboard as BaseDashboard;
-use App\Models\ChatwootContact;
-use App\Models\User;
 
 class Dashboard extends BaseDashboard
 {
@@ -17,29 +17,33 @@ class Dashboard extends BaseDashboard
 
     public function filtersForm(Form $form): Form
     {
-        return $form
-            ->schema([
-                Section::make()
-                    ->schema([
-                        Select::make('chatwootContact')
-                            ->options(
-                                ChatwootContact::query()
-                                    ->get(['id', 'name'])
-                                    ->mapWithKeys(function ($item) {
-                                        // Use the contact name if not null, otherwise use 'No Name' as a placeholder
-                                        return [$item->id => $item->name ?? 'No Name'];
-                                    })
-                                    ->toArray()
-                            )
-                            ->preload()
-                            ->searchable(),
-                        DatePicker::make('startDate')
-                            ->maxDate(fn (Get $get) => $get('endDate') ?: now()),
-                        DatePicker::make('endDate')
-                            ->minDate(fn (Get $get) => $get('startDate') ?: now())
-                            ->maxDate(now()),
-                    ])
-                    ->columns(3),
-            ]);
+        $form->schema([
+            Section::make()
+                ->schema([
+                    Select::make('chatwoot_contact')
+                        ->options(
+                            ChatwootContact::query()
+                                ->get(['id', 'name', 'email', 'phone_number'])
+                                ->mapWithKeys(function ($item) {
+                                    $displayName = $item->name ?: 'No Name';
+                                    return [$item->id => "{$displayName} {$item->email} {$item->phone_number}"];
+                                })
+                                ->toArray()
+                        )
+                        ->preload()
+                        ->searchable()
+                        ->reactive()
+                        ->afterStateUpdated(fn (callable $set) => $set('stripe_customer', null)), // Reset Stripe customer when contact changes
+                ])
+                ->columns(2),
+        ]);
+        return $form;
+    }
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        $infolist->schema([
+            Components\TextEntry::make('test')->label('test'),
+        ]);
+        return $infolist;
     }
 }
