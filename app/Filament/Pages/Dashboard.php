@@ -26,13 +26,15 @@ class Dashboard extends BaseDashboard
                                 ->get(['id', 'name', 'email', 'phone_number'])
                                 ->mapWithKeys(function ($item) {
                                     $displayName = $item->name ?: 'No Name';
-                                    return [$item->id => "{$displayName} {$item->email} {$item->phone_number}"];
+                                    return [$item->id => "<span class=\"font-bold\">{$displayName}</span><span></span><br><span class=\"text-gray-400\">tel:</span> {$item->email}<br><span class=\"text-gray-400\">email:</span> {$item->phone_number}"];
                                 })
                                 ->toArray()
                         )
                         ->preload()
                         ->searchable()
                         ->reactive()
+                        ->allowHtml()
+                        ->native(false)
                         ->afterStateUpdated(fn (callable $set) => $set('stripe_customer', null)), // Reset Stripe customer when contact changes
                 ])
                 ->columns(2),

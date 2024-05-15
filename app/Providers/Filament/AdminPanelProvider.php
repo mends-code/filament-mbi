@@ -22,6 +22,11 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Laravel\Socialite\Contracts\User as SocialiteUserContract;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Blade;
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -38,8 +43,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverLivewireComponents(in: app_path('Livewire'), for: 'App\\Livewire')
+            ->pages([])
             ->widgets([])
             ->topNavigation()
             ->middleware([
@@ -86,5 +92,12 @@ class AdminPanelProvider extends PanelProvider
                 ->defaultPaginationPageOption(5)
                 ->persistFiltersInSession();
         });
+        FilamentAsset::register([
+            Css::make('app-stylesheet', __DIR__ . '/../../resources/css/app.css'),
+        ]);
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
+            fn (): string => Blade::render('@livewire("chatwoot-contact-banner")'),
+        );
     }
 }
