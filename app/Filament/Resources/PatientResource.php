@@ -67,6 +67,7 @@ class PatientResource extends Resource
             ])
             ->actions([
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()->modalSubmitAction( ),
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),
                 Tables\Actions\ViewAction::make(),
@@ -77,7 +78,9 @@ class PatientResource extends Resource
                     Tables\Actions\RestoreBulkAction::make(),
                 ])
             ])
-            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', 'null'));
+            ->headerActions([])
+            ->recordAction(null)
+            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null));
     }
 
     public static function getRelations(): array
@@ -91,8 +94,6 @@ class PatientResource extends Resource
     {
         return [
             'index' => Pages\ListPatients::route('/'),
-            'create' => Pages\CreatePatient::route('/create'),
-            'edit' => Pages\EditPatient::route('/{record}/edit'),
         ];
     }
 }

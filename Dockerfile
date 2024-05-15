@@ -1,48 +1,175 @@
-# Use PHP with Apache as the base image
-FROM php:8.2-apache as web
+# Accepted values: 8.3 - 8.2
+ARG PHP_VERSION=8.3
 
-# Install Additional System Dependencies
-RUN apt-get update && apt-get install -y \
-    libzip-dev \
+ARG FRANKENPHP_VERSION=latest
+
+ARG COMPOSER_VERSION=latest
+
+###########################################
+# Build frontend assets with NPM
+###########################################
+
+ARG NODE_VERSION=20-alpine
+
+FROM node:${NODE_VERSION} AS build
+
+ENV ROOT=/var/www/html
+
+WORKDIR ${ROOT}
+
+RUN npm config set update-notifier false && npm set progress=false
+
+COPY package*.json ./
+
+RUN if [ -f $ROOT/package-lock.json ]; \
+    then \
+    npm ci --loglevel=error --no-audit; \
+    else \
+    npm install --loglevel=error --no-audit; \
+    fi
+
+COPY . .
+
+RUN npm run build
+
+###########################################
+
+FROM composer:${COMPOSER_VERSION} AS vendor
+
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}
+
+LABEL maintainer="SMortexa <seyed.me720@gmail.com>"
+LABEL org.opencontainers.image.title="Laravel Octane Dockerfile"
+LABEL org.opencontainers.image.description="Production-ready Dockerfile for Laravel Octane"
+LABEL org.opencontainers.image.source=https://github.com/exaco/laravel-octane-dockerfile
+LABEL org.opencontainers.image.licenses=MIT
+
+ARG WWWUSER=1000
+ARG WWWGROUP=1000
+ARG TZ=UTC
+ARG APP_DIR=/var/www/html
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    TERM=xterm-color \
+    WITH_HORIZON=false \
+    WITH_SCHEDULER=false \
+    OCTANE_SERVER=frankenphp \
+    USER=octane \
+    ROOT=${APP_DIR} \
+    COMPOSER_FUND=0 \
+    COMPOSER_MAX_PARALLEL_HTTP=24 \
+    XDG_CONFIG_HOME=${APP_DIR}/.config \
+    XDG_DATA_HOME=${APP_DIR}/.data
+
+WORKDIR ${ROOT}
+
+SHELL ["/bin/bash", "-eou", "pipefail", "-c"]
+
+RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime \
+    && echo ${TZ} > /etc/timezone
+
+ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
+RUN apt-get update; \
+    apt-get upgrade -yqq; \
+    apt-get install -yqq --no-install-recommends --show-progress \
+    apt-utils \
+    curl \
+    wget \
+    nano \
+    ncdu \
+    procps \
+    ca-certificates \
+    supervisor \
+    libsodium-dev \
+    # Install PHP extensions
+    && install-php-extensions \
+    bz2 \
+    pcntl \
+    mbstring \
+    bcmath \
+    sockets \
+    pgsql \
+    pdo_pgsql \
+    opcache \
+    exif \
+    pdo_mysql \
     zip \
-    libpq-dev \
-    libicu-dev \
+    intl \
+    gd \
+    redis \
+    rdkafka \
+    memcached \
+    igbinary \
+    ldap \
+    && apt-get -y autoremove \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && docker-php-source delete \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && rm /var/log/lastlog /var/log/faillog
 
-# Enable Apache mod_rewrite for URL rewriting
-RUN a2enmod rewrite
+RUN wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64" \
+    -O /usr/bin/supercronic \
+    && chmod +x /usr/bin/supercronic \
+    && mkdir -p /etc/supercronic \
+    && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --no-interaction" > /etc/supercronic/laravel
 
-# Install PHP extensions
+RUN userdel --remove --force www-data \
+    && groupadd --force -g ${WWWGROUP} ${USER} \
+    && useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} ${USER}
 
-RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
+RUN chown -R ${USER}:${USER} ${ROOT} /var/{log,run} \
+    && chmod -R a+rw ${ROOT} /var/{log,run}
 
-RUN docker-php-ext-install pdo_pgsql zip intl
+RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
-# Set Apache DocumentRoot to point to Laravel's public directory
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+USER ${USER}
 
-# Update Apache configuration files to use the new DocumentRoot
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
-    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+COPY --chown=${USER}:${USER} --from=vendor /usr/bin/composer /usr/bin/composer
+COPY --chown=${USER}:${USER} composer.json composer.lock ./
 
-# Copy the application code
-COPY . /var/www/html
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --no-autoloader \
+    --no-ansi \
+    --no-scripts \
+    --audit
 
-# Set the working directory
-WORKDIR /var/www/html
+COPY --chown=${USER}:${USER} . .
+COPY --chown=${USER}:${USER} --from=build ${ROOT}/public public
 
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN mkdir -p \
+    storage/framework/{sessions,views,cache,testing} \
+    storage/logs \
+    bootstrap/cache && chmod -R a+rw storage
 
-# Install project dependencies
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+COPY --chown=${USER}:${USER} deployment/supervisord.conf /etc/supervisor/
+COPY --chown=${USER}:${USER} deployment/octane/FrankenPHP/supervisord.frankenphp.conf /etc/supervisor/conf.d/
+COPY --chown=${USER}:${USER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
+COPY --chown=${USER}:${USER} deployment/start-container /usr/local/bin/start-container
+COPY --chown=${USER}:${USER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
 
-# Set permissions for Laravel's storage and cache directories
-RUN chown -R www-data:www-data storage bootstrap/cache
+# FrankenPHP embedded PHP configuration
+COPY --chown=${USER}:${USER} deployment/php.ini /lib/php.ini
 
-# Expose the HTTP port
-EXPOSE 80
+RUN composer install \
+    --classmap-authoritative \
+    --no-interaction \
+    --no-ansi \
+    --no-dev \
+    && composer clear-cache \
+    && php artisan storage:link
 
-# Start Apache in the foreground
-CMD ["apache2-foreground"]
+RUN chmod +x /usr/local/bin/start-container
+
+RUN cat deployment/utilities.sh >> ~/.bashrc
+
+EXPOSE 8000
+EXPOSE 443
+EXPOSE 443/udp
+EXPOSE 2019
+
+ENTRYPOINT ["start-container"]
+
+HEALTHCHECK --start-period=5s --interval=2s --timeout=5s --retries=8 CMD php artisan octane:status || exit 1

@@ -35,7 +35,7 @@ class ChatwootContactResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
-    public static function form(Form $form): Form
+    public static function countries()
     {
         $countries = collect(CountryLoader::countries())->mapWithKeys(function ($country) {
             $label = sprintf(
@@ -45,7 +45,11 @@ class ChatwootContactResource extends Resource
             );
             return [$country['name'] => $label];
         });
+        return $countries;
+    }
 
+    public static function form(Form $form): Form
+    {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('id')->integer()->disabled(),
@@ -58,7 +62,7 @@ class ChatwootContactResource extends Resource
                 Forms\Components\TextInput::make('phone_number')->nullable(),
                 Forms\Components\TextInput::make('location')->nullable(),
                 Forms\Components\Select::make('country_code')->nullable()
-                    ->options($countries)
+                    ->options(countries())
                     ->searchable()
                     ->placeholder('Select a country'),
                 Forms\Components\Checkbox::make('blocked')->disabled(),
@@ -74,6 +78,7 @@ class ChatwootContactResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')->badge()->color('gray')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable(),
                 Tables\Columns\TextColumn::make('phone_number')->searchable(),
@@ -93,9 +98,9 @@ class ChatwootContactResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([])
-            ->persistFiltersInSession()
-            ->defaultSort('last_activity_at', 'desc')
-            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', 'null'));
+            ->recordAction(null)
+            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null))
+            ->defaultSort('last_activity_at', 'desc');
     }
 
     public static function getRelations(): array

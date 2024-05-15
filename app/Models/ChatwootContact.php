@@ -16,6 +16,7 @@ class ChatwootContact extends BaseModelChatwoot
     ];
 
     protected $casts = [
+        'name' => 'string',
         'additional_attributes' => 'json',
         'custom_attributes' => 'json',
         'last_activity_at' => 'timestamp',

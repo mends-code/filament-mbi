@@ -12,14 +12,22 @@ class StripeInvoice extends BaseModelStripe
             $builder->where('object_type', 'invoice');
         });
     }
-    
-    protected $appends = ['customer_id'];
+
+    protected $appends = [
+        'customer_id',
+        'created'
+    ];
 
     public function getCustomerIdAttribute()
     {
         return $this->data['customer'] ?? null;
     }
-    
+
+    public function getCreatedAttribute()
+    {
+        return $this->data['created'] ?? null;
+    }
+
     public function customer()
     {
         return $this->belongsTo(StripeCustomer::class, 'customer_id', 'stripe_id');

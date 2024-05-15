@@ -4,7 +4,7 @@ namespace App\Models;
 
 class StripeCustomer extends BaseModelStripe
 {
-    protected $table = 'mbi_stripe.objects'; // Use the same table as StripeObject
+    protected $table = 'mbi_stripe.objects';
 
     protected static function booted()
     {

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\StripeInvoiceResource\Pages;
+use App\Models\StripeCustomer;
 use App\Models\StripeInvoice;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -13,6 +14,10 @@ use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Infolist;
+use Filament\Tables\Filters;
+use Filament\Tables\Grouping\Group;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Support\Enums\FontFamily;
 
 class StripeInvoiceResource extends Resource
 {
@@ -34,20 +39,29 @@ class StripeInvoiceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('data.id')->label('Invoice ID')->sortable()->badge()->color('gray'),
-                Tables\Columns\TextColumn::make('customer.data.name')
+                Tables\Columns\TextColumn::make('data.id')->label('Invoice ID')->badge()->color('gray')->searchable()
+                    ->icon('heroicon-o-clipboard')
+                    ->copyable()
+                    ->limit(15),
+                Tables\Columns\TextColumn::make('data.hosted_invoice_url')
+                    ->label('Hosted Invoice Url')
+                    ->icon('heroicon-o-clipboard')
+                    ->badge()
+                    ->color('warning')
+                    ->copyable()
+                    ->limit(15),                Tables\Columns\TextColumn::make('customer.data.name')
                     ->label('Customer Name')
                     ->badge()
-                    ->color('gray'),
+                    ->color('gray')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('data.total')
                     ->label('Total')
                     ->money(fn ($record) => $record->data['currency'], divideBy: 100)
                     ->badge()
                     ->color(fn ($record) => $record->data['paid'] ? 'success' : 'danger'),
-                Tables\Columns\TextColumn::make('data.created')->label('Created At')->sortable()->since(),
+                Tables\Columns\TextColumn::make('created')->label('Created At')->since()->sortable(),
                 Tables\Columns\TextColumn::make('data.status')
                     ->label('Status')
-                    ->sortable()
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'draft' => 'gray',
@@ -55,15 +69,30 @@ class StripeInvoiceResource extends Resource
                         'paid' => 'success',
                         'uncollectible' => 'danger',
                         'void' => 'gray'
-                    })
+                    }),
+            ])
+            ->filters([
+                Filters\SelectFilter::make('data.status')
+                    ->options([
+                        'draft' => 'draft',
+                        'open' => 'open',
+                        'paid' => 'paid',
+                        'uncollectible' => 'uncollectible',
+                        'void' => 'void'
+                    ])
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ActionGroup::make([
+
+                    Tables\Actions\ViewAction::make(),
+                ])
             ])
             ->bulkActions([
                 // Define bulk actions here
             ])
-            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', 'null'));
+            ->defaultSort('created', 'desc')
+            ->recordAction(null)
+            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null));
     }
 
     public static function infolist(Infolist $infolist): Infolist
