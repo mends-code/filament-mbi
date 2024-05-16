@@ -88,11 +88,11 @@ class AdminPanelProvider extends PanelProvider
         Modal::closeButton(false);
         Table::configureUsing(function (Table $table): void {
             $table
-                ->paginationPageOptions([5, 10, 25])
-                ->defaultPaginationPageOption(5)
+                //                ->paginationPageOptions([5, 10, 25])
+                //              ->defaultPaginationPageOption(5)
                 ->persistFiltersInSession();
         });
-/*        FilamentView::registerRenderHook(
+        /*        FilamentView::registerRenderHook(
             PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
             fn (): string => Blade::render('@livewire("chatwoot-contact-banner")'),
         );*/

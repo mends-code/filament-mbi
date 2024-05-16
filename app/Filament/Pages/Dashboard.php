@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\ChatwootContact;
+use App\Models\StripeCustomer;
 use App\Models\StripePrice;
 use App\Services\StripeService;
 use Filament\Forms\Components\Section;
@@ -24,12 +25,13 @@ class Dashboard extends BaseDashboard
                 Section::make()
                     ->schema([
                         Select::make('chatwootContactId')
+                            ->label('Chatwoot Contact')
                             ->options(
-                                ChatwootContact::query()
-                                    ->get(['id', 'name', 'email', 'phone_number'])
-                                    ->mapWithKeys(function ($item) {
-                                        $displayName = $item->name ?: 'No Name';
-                                        return [$item->id => "<span class=\"font-bold\">{$displayName}</span><br><span class=\"text-gray-400\">tel:</span> {$item->phone_number}<br><span class=\"text-gray-400\">email:</span> {$item->email}"];
+                                ChatwootContact::all()->pluck('name', 'id')
+                                    ->mapWithKeys(function ($item, $key) {
+                                        $contact = ChatwootContact::find($key);
+                                        $displayName = $contact->name ?: 'No Name';
+                                        return [$key => "<span class=\"font-bold\">{$displayName}</span><br><span class=\"text-gray-400\">tel:</span> {$contact->phone_number}<br><span class=\"text-gray-400\">email:</span> {$contact->email}"];
                                     })
                                     ->toArray()
                             )
@@ -38,38 +40,17 @@ class Dashboard extends BaseDashboard
                             ->reactive()
                             ->allowHtml()
                             ->native(false)
-                            ->afterStateUpdated(fn (callable $set, $state) => $set('stripe_customer', $this->getStripeCustomerId($state))),
-                    ]),
+                            ->afterStateUpdated(fn (callable $set, $state) => $this->setStripeCustomerIdOptions($set, $state)),
+
+                        Select::make('stripeCustomerId')
+                    ])
+                    ->columns(2),
+
                 Actions::make([
                     Action::make('createInvoiceUsingPrice')
                         ->label('Create Invoice')
                         ->modal('createInvoiceModal')
-                        ->form([
-                            Select::make('stripe_price')
-                                ->label('Price')
-                                ->options(
-                                    StripePrice::all()->mapWithKeys(function ($item) {
-                                        $data = $item->data;
-                                        $productName = $item->product['data']['name'];
-                                        return [$item->id => "{$productName} (" . ($data['unit_amount'] / 100) . " {$data['currency']})"];
-                                    })
-                                )
-                                ->searchable(),
-                        ])
-                        ->action(function (array $data) {
-                            $stripeService = App::make(StripeService::class);
-                            $stripeService->createInvoiceFromPrice($data['chatwootContactId'], $data['stripe_price']);
-                        })
-                ])
+                ]),
             ]);
-    }
-
-    public function getStripeCustomerId($contactId)
-    {
-        $contact = ChatwootContact::find($contactId);
-        if ($contact && $contact->customer()->exists()) {
-            return $contact->customer->id;
-        }
-        return null;
     }
 }

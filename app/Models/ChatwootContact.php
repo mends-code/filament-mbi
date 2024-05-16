@@ -37,11 +37,11 @@ class ChatwootContact extends Model
         return $this->belongsToMany(Patient::class, 'mbi_filament.chatwoot_contacts_patients', 'chatwoot_contact_id', 'patient_id')->withTimestamps();
     }
 
-    public function customer()
+    public function stripeCustomers()
     {
-        return $this->hasOne(StripeCustomer::class, 'chatwoot_contact_id');
+        return $this->hasMany(StripeCustomer::class, 'chatwoot_contact_id');
     }
-
+    
     public function getLastActivityAtAttribute($value)
     {
         return $value ? Carbon::parse($value)->setTimezone('Europe/Warsaw') : null;

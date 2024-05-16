@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+
 class StripeInvoice extends BaseModelStripe
 {
     protected $table = 'mbi_stripe.invoices';
@@ -15,10 +17,8 @@ class StripeInvoice extends BaseModelStripe
         'id', 'data', 'customer_id'
     ];
 
-
     public function customer()
     {
         return $this->belongsTo(StripeCustomer::class, 'customer_id', 'id');
     }
-
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+
 class StripeCustomer extends BaseModelStripe
 {
     protected $table = 'mbi_stripe.customers';
@@ -19,5 +21,10 @@ class StripeCustomer extends BaseModelStripe
     public function contact()
     {
         return $this->belongsTo(ChatwootContact::class, 'chatwoot_contact_id');
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(StripeInvoice::class, 'customer_id', 'id');
     }
 }
