@@ -4,13 +4,15 @@ namespace App\Models;
 
 class StripePrice extends BaseModelStripe
 {
-    protected $table = 'mbi_stripe.objects';
+    protected $table = 'mbi_stripe.prices';
 
-    protected static function booted()
+    protected $casts = [
+        'id' => 'string',
+        'data' => 'json',
+    ];
+
+    public function product()
     {
-        static::addGlobalScope('object_type', function ($builder) {
-            $builder->where('object_type', 'price');
-        });
+        return $this->belongsTo(StripeProduct::class, 'product_id', 'id');
     }
-
 }

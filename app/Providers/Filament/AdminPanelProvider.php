@@ -92,9 +92,9 @@ class AdminPanelProvider extends PanelProvider
                 ->defaultPaginationPageOption(5)
                 ->persistFiltersInSession();
         });
-        FilamentView::registerRenderHook(
+/*        FilamentView::registerRenderHook(
             PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
             fn (): string => Blade::render('@livewire("chatwoot-contact-banner")'),
-        );
+        );*/
     }
 }

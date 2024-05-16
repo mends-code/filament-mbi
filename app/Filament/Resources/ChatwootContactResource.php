@@ -5,17 +5,23 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ChatwootContactResource\Pages;
 use App\Filament\Resources\ChatwootContactResource\RelationManagers;
 use App\Models\ChatwootContact;
-use Filament\Forms;
+use App\Models\StripePrice;
+use App\Models\StripeInvoice;
+use App\Services\StripeService;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Form;
-use Filament\Forms\FormsComponent;
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
+use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Rinvex\Country\CountryLoader;
 use Illuminate\Database\Eloquent\Model;
+use Rinvex\Country\CountryLoader;
+use Illuminate\Support\Facades\App;
+use Livewire\Livewire;
 
 class ChatwootContactResource extends Resource
 {
@@ -52,29 +58,27 @@ class ChatwootContactResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('id')->integer()->disabled(),
-                Forms\Components\Select::make('chatwoot_account_id')
-                    ->relationship('account', 'name') // Assuming 'name' is the display field for accounts
+                TextInput::make('id')->integer()->disabled(),
+                Select::make('chatwoot_account_id')
+                    ->relationship('account', 'name')
                     ->label('Account')->disabled(),
-                Forms\Components\DateTimePicker::make('last_activity_at')->nullable()->disabled(),
-                Forms\Components\TextInput::make('name')->nullable(),
-                Forms\Components\TextInput::make('email')->nullable()->email(),
-                Forms\Components\TextInput::make('phone_number')->nullable(),
-                Forms\Components\TextInput::make('location')->nullable(),
-                Forms\Components\Select::make('country_code')->nullable()
-                    ->options(countries())
+                DateTimePicker::make('last_activity_at')->nullable()->disabled(),
+                TextInput::make('name')->nullable(),
+                TextInput::make('email')->nullable()->email(),
+                TextInput::make('phone_number')->nullable(),
+                TextInput::make('location')->nullable(),
+                Select::make('country_code')->nullable()
+                    ->options(self::countries())
                     ->searchable()
                     ->placeholder('Select a country'),
-                Forms\Components\Checkbox::make('blocked')->disabled(),
-                Forms\Components\Select::make('customer')
-                    ->relationship(
-                        titleAttribute: 'stripe_id',
-                    )
-                    ->searchable(['stripe_id'])
+                Checkbox::make('blocked')->disabled(),
+                Select::make('customer')
+                    ->relationship('customer', 'stripe_customer_id')
+                    ->searchable(['stripe_customer_id']),
             ]);
     }
 
-    public static function table(Table $table): Table
+    public static function table(Tables\Table $table): Tables\Table
     {
         return $table
             ->columns([
@@ -82,7 +86,7 @@ class ChatwootContactResource extends Resource
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable(),
                 Tables\Columns\TextColumn::make('phone_number')->searchable(),
-                Tables\Columns\TextColumn::make('customer.stripe_id')->badge()->color('gray')->searchable(),
+                Tables\Columns\TextColumn::make('customer.id')->badge()->color('gray')->searchable(),
                 Tables\Columns\TextColumn::make('last_activity_at')->since()->sortable(),
             ])
             ->filters([
@@ -90,7 +94,7 @@ class ChatwootContactResource extends Resource
                     ->queries(
                         true: fn (Builder $query) => $query->whereNotNull('last_activity_at'),
                         false: fn (Builder $query) => $query->whereNull('last_activity_at'),
-                        blank: fn (Builder $query) => $query, // In this example, we do not want to filter the query when it is blank.
+                        blank: fn (Builder $query) => $query,
                     )->default(true)
             ])
             ->actions([
