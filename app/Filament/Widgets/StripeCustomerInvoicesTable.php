@@ -67,7 +67,6 @@ class StripeCustomerInvoicesTable extends BaseWidget
                 // Define bulk actions here
             ])
             ->defaultSort('created_at', 'desc')
-            ->recordAction(null)
             ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null));
     }
 

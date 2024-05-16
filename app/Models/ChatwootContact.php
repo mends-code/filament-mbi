@@ -39,7 +39,7 @@ class ChatwootContact extends Model
 
     public function customer()
     {
-        return $this->belongsToMany(StripeCustomer::class, 'mbi_filament.chatwoot_contact_stripe_customer', 'chatwoot_contact_id', 'stripe_customer_id')->withTimestamps();
+        return $this->hasOne(StripeCustomer::class, 'chatwoot_contact_id');
     }
 
     public function getLastActivityAtAttribute($value)

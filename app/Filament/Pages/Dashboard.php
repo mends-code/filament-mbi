@@ -5,14 +5,12 @@ namespace App\Filament\Pages;
 use App\Models\ChatwootContact;
 use App\Models\StripePrice;
 use App\Services\StripeService;
-use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Pages\Dashboard as BaseDashboard;
-use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Actions;
 use Illuminate\Support\Facades\App;
 
 class Dashboard extends BaseDashboard
@@ -60,7 +58,7 @@ class Dashboard extends BaseDashboard
                         ])
                         ->action(function (array $data) {
                             $stripeService = App::make(StripeService::class);
-                            $stripeService->createInvoiceFromPrice($this->filters['chatwootContactId'], $data['stripe_price']);
+                            $stripeService->createInvoiceFromPrice($data['chatwootContactId'], $data['stripe_price']);
                         })
                 ])
             ]);
@@ -70,7 +68,7 @@ class Dashboard extends BaseDashboard
     {
         $contact = ChatwootContact::find($contactId);
         if ($contact && $contact->customer()->exists()) {
-            return $contact->customer()->first()->id;
+            return $contact->customer->id;
         }
         return null;
     }

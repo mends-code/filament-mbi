@@ -9,21 +9,15 @@ class StripeCustomer extends BaseModelStripe
     protected $casts = [
         'id' => 'string',
         'data' => 'json',
+        'chatwoot_contact_id' => 'integer'
     ];
 
     protected $fillable = [
-        'id', 'data'
+        'id', 'data', 'chatwoot_contact_id'
     ];
 
     public function contact()
     {
-        return $this->belongsToMany(
-            ChatwootContact::class,
-            'mbi_filament.chatwoot_contact_stripe_customer',
-            'stripe_customer_id',
-            'chatwoot_contact_id',
-            'id',
-            'id'
-        )->withTimestamps();
+        return $this->belongsTo(ChatwootContact::class, 'chatwoot_contact_id');
     }
 }
