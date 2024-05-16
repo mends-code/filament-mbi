@@ -9,6 +9,10 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Filament\Infolists\Components\Fieldset;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Infolist;
 
 class StripeCustomerInvoicesTable extends BaseWidget
 {
@@ -69,6 +73,72 @@ class StripeCustomerInvoicesTable extends BaseWidget
             ->defaultSort('created_at', 'desc')
             ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null));
     }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Fieldset::make('invoice-data')
+                    ->schema([
+                        TextEntry::make('customer.data.id')->badge()->color('gray')->label('ID'),
+                        TextEntry::make('customer.data.name')->label('Name'),
+                        TextEntry::make('customer.data.email')->label('Email'),
+                        TextEntry::make('customer.data.phone')->label('Phone'),
+                    ])
+                    ->columns([
+                        'sm' => 1,
+                        'xl' => 2,
+                    ]),
+                Fieldset::make('invoice-data')
+                    ->schema([
+                        TextEntry::make('data.id')->badge()->color('gray')->label('ID'),
+                        TextEntry::make('data.total')
+                            ->label('Total')
+                            ->money(fn ($record) => $record->data['currency'], divideBy: 100)
+                            ->badge()
+                            ->color(fn ($record) => $record->data['paid'] ? 'success' : 'danger'),
+                        TextEntry::make('data.created')->since()->label('Created At'),
+                        TextEntry::make('data.status')
+                            ->label('Status')
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'draft' => 'gray',
+                                'open' => 'info',
+                                'paid' => 'success',
+                                'uncollectible' => 'danger',
+                                'void' => 'gray'
+                            }),
+                    ])
+                    ->columns([
+                        'sm' => 1,
+                        'xl' => 2,
+                    ]),
+                Fieldset::make('invoice-items')
+                    ->schema([
+                        RepeatableEntry::make('data.lines.data')
+                            ->schema([
+                                TextEntry::make('description'),
+                                TextEntry::make('price.unit_amount')
+                                    ->money(fn ($record) => $record->data['currency'], divideBy: 100)
+                                    ->badge()
+                                    ->color('gray'),
+                                TextEntry::make('quantity'),
+                                TextEntry::make('amount')
+                                    ->money(fn ($record) => $record->data['currency'], divideBy: 100)
+                                    ->badge()
+                                    ->color('gray'),
+                            ])
+                            ->label('')
+                            ->columns([
+                                'sm' => 1,
+                                'xl' => 4,
+                            ]),
+
+                    ])
+                    ->columns(1),
+            ]);
+    }
+
 
     protected function getQuery(): Builder
     {
