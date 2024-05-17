@@ -26,21 +26,12 @@ class Dashboard extends BaseDashboard
                     ->schema([
                         Select::make('chatwootContactId')
                             ->label('Chatwoot Contact')
-                            ->options(
-                                ChatwootContact::all()->pluck('name', 'id')
-                                    ->mapWithKeys(function ($item, $key) {
-                                        $contact = ChatwootContact::find($key);
-                                        $displayName = $contact->name ?: 'No Name';
-                                        return [$key => "<span class=\"font-bold\">{$displayName}</span><br><span class=\"text-gray-400\">tel:</span> {$contact->phone_number}<br><span class=\"text-gray-400\">email:</span> {$contact->email}"];
-                                    })
-                                    ->toArray()
-                            )
                             ->preload()
                             ->searchable()
                             ->reactive()
                             ->allowHtml()
                             ->native(false)
-                            ->afterStateUpdated(fn (callable $set, $state) => $this->setStripeCustomerIdOptions($set, $state)),
+                            ->afterStateUpdated(fn(callable $set, $state) => $this->setStripeCustomerIdOptions($set, $state)),
 
                         Select::make('stripeCustomerId')
                     ])
@@ -48,7 +39,6 @@ class Dashboard extends BaseDashboard
 
                 Actions::make([
                     Action::make('createInvoiceUsingPrice')
-                        ->label('Create Invoice')
                         ->modal('createInvoiceModal')
                 ]),
             ]);
