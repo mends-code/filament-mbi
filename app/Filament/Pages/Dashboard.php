@@ -39,7 +39,7 @@ class Dashboard extends BaseDashboard
 
                 Actions::make([
                     Action::make('createInvoiceUsingPrice')
-                        ->modal('createInvoiceModal')
+                        ->modal()
                 ]),
             ]);
     }
