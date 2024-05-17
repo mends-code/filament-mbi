@@ -6,7 +6,6 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "dutchcodingcompany/filament-socialite": "^1.4",
         "filament/filament": "^3.2",
         "filament/widgets": "^3.2",
         "laravel/framework": "^11.0",
