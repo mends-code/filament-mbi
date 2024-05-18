@@ -2,34 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+
 class StripeInvoice extends BaseModelStripe
 {
-    protected $table = 'mbi_stripe.objects'; // Use the same table as StripeObject
+    protected $table = 'mbi_stripe.invoices';
 
-    protected static function booted()
-    {
-        static::addGlobalScope('object_type', function ($builder) {
-            $builder->where('object_type', 'invoice');
-        });
-    }
-
-    protected $appends = [
-        'customer_id',
-        'created'
+    protected $casts = [
+        'id' => 'string',
+        'data' => 'json',
     ];
 
-    public function getCustomerIdAttribute()
-    {
-        return $this->data['customer'] ?? null;
-    }
-
-    public function getCreatedAttribute()
-    {
-        return $this->data['created'] ?? null;
-    }
+    protected $fillable = [
+        'id', 'data', 'customer_id'
+    ];
 
     public function customer()
     {
-        return $this->belongsTo(StripeCustomer::class, 'customer_id', 'stripe_id');
+        return $this->belongsTo(StripeCustomer::class, 'customer_id', 'id');
     }
 }

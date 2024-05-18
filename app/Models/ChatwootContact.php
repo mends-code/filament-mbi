@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
 
-class ChatwootContact extends BaseModelChatwoot
+class ChatwootContact extends Model
 {
+    use HasFactory;
 
     protected $table = 'mbi_chatwoot.contacts';
 
@@ -24,29 +27,28 @@ class ChatwootContact extends BaseModelChatwoot
         'identifier' => 'string',
     ];
 
-    /**
-     * Get the account that owns the contact.
-     */
     public function account()
     {
         return $this->belongsTo(ChatwootAccount::class, 'account_id');
     }
-    /**
-     * The patients that belong to the contact.
-     */
+
     public function patients()
     {
         return $this->belongsToMany(Patient::class, 'mbi_filament.chatwoot_contacts_patients', 'chatwoot_contact_id', 'patient_id')->withTimestamps();
     }
 
-    public function customer()
+    public function stripeCustomers()
     {
-        return $this->belongsToMany(StripeCustomer::class, 'mbi_filament.chatwoot_contact_stripe_customer', 'chatwoot_contact_id', 'stripe_customer_id')->withTimestamps();
+        return $this->hasMany(StripeCustomer::class, 'chatwoot_contact_id');
+    }
+
+    public function conversations()
+    {
+        return $this->hasMany(ChatwootConversation::class, 'contact_id');
     }
 
     public function getLastActivityAtAttribute($value)
     {
-        return $value ? Carbon::parse($value, 'UTC')->timezone('Europe/Warsaw') : null;
+        return $value ? Carbon::parse($value)->setTimezone('Europe/Warsaw') : null;
     }
-
 }

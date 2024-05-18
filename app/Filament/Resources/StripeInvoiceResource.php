@@ -27,19 +27,11 @@ class StripeInvoiceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-plus';
 
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('data.id'),
-            ]);
-    }
-
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('data.id')->label('Invoice ID')->badge()->color('gray')->searchable()
+                Tables\Columns\TextColumn::make('id')->label('Invoice ID')->badge()->color('gray')->searchable()
                     ->icon('heroicon-o-clipboard')
                     ->copyable()
                     ->limit(15),
@@ -49,17 +41,21 @@ class StripeInvoiceResource extends Resource
                     ->badge()
                     ->color('warning')
                     ->copyable()
-                    ->limit(15),                Tables\Columns\TextColumn::make('customer.data.name')
+                    ->limit(15),
+                Tables\Columns\TextColumn::make('customer.data.name')
                     ->label('Customer Name')
                     ->badge()
                     ->color('gray')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('customer.contact.name')
+                    ->badge()
+                    ->color('gray'),
                 Tables\Columns\TextColumn::make('data.total')
                     ->label('Total')
                     ->money(fn ($record) => $record->data['currency'], divideBy: 100)
                     ->badge()
                     ->color(fn ($record) => $record->data['paid'] ? 'success' : 'danger'),
-                Tables\Columns\TextColumn::make('created')->label('Created At')->since()->sortable(),
+                Tables\Columns\TextColumn::make('data.created')->label('Created At')->since()->sortable(),
                 Tables\Columns\TextColumn::make('data.status')
                     ->label('Status')
                     ->badge()
@@ -70,6 +66,13 @@ class StripeInvoiceResource extends Resource
                         'uncollectible' => 'danger',
                         'void' => 'gray'
                     }),
+                Tables\Columns\IconColumn::make('data.livemode')
+                    ->label('Livemode')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check')
+                    ->falseIcon('heroicon-o-x-mark')
+                    ->trueColor('success')
+                    ->falseColor('warning')
             ])
             ->filters([
                 Filters\SelectFilter::make('data.status')
@@ -90,7 +93,7 @@ class StripeInvoiceResource extends Resource
             ->bulkActions([
                 // Define bulk actions here
             ])
-            ->defaultSort('created', 'desc')
+            ->defaultSort('data.created', 'desc')
             ->recordAction(null)
             ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null));
     }

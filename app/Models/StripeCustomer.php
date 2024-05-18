@@ -2,20 +2,29 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+
 class StripeCustomer extends BaseModelStripe
 {
-    protected $table = 'mbi_stripe.objects';
+    protected $table = 'mbi_stripe.customers';
 
-    protected static function booted()
+    protected $casts = [
+        'id' => 'string',
+        'data' => 'json',
+        'chatwoot_contact_id' => 'integer'
+    ];
+
+    protected $fillable = [
+        'id', 'data', 'chatwoot_contact_id'
+    ];
+
+    public function chatwootContact()
     {
-        static::addGlobalScope('object_type', function ($builder) {
-            $builder->where('object_type', 'customer');
-        });
+        return $this->belongsTo(ChatwootContact::class, 'chatwoot_contact_id');
     }
 
-    public function contact()
+    public function invoices()
     {
-        return $this->belongsToMany(ChatwootContact::class, 'mbi_filament.chatwoot_contact_stripe_customer', 'stripe_customer_id', 'chatwoot_contact_id');
+        return $this->hasMany(StripeInvoice::class, 'customer_id', 'id');
     }
-
 }

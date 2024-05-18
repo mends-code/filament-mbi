@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class BaseModelStripe extends Model
 {
     use HasFactory;
-    
-    protected $casts = [
-        'data' => 'json',
-    ];
+
+    protected $keyType = 'string';
 }

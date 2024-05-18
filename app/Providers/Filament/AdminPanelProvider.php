@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -20,7 +19,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Laravel\Socialite\Contracts\User as SocialiteUserContract;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
@@ -64,22 +62,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->sidebarCollapsibleOnDesktop()
             ->spa(env('FILAMENT_SPA', true))
-            ->favicon(asset('favicon.svg'))
-            ->plugin(
-                FilamentSocialitePlugin::make()
-                    ->setProviders([
-                        'google' => [
-                            'label' => 'Google',
-                            // Custom icon requires an additional package, see below.
-                            'icon' => 'fab-google',
-                            // (optional) Button color override, default: 'gray'.
-                            'color' => 'primary',
-                            // (optional) Button style override, default: true (outlined).
-                            'outlined' => false,
-                        ],
-                    ])
-                    ->setRegistrationEnabled(fn (?Authenticatable $user) => (bool) $user)
-            );
+            ->favicon(asset('favicon.svg'));
     }
 
     public function boot(): void
@@ -88,16 +71,7 @@ class AdminPanelProvider extends PanelProvider
         Modal::closeButton(false);
         Table::configureUsing(function (Table $table): void {
             $table
-                ->paginationPageOptions([5, 10, 25])
-                ->defaultPaginationPageOption(5)
                 ->persistFiltersInSession();
         });
-        FilamentAsset::register([
-            Css::make('app-stylesheet', __DIR__ . '/../../resources/css/app.css'),
-        ]);
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
-            fn (): string => Blade::render('@livewire("chatwoot-contact-banner")'),
-        );
     }
 }
