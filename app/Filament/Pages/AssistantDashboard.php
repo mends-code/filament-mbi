@@ -64,12 +64,19 @@ class AssistantDashboard extends BaseDashboard
 
     protected function getChatwootContactsSearchResults(string $search): array
     {
-        return ChatwootContact::where('id', 'like', "%{$search}%")
-            ->orWhere('name', 'like', "%{$search}%")
-            ->orWhere('email', 'like', "%{$search}%")
-            ->orWhere('phone_number', 'like', "%{$search}%")
-            ->limit(10)
-            ->get()
+        $words = explode(' ', $search);
+        $query = ChatwootContact::query();
+
+        foreach ($words as $word) {
+            $query->where(function ($q) use ($word) {
+                $q->where('id', 'ILIKE', "%{$word}%")
+                  ->orWhere('name', 'ILIKE', "%{$word}%")
+                  ->orWhere('email', 'ILIKE', "%{$word}%")
+                  ->orWhere('phone_number', 'ILIKE', "%{$word}%");
+            });
+        }
+
+        return $query->limit(10)->get()
             ->mapWithKeys(function ($contact) {
                 return [$contact->id => $this->getChatwootContactLabel($contact->id)];
             })
