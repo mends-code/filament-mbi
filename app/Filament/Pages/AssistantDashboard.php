@@ -10,9 +10,8 @@ use Filament\Forms\Form;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Forms\Components\Actions\Action;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\HtmlString;
 
-class Dashboard extends BaseDashboard
+class AssistantDashboard extends BaseDashboard
 {
     use BaseDashboard\Concerns\HasFiltersForm;
 
@@ -43,7 +42,8 @@ class Dashboard extends BaseDashboard
                         Select::make('chatwootContactId')
                             ->label('Kontakt')
                             ->searchable()
-                            ->options($this->getChatwootContactsOptions())
+                            ->getSearchResultsUsing(fn (string $search): array => $this->getChatwootContactsSearchResults($search))
+                            ->getOptionLabelUsing(fn ($value): ?string => $this->getChatwootContactLabel($value))
                             ->reactive()
                             ->allowHtml()
                             ->native(false)
@@ -53,31 +53,42 @@ class Dashboard extends BaseDashboard
 
                         Select::make('chatwootConversationId')
                             ->label('Rozmowa')
-                            ->searchable()
-                            ->options(function () {
-                                return $this->getChatwootConversationsOptions($this->filters['chatwootContactId']);
-                            })
-                            ->reactive()
+                            ->options(fn () => $this->getChatwootConversationsOptions($this->filters['chatwootContactId']))
                             ->allowHtml()
                             ->native(false)
-                            ->disabled(fn() => empty ($this->filters['chatwootContactId'])),
+                            ->disabled(fn() => empty($this->filters['chatwootContactId'])),
                     ])
                     ->columns(2),
             ]);
     }
 
-    protected function getChatwootContactsOptions(): array
+    protected function getChatwootContactsSearchResults(string $search): array
     {
-        return ChatwootContact::all()->mapWithKeys(function ($contact) {
-            $html = Blade::render('components.dashboard-contact-select-option', ['contact' => $contact]);
-            return [$contact->id => $html];
-        })->toArray();
+        return ChatwootContact::where('id', 'like', "%{$search}%")
+            ->orWhere('name', 'like', "%{$search}%")
+            ->orWhere('email', 'like', "%{$search}%")
+            ->orWhere('phone_number', 'like', "%{$search}%")
+            ->limit(10)
+            ->get()
+            ->mapWithKeys(function ($contact) {
+                return [$contact->id => $this->getChatwootContactLabel($contact->id)];
+            })
+            ->toArray();
+    }
+
+    protected function getChatwootContactLabel($value): ?string
+    {
+        $contact = ChatwootContact::find($value);
+
+        if ($contact) {
+            return Blade::render('components.dashboard-contact-select-option', ['contact' => $contact]);
+        }
+
+        return null;
     }
 
     protected function getChatwootConversationsOptions($contactId): array
     {
-        $contactId = $this->filters['chatwootContactId'];
-
         if (!$contactId) {
             return [];
         }
