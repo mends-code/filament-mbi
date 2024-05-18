@@ -42,9 +42,9 @@ class AssistantDashboard extends BaseDashboard
                         Select::make('chatwootContactId')
                             ->label('Kontakt')
                             ->searchable()
-                            ->getSearchResultsUsing(fn (string $search): array => $this->getChatwootContactsSearchResults($search))
-                            ->getOptionLabelUsing(fn ($value): ?string => $this->getChatwootContactLabel($value))
-                            ->reactive()
+                            ->getSearchResultsUsing(fn(string $search): array => $this->getChatwootContactsSearchResults($search))
+                            ->getOptionLabelUsing(fn($value): ?string => $this->getChatwootContactLabel($value))
+                            ->live(onBlur: true)
                             ->allowHtml()
                             ->native(false)
                             ->afterStateUpdated(function () {
@@ -53,10 +53,11 @@ class AssistantDashboard extends BaseDashboard
 
                         Select::make('chatwootConversationId')
                             ->label('Rozmowa')
-                            ->options(fn () => $this->getChatwootConversationsOptions($this->filters['chatwootContactId']))
+                            ->options(fn() => $this->getChatwootConversationsOptions($this->filters['chatwootContactId']))
                             ->allowHtml()
+                            ->live(onBlur: true)
                             ->native(false)
-                            ->disabled(fn() => empty($this->filters['chatwootContactId'])),
+                            ->disabled(fn() => empty ($this->filters['chatwootContactId'])),
                     ])
                     ->columns(2),
             ]);
@@ -70,9 +71,9 @@ class AssistantDashboard extends BaseDashboard
         foreach ($words as $word) {
             $query->where(function ($q) use ($word) {
                 $q->where('id', 'ILIKE', "%{$word}%")
-                  ->orWhere('name', 'ILIKE', "%{$word}%")
-                  ->orWhere('email', 'ILIKE', "%{$word}%")
-                  ->orWhere('phone_number', 'ILIKE', "%{$word}%");
+                    ->orWhere('name', 'ILIKE', "%{$word}%")
+                    ->orWhere('email', 'ILIKE', "%{$word}%")
+                    ->orWhere('phone_number', 'ILIKE', "%{$word}%");
             });
         }
 
