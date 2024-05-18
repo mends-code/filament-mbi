@@ -41,7 +41,12 @@ class ChatwootContact extends Model
     {
         return $this->hasMany(StripeCustomer::class, 'chatwoot_contact_id');
     }
-    
+
+    public function conversations()
+    {
+        return $this->hasMany(ChatwootConversation::class, 'contact_id');
+    }
+
     public function getLastActivityAtAttribute($value)
     {
         return $value ? Carbon::parse($value)->setTimezone('Europe/Warsaw') : null;

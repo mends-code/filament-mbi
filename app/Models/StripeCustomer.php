@@ -18,7 +18,7 @@ class StripeCustomer extends BaseModelStripe
         'id', 'data', 'chatwoot_contact_id'
     ];
 
-    public function contact()
+    public function chatwootContact()
     {
         return $this->belongsTo(ChatwootContact::class, 'chatwoot_contact_id');
     }
