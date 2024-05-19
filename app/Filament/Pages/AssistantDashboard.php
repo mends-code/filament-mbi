@@ -26,6 +26,16 @@ class AssistantDashboard extends BaseDashboard
     protected static ?string $title = "Panel Asystenta";
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
 
+    protected static function contactPlaceholder()
+    {
+        return Blade::render('components.dashboard-contact-select-option', ['contact' => null]);
+    }
+
+    protected static function conversationPlaceholder()
+    {
+        return Blade::render('components.dashboard-contact-select-option', ['contact' => null]);
+    }
+
     protected function getHeaderActions(): array
     {
         $isEmbeddedMode = false;
@@ -53,7 +63,7 @@ class AssistantDashboard extends BaseDashboard
                                 ->getSearchResultsUsing(fn(string $search): array => $this->getChatwootContactsSearchResults($search))
                                 ->getOptionLabelUsing(fn($value): ?string => $this->getChatwootContactLabel($value))
                                 ->live()
-                                ->placeholder(fn() => Blade::render('components.dashboard-contact-select-option', ['contact' => null]))
+                                ->placeholder($this->contactPlaceholder())
                                 ->allowHtml()
                                 ->native(false)
                                 ->required()
@@ -78,7 +88,7 @@ class AssistantDashboard extends BaseDashboard
                                 ->options(fn() => $this->getChatwootConversationsOptions($get('chatwootContactId') ?? null))
                                 ->allowHtml()
                                 ->live()
-                                ->placeholder(fn() => Blade::render('components.dashboard-conversation-select-option', ['conversation' => null]))
+                                ->placeholder($this->conversationPlaceholder())
                                 ->native(false)
                                 ->required()
                                 ->default($get('chatwootConversationId')),
