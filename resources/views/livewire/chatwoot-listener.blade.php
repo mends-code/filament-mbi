@@ -1,17 +1,14 @@
-<!-- resources/views/livewire/chatwoot-listener.blade.php -->
-
-<div>
-    <h1>Chatwoot Event Data</h1>
-</div>
-
 <script>
     console.log('test');
     window.addEventListener("message", function(event) {
-
         const eventData = JSON.parse(event.data);
         console.log(event.data);
     });
-
-    // Request data from Chatwoot
-    window.parent.postMessage('chatwoot-dashboard-app:fetch-info', '*');
 </script>
+<div>
+    @if ($chatwootData)
+        <pre>{{ json_encode($chatwootData, JSON_PRETTY_PRINT) }}</pre>
+    @else
+        <p>No data received yet.</p>
+    @endif
+</div>
