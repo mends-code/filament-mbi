@@ -4,18 +4,16 @@ namespace App\Filament\Pages;
 
 use App\Models\ChatwootContact;
 use App\Models\ChatwootConversation;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Actions\Action;
-use Filament\Forms\Form;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Dashboard\Actions\FilterAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
 use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Illuminate\Support\Facades\Request; // Import Request facade
 
 class AssistantDashboard extends BaseDashboard
 {
@@ -29,22 +27,24 @@ class AssistantDashboard extends BaseDashboard
 
     protected function getHeaderActions(): array
     {
+        $isEmbeddedMode = Request::get('isEmbeddedMode', false); // Retrieve isEmbeddedMode from the request
+
         return [
             Action::make('CreateInvoice'),
             FilterAction::make('changeServiceScope')
-                ->label(fn() => session('isEmbeddedMode', false) ? 'Sprawdź kontekst obsługi' : 'Zmień kontekst obsługi')
+                ->label(fn() => $isEmbeddedMode ? 'Sprawdź kontekst obsługi' : 'Zmień kontekst obsługi')
                 ->modalHeading()
                 ->slideOver(false)
                 ->icon('heroicon-o-arrow-path')
                 ->modalWidth('3xl')
                 ->form([
                     Grid::make(1)
-                        ->schema(function (Get $get, Set $set) {
+                        ->schema(function (Get $get, Set $set) use ($isEmbeddedMode) {
                             $contactId = $get('chatwootContactId');
 
                             return [
                                 Select::make('chatwootContactId')
-                                    ->disabled(session('isEmbeddedMode', false))
+                                    ->disabled($isEmbeddedMode)
                                     ->label('Kontakt')
                                     ->searchable()
                                     ->getSearchResultsUsing(fn(string $search): array => $this->getChatwootContactsSearchResults($search))
@@ -69,7 +69,7 @@ class AssistantDashboard extends BaseDashboard
                                     }),
 
                                 Select::make('chatwootConversationId')
-                                    ->disabled(session('isEmbeddedMode', false))
+                                    ->disabled($isEmbeddedMode)
                                     ->label('Rozmowa')
                                     ->options(fn() => $this->getChatwootConversationsOptions($contactId ?? null))
                                     ->allowHtml()
