@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Illuminate\Support\Facades\Request; // Import Request facade
+use Illuminate\Support\Facades\Session;
 
 class AssistantDashboard extends BaseDashboard
 {
@@ -30,6 +31,10 @@ class AssistantDashboard extends BaseDashboard
         // Get isEmbeddedMode from request attributes or cookies
         $isEmbeddedMode = request()->attributes->get('isEmbeddedMode', request()->cookie('isEmbeddedMode', false));
 
+        // Get chatwootContactId and chatwootConversationId from session
+        $chatwootContactId = Session::get('chatwoot.conversation.contact_id');
+        $chatwootConversationId = Session::get('chatwoot.conversation.id');
+
         return [
             Action::make('CreateInvoice'),
             FilterAction::make('changeServiceScope')
@@ -40,9 +45,7 @@ class AssistantDashboard extends BaseDashboard
                 ->modalWidth('3xl')
                 ->form([
                     Grid::make(1)
-                        ->schema(function (Get $get, Set $set) use ($isEmbeddedMode) {
-                            $contactId = $get('chatwootContactId');
-
+                        ->schema(function (Get $get, Set $set) use ($isEmbeddedMode, $chatwootContactId, $chatwootConversationId) {
                             return [
                                 Select::make('chatwootContactId')
                                     ->disabled($isEmbeddedMode)
@@ -55,6 +58,7 @@ class AssistantDashboard extends BaseDashboard
                                     ->allowHtml()
                                     ->native(false)
                                     ->required()
+                                    ->default($chatwootContactId)
                                     ->afterStateUpdated(function (Set $set, $state) {
                                         if ($state == null) {
                                             $set('chatwootConversationId', null);
@@ -72,12 +76,13 @@ class AssistantDashboard extends BaseDashboard
                                 Select::make('chatwootConversationId')
                                     ->disabled($isEmbeddedMode)
                                     ->label('Rozmowa')
-                                    ->options(fn() => $this->getChatwootConversationsOptions($contactId ?? null))
+                                    ->options(fn() => $this->getChatwootConversationsOptions($chatwootContactId ?? null))
                                     ->allowHtml()
                                     ->live()
                                     ->placeholder(fn() => Blade::render('components.dashboard-conversation-select-option', ['conversation' => null]))
                                     ->native(false)
-                                    ->required(),
+                                    ->required()
+                                    ->default($chatwootConversationId),
                             ];
                         })
                 ])
