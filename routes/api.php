@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ChatwootContextController;
+use App\Http\Controllers\ChatwootEventController;
 
-// Define a resource route for Chatwoot context
-Route::apiResource('chatwoot-context', ChatwootContextController::class);
+Route::post('/chatwoot-event', [ChatwootEventController::class, 'handle']);
