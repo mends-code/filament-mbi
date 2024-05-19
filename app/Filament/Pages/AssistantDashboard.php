@@ -33,7 +33,7 @@ class AssistantDashboard extends BaseDashboard
         $isEmbeddedMode = Cookie::get('embedMode') === 'true';
         $chatwootContactId = $this->filters['chatwootContactId'];
         $chatwootConversationId = $this->filters['chatwootConversationId'];
-
+      
         return [
             Action::make('CreateInvoice'),
             FilterAction::make('changeServiceScope')
@@ -71,7 +71,7 @@ class AssistantDashboard extends BaseDashboard
                                             }
                                         }
                                     }),
-
+    
                                 Select::make('chatwootConversationId')
                                     ->disabled($isEmbeddedMode)
                                     ->label('Rozmowa')
@@ -88,7 +88,8 @@ class AssistantDashboard extends BaseDashboard
                 ->color('gray'),
         ];
     }
-    protected function getChatwootContactsSearchResults(string $search): array
+
+  protected function getChatwootContactsSearchResults(string $search): array
     {
         $words = explode(' ', $search);
         $query = ChatwootContact::query();

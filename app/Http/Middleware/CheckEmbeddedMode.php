@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Session;
 
 class CheckEmbeddedMode
 {
@@ -27,10 +28,9 @@ class CheckEmbeddedMode
         // Add the isEmbeddedMode status to the request attributes
         $request->attributes->set('isEmbeddedMode', $isEmbeddedMode);
 
-        // Set a cookie with the isEmbeddedMode status
-        $response = $next($request);
-        $response->headers->setCookie(cookie('isEmbeddedMode', $isEmbeddedMode, 0, '/', null, false, false));
+        // Store the isEmbeddedMode status in the session
+        if (!$isEmbeddedMode) Session::put('isEmbeddedMode', $isEmbeddedMode);
 
-        return $response;
+        return $next($request);
     }
 }
