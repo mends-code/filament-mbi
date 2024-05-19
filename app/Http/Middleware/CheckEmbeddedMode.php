@@ -23,7 +23,8 @@ class CheckEmbeddedMode
             }
         }
 
-        $request->attributes->set('isEmbeddedMode', $isEmbeddedMode);
+        // Store the isEmbeddedMode status in the session
+        session(['isEmbeddedMode' => $isEmbeddedMode]);
 
         return $next($request);
     }
