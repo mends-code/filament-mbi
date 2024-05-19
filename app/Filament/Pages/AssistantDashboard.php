@@ -28,10 +28,8 @@ class AssistantDashboard extends BaseDashboard
 
     protected function getHeaderActions(): array
     {
-        // Get isEmbeddedMode from request attributes or cookies
+      
         $isEmbeddedMode = session('isEmbeddedMode', false);
-    
-        // Get chatwootContactId and chatwootConversationId from session
         $chatwootContactId = $this->filters['chatwootContactId'];
         $chatwootConversationId = $this->filters['chatwootConversationId'];
     
