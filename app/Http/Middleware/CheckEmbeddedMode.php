@@ -14,14 +14,21 @@ class CheckEmbeddedMode
         $referer = $request->headers->get('referer');
         $origin = $request->headers->get('origin');
 
-        $isEmbeddedMode = false;
+        // Check if the mode is already set in the session
+        $isEmbeddedMode = session('isEmbeddedMode', false);
 
+        // Detect if the request is coming from the embedded context
         if ($embeddedHostUrl) {
             if ($referer && strpos($referer, $embeddedHostUrl) === 0) {
                 $isEmbeddedMode = true;
             } elseif ($origin && strpos($origin, $embeddedHostUrl) === 0) {
                 $isEmbeddedMode = true;
             }
+        }
+
+        // Store the mode in the session and prevent overwriting if already set
+        if (!session()->has('isEmbeddedMode')) {
+            session(['isEmbeddedMode' => $isEmbeddedMode]);
         }
 
         // Add the isEmbeddedMode status to the request attributes
