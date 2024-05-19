@@ -13,7 +13,7 @@
 
     <!-- Second Row: Last Activity Icon and Last Activity -->
     <div class="flex items-center gap-x-2">
-        <div class="w-6">
+        <div class="">
             @include('vendor.filament.components.icon', [
                 'icon' => 'heroicon-o-chat-bubble-left-ellipsis',
                 'class' => 'h-5 w-5 text-gray-600',
@@ -30,7 +30,7 @@
 
     <!-- Third Row: Created At Icon and Created At -->
     <div class="flex items-center gap-x-2">
-        <div class="w-6">
+        <div class="">
             @include('vendor.filament.components.icon', [
                 'icon' => 'heroicon-o-user-plus',
                 'class' => 'h-5 w-5 text-gray-600',
