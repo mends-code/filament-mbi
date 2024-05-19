@@ -33,6 +33,7 @@ class AssistantDashboard extends BaseDashboard
             Action::make('CreateInvoice'),
             FilterAction::make('changeServiceScope')
                 ->label('Zmień Kontekst Obsługi')
+                ->hidden(session('isEmbeddedMode', false))
                 ->modalHeading()
                 ->slideOver(false)
                 ->icon('heroicon-o-arrow-path')
