@@ -8,7 +8,7 @@ class ChatwootListener extends Component
 {
     public $chatwootData;
 
-    protected $listeners = ['chatwootEventReceived' => 'handleChatwootEvent'];
+    protected $listeners = ['message' => 'handleChatwootEvent'];
 
     public function handleChatwootEvent($eventData)
     {
