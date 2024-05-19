@@ -69,7 +69,7 @@ class AssistantDashboard extends BaseDashboard
                                     }),
 
                                 Select::make('chatwootConversationId')
-                                    ->session('isEmbeddedMode', false)
+                                    ->disabled(session('isEmbeddedMode', false))
                                     ->label('Rozmowa')
                                     ->options(fn() => $this->getChatwootConversationsOptions($contactId ?? null))
                                     ->allowHtml()
