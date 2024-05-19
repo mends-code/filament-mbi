@@ -4,10 +4,11 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class CheckEmbeddedMode
 {
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
         $embeddedHostUrl = config('chatwoot.embedded_host_url');
         $referer = $request->headers->get('referer');
@@ -26,6 +27,10 @@ class CheckEmbeddedMode
         // Add the isEmbeddedMode status to the request attributes
         $request->attributes->set('isEmbeddedMode', $isEmbeddedMode);
 
-        return $next($request);
+        // Set a cookie with the isEmbeddedMode status
+        $response = $next($request);
+        $response->headers->setCookie(cookie('isEmbeddedMode', $isEmbeddedMode, 0, '/', null, false, false));
+
+        return $response;
     }
 }

@@ -27,7 +27,8 @@ class AssistantDashboard extends BaseDashboard
 
     protected function getHeaderActions(): array
     {
-        $isEmbeddedMode = Request::get('isEmbeddedMode', false); // Retrieve isEmbeddedMode from the request
+        // Get isEmbeddedMode from request attributes or cookies
+        $isEmbeddedMode = request()->attributes->get('isEmbeddedMode', request()->cookie('isEmbeddedMode', false));
 
         return [
             Action::make('CreateInvoice'),
