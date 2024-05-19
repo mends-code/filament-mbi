@@ -11,15 +11,16 @@ use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Dashboard\Actions\FilterAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
+use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Cookie;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Form;
 
 class AssistantDashboard extends BaseDashboard
 {
-    use HasFiltersAction;
+    use HasFiltersAction, HasFiltersForm;
 
     protected static ?string $navigationLabel = "Panel Asystenta";
     protected static ?string $title = "Panel Asystenta";
@@ -28,65 +29,65 @@ class AssistantDashboard extends BaseDashboard
     protected function getHeaderActions(): array
     {
         $isEmbeddedMode = false;
-        $chatwootContactId = null;
-        $chatwootConversationId = null;
-      
+
         return [
-            Action::make('CreateInvoice'),
-            FilterAction::make('changeServiceScope')
-                ->label(fn() => $isEmbeddedMode ? 'Sprawdź kontekst obsługi' : 'Zmień kontekst obsługi')
-                ->modalHeading()
-                ->slideOver(false)
-                ->icon(fn() => $isEmbeddedMode ? 'heroicon-o-eye' : 'heroicon-o-arrow-path')
-                ->modalWidth('3xl')
-                ->form([
-                    Grid::make(1)
-                        ->schema(function (Get $get, Set $set) use ($isEmbeddedMode, $chatwootContactId, $chatwootConversationId) {
-                            return [
-                                Select::make('chatwootContactId')
-                                    ->disabled($isEmbeddedMode)
-                                    ->label('Kontakt')
-                                    ->searchable()
-                                    ->getSearchResultsUsing(fn(string $search): array => $this->getChatwootContactsSearchResults($search))
-                                    ->getOptionLabelUsing(fn($value): ?string => $this->getChatwootContactLabel($value))
-                                    ->live()
-                                    ->placeholder(fn() => Blade::render('components.dashboard-contact-select-option', ['contact' => null]))
-                                    ->allowHtml()
-                                    ->native(false)
-                                    ->required()
-                                    ->default($chatwootContactId)
-                                    ->afterStateUpdated(function (Set $set, $state) {
-                                        if ($state == null) {
-                                            $set('chatwootConversationId', null);
-                                        } else {
-                                            // Fetch the most recent conversation for the selected contact
-                                            $conversation = ChatwootConversation::where('contact_id', $state)
-                                                ->orderBy('last_activity_at', 'desc')
-                                                ->first();
-                                            if ($conversation) {
-                                                $set('chatwootConversationId', $conversation->id);
-                                            }
-                                        }
-                                    }),
-    
-                                Select::make('chatwootConversationId')
-                                    ->disabled($isEmbeddedMode)
-                                    ->label('Rozmowa')
-                                    ->options(fn() => $this->getChatwootConversationsOptions($chatwootContactId ?? null))
-                                    ->allowHtml()
-                                    ->live()
-                                    ->placeholder(fn() => Blade::render('components.dashboard-conversation-select-option', ['conversation' => null]))
-                                    ->native(false)
-                                    ->required()
-                                    ->default($chatwootConversationId),
-                            ];
-                        })
-                ])
-                ->color('gray'),
+            Action::make('headerActionPrimary'),
+            Action::make('headerActionSecondary')->color('gray'),
         ];
     }
 
-  protected function getChatwootContactsSearchResults(string $search): array
+    public function filtersForm(Form $form): Form
+    {
+        $isEmbeddedMode = false;
+
+        return $form
+            ->schema([
+                Section::make('serviceSubjectContext')
+                    ->heading('Kontekst Obsługi Pacjenta')
+                    ->schema(function (Get $get, Set $set) use ($isEmbeddedMode) {
+                        return [
+                            Select::make('chatwootContactId')
+                                ->disabled($isEmbeddedMode)
+                                ->label('Kontakt')
+                                ->searchable()
+                                ->getSearchResultsUsing(fn(string $search): array => $this->getChatwootContactsSearchResults($search))
+                                ->getOptionLabelUsing(fn($value): ?string => $this->getChatwootContactLabel($value))
+                                ->live()
+                                ->placeholder(fn() => Blade::render('components.dashboard-contact-select-option', ['contact' => null]))
+                                ->allowHtml()
+                                ->native(false)
+                                ->required()
+                                ->default($get('chatwootContactId'))
+                                ->afterStateUpdated(function (Set $set, $state) {
+                                    if ($state == null) {
+                                        $set('chatwootConversationId', null);
+                                    } else {
+                                        // Fetch the most recent conversation for the selected contact
+                                        $conversation = ChatwootConversation::where('contact_id', $state)
+                                            ->orderBy('last_activity_at', 'desc')
+                                            ->first();
+                                        if ($conversation) {
+                                            $set('chatwootConversationId', $conversation->id);
+                                        }
+                                    }
+                                }),
+
+                            Select::make('chatwootConversationId')
+                                ->disabled($isEmbeddedMode)
+                                ->label('Rozmowa')
+                                ->options(fn() => $this->getChatwootConversationsOptions($get('chatwootContactId') ?? null))
+                                ->allowHtml()
+                                ->live()
+                                ->placeholder(fn() => Blade::render('components.dashboard-conversation-select-option', ['conversation' => null]))
+                                ->native(false)
+                                ->required()
+                                ->default($get('chatwootConversationId')),
+                        ];
+                    })
+                    ->columns(2),
+            ]);
+    }
+    protected function getChatwootContactsSearchResults(string $search): array
     {
         $words = explode(' ', $search);
         $query = ChatwootContact::query();
