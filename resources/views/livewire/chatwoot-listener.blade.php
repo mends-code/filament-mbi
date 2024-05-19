@@ -4,6 +4,7 @@
         const eventData = JSON.parse(event.data);
         console.log(event.data);
     });
+    {{ $this->emit('message') }}
 </script>
 <div>
     @if ($chatwootData)
