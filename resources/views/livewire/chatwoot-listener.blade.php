@@ -7,7 +7,7 @@
 </script>
 <div>
     @if ($chatwootData)
-        <pre>{{ json_encode($eventData, JSON_PRETTY_PRINT) }}</pre>
+        <pre>{{ json_encode($chatwootData, JSON_PRETTY_PRINT) }}</pre>
     @else
         <p>No data received yet.</p>
     @endif
