@@ -65,10 +65,6 @@ class AdminPanelProvider extends PanelProvider
 
     public function boot(): void
     {
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::HEAD_END,
-            fn(): string => Blade::render('livewire.chatwoot-embed-script'),
-        );
         Modal::closedByClickingAway(false);
         Modal::closeButton(false);
         Table::configureUsing(function (Table $table): void {

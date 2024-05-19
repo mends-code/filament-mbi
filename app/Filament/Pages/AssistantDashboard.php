@@ -28,8 +28,8 @@ class AssistantDashboard extends BaseDashboard
     protected function getHeaderActions(): array
     {
         $isEmbeddedMode = false;
-        $chatwootContactId = $this->filters['chatwootContactId'];
-        $chatwootConversationId = $this->filters['chatwootConversationId'];
+        $chatwootContactId = null;
+        $chatwootConversationId = null;
       
         return [
             Action::make('CreateInvoice'),
