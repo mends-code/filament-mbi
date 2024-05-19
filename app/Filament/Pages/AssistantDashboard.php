@@ -28,12 +28,10 @@ class AssistantDashboard extends BaseDashboard
 
     protected function getHeaderActions(): array
     {
-        // Get isEmbeddedMode from request attributes or cookies
-        $isEmbeddedMode = request()->attributes->get('isEmbeddedMode', request()->cookie('isEmbeddedMode', false));
-    
-        // Get chatwootContactId and chatwootConversationId from session
-        $chatwootContactId = Session::get('chatwoot.contact_id');
-        $chatwootConversationId = Session::get('chatwoot.conversation_id');
+      
+        $isEmbeddedMode = session('isEmbeddedMode', false);
+        $chatwootContactId = $this->filters['chatwootContactId'];
+        $chatwootConversationId = $this->filters['chatwootConversationId'];
     
         return [
             Action::make('CreateInvoice'),
