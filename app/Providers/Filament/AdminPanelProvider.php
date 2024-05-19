@@ -72,8 +72,6 @@ class AdminPanelProvider extends PanelProvider
         Modal::closedByClickingAway(false);
         Modal::closeButton(false);
         Table::configureUsing(function (Table $table): void {
-            $table
-                ->persistFiltersInSession();
         });
     }
 }
