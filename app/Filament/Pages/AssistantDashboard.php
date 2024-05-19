@@ -32,8 +32,7 @@ class AssistantDashboard extends BaseDashboard
         return [
             Action::make('CreateInvoice'),
             FilterAction::make('changeServiceScope')
-                ->label('Zmień Kontekst Obsługi')
-                ->hidden(session('isEmbeddedMode', false))
+                ->label(fn() => session('isEmbeddedMode', false) ? 'Sprawdź kontekst obsługi' : 'Zmień kontekst obsługi')
                 ->modalHeading()
                 ->slideOver(false)
                 ->icon('heroicon-o-arrow-path')
@@ -45,6 +44,7 @@ class AssistantDashboard extends BaseDashboard
 
                             return [
                                 Select::make('chatwootContactId')
+                                    ->disabled(session('isEmbeddedMode', false))
                                     ->label('Kontakt')
                                     ->searchable()
                                     ->getSearchResultsUsing(fn(string $search): array => $this->getChatwootContactsSearchResults($search))
@@ -69,6 +69,7 @@ class AssistantDashboard extends BaseDashboard
                                     }),
 
                                 Select::make('chatwootConversationId')
+                                    ->session('isEmbeddedMode', false)
                                     ->label('Rozmowa')
                                     ->options(fn() => $this->getChatwootConversationsOptions($contactId ?? null))
                                     ->allowHtml()
