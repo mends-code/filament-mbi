@@ -11,7 +11,7 @@
 
     <!-- Second Row: Email Icon and Email -->
     <div class="flex items-center gap-x-2">
-        <div class="w-6">
+        <div class="">
             @include('vendor.filament.components.icon', ['icon' => 'heroicon-o-envelope', 'class' => 'h-5 w-5 text-gray-600'])
         </div>
         <div class="text-sm text-gray-600">{{ $contact->email ?? 'Adres email' }}</div>
@@ -19,7 +19,7 @@
 
     <!-- Third Row: Phone Icon and Phone Number -->
     <div class="flex items-center gap-x-2">
-        <div class="w-6">
+        <div class="">
             @include('vendor.filament.components.icon', ['icon' => 'heroicon-o-phone', 'class' => 'h-5 w-5 text-gray-600'])
         </div>
         <div class="text-sm text-gray-600">{{ $contact->phone_number ?? 'Numer telefonu' }}</div>

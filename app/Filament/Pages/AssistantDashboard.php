@@ -36,7 +36,7 @@ class AssistantDashboard extends BaseDashboard
                 ->label(fn() => $isEmbeddedMode ? 'Sprawdź kontekst obsługi' : 'Zmień kontekst obsługi')
                 ->modalHeading()
                 ->slideOver(false)
-                ->icon('heroicon-o-arrow-path')
+                ->icon(fn() => $isEmbeddedMode ? 'heroicon-o-eye' : 'heroicon-o-arrow-path')
                 ->modalWidth('3xl')
                 ->form([
                     Grid::make(1)
