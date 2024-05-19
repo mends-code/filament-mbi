@@ -1,11 +1,7 @@
 <?php
 
-// routes/api.php
-
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ChatwootController;
+use App\Http\Controllers\ChatwootContextController;
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/chatwoot/context', [ChatwootController::class, 'store']);
-});
+// Define a resource route for Chatwoot context
+Route::apiResource('chatwoot-context', ChatwootContextController::class);

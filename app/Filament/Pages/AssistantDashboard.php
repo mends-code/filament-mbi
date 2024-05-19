@@ -27,7 +27,7 @@ class AssistantDashboard extends BaseDashboard
 
     protected function getHeaderActions(): array
     {
-        $chatwootContext = json_decode(Cookie::get('chatwootContext'), true);
+        $chatwootContext = session('chatwoot_context', []);
         $this->filters['chatwootContactId'] = $chatwootContext['contact']['id'] ?? null;
         $this->filters['chatwootConversationId'] = $chatwootContext['conversation']['id'] ?? null;
         $isEmbeddedMode = Cookie::get('embedMode') === 'true';
