@@ -28,6 +28,7 @@ class AssistantDashboard extends BaseDashboard
 
     protected function getHeaderActions(): array
     {
+      
         $this->filters['chatwootContactId'] = session('chatwoot.contact.id', null);
         $this->filters['chatwootConversationId'] = session('chatwoot.conversation.id', null);
         $isEmbeddedMode = session('isEmbeddedMode', false);
