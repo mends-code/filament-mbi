@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Filament\Pages;
 
 use App\Models\ChatwootContact;
@@ -13,26 +14,26 @@ use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
 use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Illuminate\Support\Facades\Request; // Import Request facade
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Cookie;
 
 class AssistantDashboard extends BaseDashboard
 {
     use HasFiltersAction;
 
     protected static ?string $navigationLabel = "Panel Asystenta";
-
     protected static ?string $title = "Panel Asystenta";
-
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
 
     protected function getHeaderActions(): array
     {
-      
-        $isEmbeddedMode = session('isEmbeddedMode', false);
+        $chatwootContext = json_decode(Cookie::get('chatwootContext'));
+        $this->filters['chatwootContactId'] = $chatwootContext && isset($chatwootContext->contact->id) ? $chatwootContext->contact->id : null;
+        $this->filters['chatwootConversationId'] = $chatwootContext && isset($chatwootContext->conversation->id) ? $chatwootContext->conversation->id : null;
+        $isEmbeddedMode = Cookie::get('embedMode') === 'true';
         $chatwootContactId = $this->filters['chatwootContactId'];
         $chatwootConversationId = $this->filters['chatwootConversationId'];
-    
+      
         return [
             Action::make('CreateInvoice'),
             FilterAction::make('changeServiceScope')
@@ -87,8 +88,8 @@ class AssistantDashboard extends BaseDashboard
                 ->color('gray'),
         ];
     }
-    
-    protected function getChatwootContactsSearchResults(string $search): array
+
+  protected function getChatwootContactsSearchResults(string $search): array
     {
         $words = explode(' ', $search);
         $query = ChatwootContact::query();
