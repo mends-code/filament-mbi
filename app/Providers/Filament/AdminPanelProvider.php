@@ -20,12 +20,9 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
-use Filament\Support\Assets\Css;
-use Filament\Support\Facades\FilamentAsset;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -69,9 +66,14 @@ class AdminPanelProvider extends PanelProvider
 
     public function boot(): void
     {
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::HEAD_END,
+            fn(): string => Blade::render('livewire.chatwoot-embed-script'),
+        );
         Modal::closedByClickingAway(false);
         Modal::closeButton(false);
         Table::configureUsing(function (Table $table): void {
+            $table->persistFiltersInSession(true);
         });
     }
 }

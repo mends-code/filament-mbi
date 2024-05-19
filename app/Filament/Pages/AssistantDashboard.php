@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Filament\Pages;
 
 use App\Models\ChatwootContact;
@@ -13,22 +14,25 @@ use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
 use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Illuminate\Support\Facades\Request; // Import Request facade
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Cookie;
 
 class AssistantDashboard extends BaseDashboard
 {
     use HasFiltersAction;
 
     protected static ?string $navigationLabel = "Panel Asystenta";
-
     protected static ?string $title = "Panel Asystenta";
-
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
 
     protected function getHeaderActions(): array
     {
-        // Get isEmbeddedMode from request attributes or cookies
-        $isEmbeddedMode = request()->attributes->get('isEmbeddedMode', request()->cookie('isEmbeddedMode', false));
+        $chatwootContext = json_decode(Cookie::get('chatwootContext'));
+        $this->filters['chatwootContactId'] = $chatwootContext && isset($chatwootContext->contact->id) ? $chatwootContext->contact->id : null;
+        $this->filters['chatwootConversationId'] = $chatwootContext && isset($chatwootContext->conversation->id) ? $chatwootContext->conversation->id : null;
+        $isEmbeddedMode = Cookie::get('embedMode') === 'true';
+        $chatwootContactId = $this->filters['chatwootContactId'];
+        $chatwootConversationId = $this->filters['chatwootConversationId'];
 
         return [
             Action::make('CreateInvoice'),
@@ -40,9 +44,7 @@ class AssistantDashboard extends BaseDashboard
                 ->modalWidth('3xl')
                 ->form([
                     Grid::make(1)
-                        ->schema(function (Get $get, Set $set) use ($isEmbeddedMode) {
-                            $contactId = $get('chatwootContactId');
-
+                        ->schema(function (Get $get, Set $set) use ($isEmbeddedMode, $chatwootContactId, $chatwootConversationId) {
                             return [
                                 Select::make('chatwootContactId')
                                     ->disabled($isEmbeddedMode)
@@ -55,6 +57,7 @@ class AssistantDashboard extends BaseDashboard
                                     ->allowHtml()
                                     ->native(false)
                                     ->required()
+                                    ->default($chatwootContactId)
                                     ->afterStateUpdated(function (Set $set, $state) {
                                         if ($state == null) {
                                             $set('chatwootConversationId', null);
@@ -72,19 +75,19 @@ class AssistantDashboard extends BaseDashboard
                                 Select::make('chatwootConversationId')
                                     ->disabled($isEmbeddedMode)
                                     ->label('Rozmowa')
-                                    ->options(fn() => $this->getChatwootConversationsOptions($contactId ?? null))
+                                    ->options(fn() => $this->getChatwootConversationsOptions($chatwootContactId ?? null))
                                     ->allowHtml()
                                     ->live()
                                     ->placeholder(fn() => Blade::render('components.dashboard-conversation-select-option', ['conversation' => null]))
                                     ->native(false)
-                                    ->required(),
+                                    ->required()
+                                    ->default($chatwootConversationId),
                             ];
                         })
                 ])
                 ->color('gray'),
         ];
     }
-
     protected function getChatwootContactsSearchResults(string $search): array
     {
         $words = explode(' ', $search);
