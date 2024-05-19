@@ -27,6 +27,11 @@ class ChatwootConversation extends BaseModelChatwoot
         return $this->belongsTo(ChatwootContact::class, 'contact_id');
     }
 
+    public function inbox()
+    {
+        return $this->belongsTo(ChatwootInbox::class, 'inbox_id');
+    }
+
     public function getLastActivityAtAttribute($value)
     {
         return $value ? Carbon::parse($value, 'UTC')->timezone('Europe/Warsaw') : null;
