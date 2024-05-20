@@ -11,7 +11,6 @@
         "laravel/framework": "^11.0",
         "laravel/horizon": "^5.24",
         "laravel/octane": "^2.3",
-        "laravel/reverb": "^1.0",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.4",
         "nesbot/carbon": "^3.3",
