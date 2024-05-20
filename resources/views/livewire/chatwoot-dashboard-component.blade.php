@@ -27,7 +27,7 @@
         });
 
         // Trigger the parent window to send the conversation data
-        document.getElementById('fetch-conversation-data').addEventListener('click', function() {
+        window.addEventListener('load', function() {
             window.parent.postMessage('chatwoot-dashboard-app:fetch-info', '*');
         });
     </script>
