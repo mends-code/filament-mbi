@@ -14,13 +14,14 @@ class ChatwootDataController extends Controller
         Log::info('Received Chatwoot data:', $request->all());
 
         // Attempt to store the received data in the session
-        Session::put('chatwoot_data', $request->all());
+        session(['chatwoot_data' => $request->all()]);
 
-        Session::put('test', 'true');
+        // Store a test value in the session
+        session(['test' => 'true']);
 
         // Verify session storage
-        if (Session::has('chatwoot_data')) {
-            Log::info('Session data successfully stored:', [Session::get('chatwoot_data')]);
+        if (session()->has('chatwoot_data')) {
+            Log::info('Session data successfully stored:', [session('chatwoot_data')]);
         } else {
             Log::warning('Failed to store session data.');
         }
