@@ -39,7 +39,6 @@ class AssistantDashboard extends BaseDashboard
 
     protected function getHeaderActions(): array
     {
-        $isEmbeddedMode = false;
 
         return [
             Action::make('headerActionPrimary'),
@@ -53,7 +52,7 @@ class AssistantDashboard extends BaseDashboard
         $chatwootData = Session::get('chatwoot_data', []);
 
         $isEmbeddedMode = false;
-        $this->filters['chawtootContactId'] = $chatwootData['data']['contact']['id'] ?? null;
+        $this->filters['chawtootContactId'] = 1179;
 
         return $form
             ->schema([
