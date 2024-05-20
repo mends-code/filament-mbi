@@ -51,7 +51,6 @@ class AssistantDashboard extends BaseDashboard
     {
 
         $isEmbeddedMode = false;
-        $this->filters['chatwootContactId'] = Session::get('test');
 
         return $form
             ->schema([
