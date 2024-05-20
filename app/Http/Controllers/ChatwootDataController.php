@@ -18,6 +18,8 @@ class ChatwootDataController extends Controller
 
         Session::put('test', 1);
 
+        Session::save();
+
         // Verify session storage
         if (Session::has('chatwoot_data')) {
             Log::info('Session data successfully stored:', [Session::get('chatwoot_data')]);
