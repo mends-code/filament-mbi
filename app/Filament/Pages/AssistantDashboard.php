@@ -17,7 +17,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
-use Session;k
+use Session;
 
 class AssistantDashboard extends BaseDashboard
 {
