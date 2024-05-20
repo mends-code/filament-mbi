@@ -10,9 +10,9 @@ class ChatwootListener extends Component
 
     protected $listeners = ['message' => 'handleChatwootEvent'];
 
-    public function handleChatwootEvent($eventData)
+    public function handleChatwootEvent()
     {
-        $this->chatwootData = $eventData;
+        $this->chatwootData = $this->dispatch('message');
     }
 
     public function render()
