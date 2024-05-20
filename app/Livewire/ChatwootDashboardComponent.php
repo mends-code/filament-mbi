@@ -3,25 +3,18 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use Livewire\Attributes\On;
 
 class ChatwootDashboardComponent extends Component
 {
-    protected $listeners = ['triggerChatwootDashboardFetchInfo'];
+    public $conversationData = [];
 
-    public function fetchInfo()
+    protected $listeners = [
+        'handleConversationData'
+    ];
+
+    public function handleConversationData($data)
     {
-        $payload = null;
-
-        $this->dispatch('chatwoot-dashboard-fetch-info', $payload);
-    }
-
-    #[On('chatwoot-dashboard-fetch-info')]
-    public function receiveInfo($payload)
-    {
-        // Handle received payload
-        // For example, log it or process it further
-        logger()->info('Payload received:', $payload);
+        $this->conversationData = $data;
     }
 
     public function render()
