@@ -9,28 +9,30 @@
     </div>
 
     <script>
-        function isJSONValid(data) {
-            try {
-                JSON.parse(data);
-                return true;
-            } catch (e) {
-                return false;
-            }
-        }
-
-        window.addEventListener("message", function(event) {
-            if (!isJSONValid(event.data)) {
-                return;
+        document.addEventListener('livewire:load', function() {
+            function isJSONValid(data) {
+                try {
+                    JSON.parse(data);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
             }
 
-            const eventData = JSON.parse(event.data);
+            window.addEventListener("message", function(event) {
+                if (!isJSONValid(event.data)) {
+                    return;
+                }
 
-            // Push the data into the backend using Livewire
-            $wire.dispatch('handleConversationData', eventData.appContext);
-        });
+                const eventData = JSON.parse(event.data);
 
-        document.getElementById('fetch-conversation-data').addEventListener('click', function() {
-            window.parent.postMessage('chatwoot-dashboard-app:fetch-info', '*');
+                // Push the data into the backend using Livewire
+                Livewire.emit('handleConversationData', eventData.appContext);
+            });
+
+            document.getElementById('fetch-conversation-data').addEventListener('click', function() {
+                window.parent.postMessage('chatwoot-dashboard-app:fetch-info', '*');
+            });
         });
     </script>
 </div>
