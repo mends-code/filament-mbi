@@ -54,7 +54,7 @@ class AssistantDashboard extends BaseDashboard
         $chatwootData = Session::get('chatwoot_data', []);
 
         $isEmbeddedMode = false;
-        $this->filters['chatwootContactId'] = intval($chatwootData['data']['contact']['id']) ?? null;
+        $this->filters['chatwootContactId'] = intval($chatwootData['contact']['id']) ?? null;
 
         return $form
             ->schema([
