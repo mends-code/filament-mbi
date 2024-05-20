@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Filament\Pages;
 
 use App\Models\ChatwootContact;
@@ -16,7 +17,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
-use Illuminate\Support\Facades\Session;
+use Session;k
 
 class AssistantDashboard extends BaseDashboard
 {
@@ -48,17 +49,17 @@ class AssistantDashboard extends BaseDashboard
 
     public function filtersForm(Form $form): Form
     {
-        $isEmbeddedMode = false;
 
-        // Retrieve chatwoot_data from the session
         $chatwootData = Session::get('chatwoot_data', []);
-        $defaultContactId = $chatwootData['contact']['id'] ?? null;
+
+        $isEmbeddedMode = false;
+        $this->filters['chawtootContactId'] = $chatwootData['data']['contact']['id'] ?? null;
 
         return $form
             ->schema([
                 Section::make('serviceSubjectContext')
                     ->heading('Kontekst Obsługi Pacjenta')
-                    ->schema(function (Get $get, Set $set) use ($isEmbeddedMode, $defaultContactId) {
+                    ->schema(function (Get $get, Set $set) use ($isEmbeddedMode) {
                         return [
                             Select::make('chatwootContactId')
                                 ->disabled($isEmbeddedMode)
@@ -71,7 +72,7 @@ class AssistantDashboard extends BaseDashboard
                                 ->allowHtml()
                                 ->native(false)
                                 ->required()
-                                ->default($defaultContactId)
+                                ->default($get('chatwootContactId'))
                                 ->afterStateUpdated(function (Set $set, $state) {
                                     if ($state == null) {
                                         $set('chatwootConversationId', null);
