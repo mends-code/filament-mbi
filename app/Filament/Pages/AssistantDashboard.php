@@ -33,7 +33,7 @@ class AssistantDashboard extends BaseDashboard
 
     protected static function conversationPlaceholder()
     {
-        return Blade::render('components.dashboard-contact-select-option', ['contact' => null]);
+        return Blade::render('components.dashboard-conversation-select-option', ['conversation' => null]);
     }
 
     protected function getHeaderActions(): array
