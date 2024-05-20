@@ -17,8 +17,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
-use League\Csv\Serializer\CastToInt;
-use Session;
+use Illuminate\Support\Facades\Session;
 
 class AssistantDashboard extends BaseDashboard
 {
@@ -51,10 +50,8 @@ class AssistantDashboard extends BaseDashboard
     public function filtersForm(Form $form): Form
     {
 
-        $chatwootData = Session::get('chatwoot_data', []);
-
         $isEmbeddedMode = false;
-        $this->filters['chatwootContactId'] = intval($chatwootData['contact']['id']) ?? null;
+        $this->filters['chatwootContactId'] = Session::get('test');
 
         return $form
             ->schema([
