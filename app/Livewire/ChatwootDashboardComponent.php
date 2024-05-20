@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-
 class ChatwootDashboardComponent extends Component
 {
     public $conversationData = [];
