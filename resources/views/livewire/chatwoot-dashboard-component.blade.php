@@ -26,7 +26,7 @@
             const eventData = JSON.parse(event.data);
 
             // Push the data into the backend using Livewire
-            Livewire.emit('handleConversationData', eventData.appContext);
+            $wire.dispatch('handleConversationData', eventData.appContext);
         });
 
         document.getElementById('fetch-conversation-data').addEventListener('click', function() {
