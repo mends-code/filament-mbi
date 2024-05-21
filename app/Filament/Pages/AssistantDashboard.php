@@ -34,7 +34,6 @@ class AssistantDashboard extends BaseDashboard
     }
 
     #[On('updateChatwootContext')]
-
     public function updateChatwootContext($context)
     {
         $this->filters['chatwootContactId'] = json_decode($context)->data->contact->id;
