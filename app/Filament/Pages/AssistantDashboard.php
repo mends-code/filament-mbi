@@ -33,6 +33,11 @@ class AssistantDashboard extends BaseDashboard
         $this->filters['chatwootConversationId'] = null;
     }
 
+    public function boot()
+    {
+        $this->dispatch('getChatwootContext');
+    }
+
     #[On('updateChatwootContext')]
     public function updateChatwootContext($context)
     {
@@ -59,7 +64,7 @@ class AssistantDashboard extends BaseDashboard
     {
 
         return [
-            Action::make('headerActionPrimary'),
+            Action::make('headerActionPrimary')->modal(),
             Action::make('headerActionSecondary')->color('gray'),
         ];
     }
