@@ -13,11 +13,6 @@ class ChatwootDashboardComponent extends Component
     {
     }
 
-    public function updateChatwootContext($context)
-    {
-
-    }
-
     public function render()
     {
         return view('livewire.chatwoot-dashboard-component');

@@ -17,6 +17,7 @@ use Filament\Forms\Set;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Illuminate\Support\Facades\Session;
+use Livewire\Attributes\On;
 
 class AssistantDashboard extends BaseDashboard
 {
@@ -25,6 +26,21 @@ class AssistantDashboard extends BaseDashboard
     protected static ?string $navigationLabel = "Panel Asystenta";
     protected static ?string $title = "Panel Asystenta";
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
+
+    public function mount()
+    {
+        $this->filters['chatwootContactId'] = null;
+        $this->filters['chatwootConversationId'] = null;
+    }
+
+    #[On('updateChatwootContext')]
+
+    public function updateChatwootContext($context)
+    {
+        $this->filters['chatwootContactId'] = json_decode($context)->data->contact->id;
+        $this->filters['chatwootConversationId'] = json_decode($context)->data->conversation->id;
+
+    }
 
     protected static function isChatwootDashboardAppMode()
     {
@@ -48,6 +64,7 @@ class AssistantDashboard extends BaseDashboard
             Action::make('headerActionSecondary')->color('gray'),
         ];
     }
+
 
     public function filtersForm(Form $form): Form
     {
@@ -138,7 +155,7 @@ class AssistantDashboard extends BaseDashboard
 
         return ChatwootConversation::where('contact_id', $contactId)->get()->mapWithKeys(function ($conversation) {
             $html = Blade::render('components.dashboard-conversation-select-option', ['conversation' => $conversation]);
-            return [$conversation->id => $html];
+            return [$conversation->display_id => $html];
         })->toArray();
     }
 }
