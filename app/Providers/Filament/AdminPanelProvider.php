@@ -68,7 +68,7 @@ class AdminPanelProvider extends PanelProvider
         Modal::closedByClickingAway(false);
         Modal::closeButton(false);
         Table::configureUsing(function (Table $table): void {
-            $table->persistFiltersInSession(true);
+            $table->persistFiltersInSession(false);
         });
         FilamentView::registerRenderHook(
             PanelsRenderHook::BODY_START,
