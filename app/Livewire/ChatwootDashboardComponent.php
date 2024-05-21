@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Session;
 
 class ChatwootDashboardComponent extends Component
 {
-    protected $listeners = ['updateChatwootContext', 'getChatwootContext'];
+    protected $listeners = ['update-chatwoot-context', 'get-chatwoot-context'];
 
     public function boot()
     {
