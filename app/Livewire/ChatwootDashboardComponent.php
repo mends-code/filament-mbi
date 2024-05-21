@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Session;
-use App\Events\ChatwootContextUpdated;
 
 class ChatwootDashboardComponent extends Component
 {

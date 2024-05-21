@@ -28,7 +28,6 @@ class AssistantDashboard extends BaseDashboard
 
     protected static function isChatwootDashboardAppMode()
     {
-        //return Session::get('isChatwootDashboardAppMode');
         return false;
     }
     protected static function contactPlaceholder()
@@ -52,7 +51,6 @@ class AssistantDashboard extends BaseDashboard
 
     public function filtersForm(Form $form): Form
     {
-
         return $form
             ->schema([
                 Section::make('serviceSubjectContext')
