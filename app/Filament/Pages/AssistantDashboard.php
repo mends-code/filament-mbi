@@ -8,7 +8,6 @@ use App\Models\ChatwootConversation;
 use Filament\Forms\Components\Select;
 use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
-use Filament\Pages\Dashboard\Actions\FilterAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Illuminate\Support\Facades\Blade;
@@ -16,11 +15,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
-<<<<<<< HEAD
-=======
-use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\On;
->>>>>>> 233554d2a5631e3bf5a01b763ab6422d4d759cf5
 
 class AssistantDashboard extends BaseDashboard
 {
@@ -65,55 +60,30 @@ class AssistantDashboard extends BaseDashboard
 
     protected function getHeaderActions(): array
     {
-<<<<<<< HEAD
-        $isEmbeddedMode = false;
-
-        return [
-            Action::make('headerActionPrimary'),
-=======
 
         return [
             Action::make('headerActionPrimary')->modal(),
->>>>>>> 233554d2a5631e3bf5a01b763ab6422d4d759cf5
             Action::make('headerActionSecondary')->color('gray'),
         ];
     }
 
-<<<<<<< HEAD
-    public function filtersForm(Form $form): Form
-    {
-        $isEmbeddedMode = false;
-
-=======
 
     public function filtersForm(Form $form): Form
     {
->>>>>>> 233554d2a5631e3bf5a01b763ab6422d4d759cf5
         return $form
             ->schema([
                 Section::make('serviceSubjectContext')
                     ->heading('Kontekst Obsługi Pacjenta')
-<<<<<<< HEAD
-                    ->schema(function (Get $get, Set $set) use ($isEmbeddedMode) {
-                        return [
-                            Select::make('chatwootContactId')
-                                ->disabled($isEmbeddedMode)
-=======
                     ->schema(function (Get $get, Set $set) {
                         return [
                             Select::make('chatwootContactId')
                                 ->disabled($this->isChatwootDashboardAppMode())
->>>>>>> 233554d2a5631e3bf5a01b763ab6422d4d759cf5
                                 ->label('Kontakt')
                                 ->searchable()
                                 ->getSearchResultsUsing(fn(string $search): array => $this->getChatwootContactsSearchResults($search))
                                 ->getOptionLabelUsing(fn($value): ?string => $this->getChatwootContactLabel($value))
                                 ->live()
-<<<<<<< HEAD
-                                ->placeholder(fn() => Blade::render('components.dashboard-contact-select-option', ['contact' => null]))
-=======
                                 ->placeholder($this->contactPlaceholder())
->>>>>>> 233554d2a5631e3bf5a01b763ab6422d4d759cf5
                                 ->allowHtml()
                                 ->native(false)
                                 ->required()
@@ -133,20 +103,12 @@ class AssistantDashboard extends BaseDashboard
                                 }),
 
                             Select::make('chatwootConversationId')
-<<<<<<< HEAD
-                                ->disabled($isEmbeddedMode)
-=======
                                 ->disabled($this->isChatwootDashboardAppMode())
->>>>>>> 233554d2a5631e3bf5a01b763ab6422d4d759cf5
                                 ->label('Rozmowa')
                                 ->options(fn() => $this->getChatwootConversationsOptions($get('chatwootContactId') ?? null))
                                 ->allowHtml()
                                 ->live()
-<<<<<<< HEAD
-                                ->placeholder(fn() => Blade::render('components.dashboard-conversation-select-option', ['conversation' => null]))
-=======
                                 ->placeholder($this->conversationPlaceholder())
->>>>>>> 233554d2a5631e3bf5a01b763ab6422d4d759cf5
                                 ->native(false)
                                 ->required()
                                 ->default($get('chatwootConversationId')),
