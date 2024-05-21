@@ -8,7 +8,6 @@ use App\Models\ChatwootConversation;
 use Filament\Forms\Components\Select;
 use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
-use Filament\Pages\Dashboard\Actions\FilterAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Illuminate\Support\Facades\Blade;
@@ -16,7 +15,6 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
-use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\On;
 
 class AssistantDashboard extends BaseDashboard
