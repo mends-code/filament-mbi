@@ -5,7 +5,6 @@ namespace App\Filament\Pages;
 
 use App\Models\ChatwootContact;
 use App\Models\ChatwootConversation;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
@@ -27,6 +26,11 @@ class AssistantDashboard extends BaseDashboard
     protected static ?string $title = "Panel Asystenta";
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
 
+    protected static function isChatwootDashboardAppMode()
+    {
+        //return Session::get('isChatwootDashboardAppMode');
+        return false;
+    }
     protected static function contactPlaceholder()
     {
         return Blade::render('components.dashboard-contact-select-option', ['contact' => null]);
@@ -39,7 +43,6 @@ class AssistantDashboard extends BaseDashboard
 
     protected function getHeaderActions(): array
     {
-        $isEmbeddedMode = false;
 
         return [
             Action::make('headerActionPrimary'),
@@ -50,16 +53,14 @@ class AssistantDashboard extends BaseDashboard
     public function filtersForm(Form $form): Form
     {
 
-        $isEmbeddedMode = false;
-
         return $form
             ->schema([
                 Section::make('serviceSubjectContext')
                     ->heading('Kontekst Obsługi Pacjenta')
-                    ->schema(function (Get $get, Set $set) use ($isEmbeddedMode) {
+                    ->schema(function (Get $get, Set $set) {
                         return [
                             Select::make('chatwootContactId')
-                                ->disabled($isEmbeddedMode)
+                                ->disabled($this->isChatwootDashboardAppMode())
                                 ->label('Kontakt')
                                 ->searchable()
                                 ->getSearchResultsUsing(fn(string $search): array => $this->getChatwootContactsSearchResults($search))
@@ -85,7 +86,7 @@ class AssistantDashboard extends BaseDashboard
                                 }),
 
                             Select::make('chatwootConversationId')
-                                ->disabled($isEmbeddedMode)
+                                ->disabled($this->isChatwootDashboardAppMode())
                                 ->label('Rozmowa')
                                 ->options(fn() => $this->getChatwootConversationsOptions($get('chatwootContactId') ?? null))
                                 ->allowHtml()

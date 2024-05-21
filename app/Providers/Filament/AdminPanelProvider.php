@@ -72,9 +72,7 @@ class AdminPanelProvider extends PanelProvider
         });
         FilamentView::registerRenderHook(
             PanelsRenderHook::BODY_START,
-            fn(): string => Blade::render('@livewire(\'chatwoot-dashboard-component\')', [
-                'conversationData'
-            ]),
+            fn(): string => Blade::render('@livewire(\'chatwoot-dashboard-component\')'),
         );
 
     }

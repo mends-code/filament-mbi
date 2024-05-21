@@ -3,17 +3,20 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Illuminate\Support\Facades\Session;
+use App\Events\ChatwootContextUpdated;
+
 class ChatwootDashboardComponent extends Component
 {
-    public $conversationData = [];
+    protected $listeners = ['updateChatwootContext'];
 
-    protected $listeners = [
-        'handleConversationData'
-    ];
-
-    public function handleConversationData($data)
+    public function boot()
     {
-        $this->conversationData = $data;
+    }
+
+    public function updateChatwootContext($context)
+    {
+
     }
 
     public function render()
