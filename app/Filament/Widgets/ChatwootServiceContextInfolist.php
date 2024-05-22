@@ -22,7 +22,7 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 
 use Livewire\Attributes\On;
-use Livewire\Attributes\Session;
+use Livewire\Attributes\Url;
 
 class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfolists
 {
@@ -34,7 +34,7 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
 
     protected int|string|array $columnSpan = 'full';
 
-    #[Session]
+    #[Url]
     public array $chatwootPayload = [];
 
     #[On('create-chatwoot-payload')]
