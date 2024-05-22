@@ -28,6 +28,10 @@ class AssistantDashboard extends BaseDashboard
     protected static ?string $title = "Panel Asystenta";
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
 
+    public function boot() {
+        $this->dispatch('update-chatwoot-payload');
+    }
+
     #[On('update-chatwoot-context')]
     public function getChatwootContext($context)
     {
@@ -42,7 +46,7 @@ class AssistantDashboard extends BaseDashboard
     #[On('set-chatwoot-session')]
     public function setChatwootSession()
     {
-        $this->dispatch('update-chatwoot-payload');
+        //$this->dispatch('update-chatwoot-payload');
     }
 
     protected function getHeaderActions(): array

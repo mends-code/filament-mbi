@@ -34,10 +34,6 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
 
     protected int|string|array $columnSpan = 'full';
 
-    public function mount() {
-        $this->dispatch('update-chatwoot-payload');
-    }
-
     public array $chatwootPayload;
 
     #[On('update-chatwoot-payload')]
