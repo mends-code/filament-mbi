@@ -44,7 +44,17 @@ class AssistantDashboard extends BaseDashboard
             'chatwootAccountId' => $contextData->conversation->account_id,
             'chatwootCurrentAgentId' => $contextData->currentAgent->id
         ];
-        
+
+        $this->dispatch('update-chatwoot-payload');
+    }
+
+    #[On('reset-chatwoot-context')]
+    public function resetChatwootContext($context)
+    {
+        $contextData = json_decode($context)->data;
+
+        $this->filters = [];
+
         $this->dispatch('update-chatwoot-payload');
     }
 
