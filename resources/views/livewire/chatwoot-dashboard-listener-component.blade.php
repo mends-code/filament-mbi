@@ -38,27 +38,23 @@
                 console.log('get-chatwoot-context');
                 window.parent.postMessage('chatwoot-dashboard-app:fetch-info', '*');
             });
-
-            /*
             
             // Additional event listener for popstate event (loading new request or similar)
             window.addEventListener('popstate', function () {
-                $wire.dispatch('update-chatwoot-payload');
+                $wire.dispatch('update-chatwoot-payload-dummy');
                 console.log('update-chatwoot-payload dispatched due to popstate event');
             });
 
             // Additional event listener for loading new request (page load, URL change)
             window.addEventListener('load', function () {
-                $wire.dispatch('update-chatwoot-payload');
+                $wire.dispatch('update-chatwoot-payload-dummy');
                 console.log('update-chatwoot-payload dispatched due to page load');
             });
 
             window.addEventListener('popstate', function () {
-                $wire.dispatch('update-chatwoot-payload');
+                $wire.dispatch('update-chatwoot-payload-dummy');
                 console.log('update-chatwoot-payload dispatched due to popstate event');
             });
-
-            */
 
         </script>
     @endscript
