@@ -36,6 +36,11 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
 
     public array $chatwootPayload;
 
+    public function hydrate()
+    {
+        $this->dispatch('update-chatwoot-payload');
+    }
+
     #[On('update-chatwoot-payload')]
     public function updateChatwootPayload()
     {
