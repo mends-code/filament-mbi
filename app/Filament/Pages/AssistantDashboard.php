@@ -44,7 +44,10 @@ class AssistantDashboard extends BaseDashboard
     {
         $this->filters['chatwootContactId'] = json_decode($context)->data->contact->id;
         $this->filters['chatwootConversationDisplayId'] = json_decode($context)->data->conversation->id;
+        $this->filters['chatwootInboxId'] = json_decode($context)->data->conversation->inbox_id;
         $this->filters['chatwootAccountId'] = json_decode($context)->data->conversation->account_id;
+        $this->filters['chatwootCurrentAgentId'] = json_decode($context)->data->currentAgent->id;
+        $this->dispatch('create-chatwoot-payload');
     }
 
     protected function getHeaderActions(): array
