@@ -30,7 +30,6 @@ class AssistantDashboard extends BaseDashboard
 
     public function mount()
     {
-        $this->dispatch('create-chatwoot-payload');
     }
 
     public function boot()
