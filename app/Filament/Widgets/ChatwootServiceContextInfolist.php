@@ -46,9 +46,9 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
         $contact = ChatwootContact::find($contactId);
         $account = ChatwootAccount::find($accountId);
         $conversation = ChatwootConversation::where('account_id', $accountId)
-                                             ->where('display_id', $conversationDisplayId)
-                                             ->where('contact_id', $contactId)
-                                             ->first();
+            ->where('display_id', $conversationDisplayId)
+            ->where('contact_id', $contactId)
+            ->first();
         $inbox = ChatwootInbox::find($inboxId);
 
         $this->chatwootPayload = [

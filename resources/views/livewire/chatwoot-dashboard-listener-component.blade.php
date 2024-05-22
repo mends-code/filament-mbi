@@ -2,7 +2,6 @@
     @script
         <script>
             window.addEventListener('message', function(event) {
-                console.log(event.data);
                 $wire.dispatch('update-chatwoot-context', {
                     context: event.data
                 });
