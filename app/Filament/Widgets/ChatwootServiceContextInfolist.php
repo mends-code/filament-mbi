@@ -22,7 +22,7 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 
 use Livewire\Attributes\On;
-use Livewire\Attributes\Url;
+use Livewire\Attributes\Session;
 
 class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfolists
 {
