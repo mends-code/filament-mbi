@@ -34,20 +34,12 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
 
     protected int|string|array $columnSpan = 'full';
 
-    public ?string $session = '';
-
-    #[Session(key: 'chatwoot-payload-session-{session}')]
-    public array $chatwootPayload = [];
-
-    #[On('create-chatwoot-payload')]
     public function createChatwootPayload()
     {
         $contactId = $this->filters['chatwootContactId'];
         $conversationDisplayId = $this->filters['chatwootConversationDisplayId'];
         $accountId = $this->filters['chatwootAccountId'];
         $inboxId = $this->filters['chatwootInboxId'];
-
-        $this->session = $conversationDisplayId;
 
         $contact = ChatwootContact::find($contactId);
         $account = ChatwootAccount::find($accountId);
@@ -57,7 +49,7 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
             ->first();
         $inbox = ChatwootInbox::find($inboxId);
 
-        $this->chatwootPayload = [
+        return [
             'contact' => $contact ? $contact->toArray() : [],
             'account' => $account ? $account->toArray() : [],
             'conversation' => $conversation ? $conversation->toArray() : [],
@@ -68,7 +60,7 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist
-            ->state($this->chatwootPayload)
+            ->state($this->createChatwootPayload())
             ->schema([
                 Split::make([
                     Section::make('serviceContextSection.contact')

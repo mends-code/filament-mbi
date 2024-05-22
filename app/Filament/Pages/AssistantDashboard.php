@@ -28,14 +28,6 @@ class AssistantDashboard extends BaseDashboard
     protected static ?string $title = "Panel Asystenta";
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
 
-    public function mount()
-    {
-    }
-
-    public function boot()
-    {
-    }
-
     #[On('update-chatwoot-context')]
     public function getChatwootContext($context)
     {
@@ -44,7 +36,6 @@ class AssistantDashboard extends BaseDashboard
         $this->filters['chatwootInboxId'] = json_decode($context)->data->conversation->inbox_id;
         $this->filters['chatwootAccountId'] = json_decode($context)->data->conversation->account_id;
         $this->filters['chatwootCurrentAgentId'] = json_decode($context)->data->currentAgent->id;
-        $this->dispatch('create-chatwoot-payload');
     }
 
     protected function getHeaderActions(): array
