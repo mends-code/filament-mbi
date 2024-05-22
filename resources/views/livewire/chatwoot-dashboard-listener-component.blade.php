@@ -15,7 +15,7 @@
                 document.cookie = `${name}=${value};path=/`;
             }
 
-            // Check if the chatwootPayload cookie is set
+            // Check if the chatwootSession cookie is set
             if (!getCookie(cookieName)) {
                 // If the cookie is not found, dispatch the event to get the Chatwoot context
                 $wire.dispatch('set-chatwoot-session');
@@ -25,15 +25,35 @@
                 setSessionCookie(cookieName, 'true');
             }
 
-            window.addEventListener('message', function(event) {
+            // Event listener for receiving the Chatwoot context message
+            window.addEventListener('message', function (event) {
                 $wire.dispatch('update-chatwoot-context', {
                     context: event.data
                 });
                 console.log('update-chatwoot-context');
             });
+
+            // Event listener for get-chatwoot-context
             $wire.on('get-chatwoot-context', () => {
                 console.log('get-chatwoot-context');
                 window.parent.postMessage('chatwoot-dashboard-app:fetch-info', '*');
+            });
+
+            // Additional event listener for popstate event (loading new request or similar)
+            window.addEventListener('popstate', function () {
+                $wire.dispatch('update-chatwoot-payload');
+                console.log('update-chatwoot-payload dispatched due to popstate event');
+            });
+
+            // Additional event listener for loading new request (page load, URL change)
+            window.addEventListener('load', function () {
+                $wire.dispatch('update-chatwoot-payload');
+                console.log('update-chatwoot-payload dispatched due to page load');
+            });
+
+            window.addEventListener('popstate', function () {
+                $wire.dispatch('update-chatwoot-payload');
+                console.log('update-chatwoot-payload dispatched due to popstate event');
             });
         </script>
     @endscript
