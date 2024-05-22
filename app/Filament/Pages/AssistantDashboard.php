@@ -30,13 +30,12 @@ class AssistantDashboard extends BaseDashboard
 
     public function mount()
     {
-        $this->filters = null;
         $this->dispatch('get-chatwoot-context');
     }
 
     public function boot()
     {
-        $this->dispatch('get-chatwoot-context');
+        $this->dispatch('update-chatwoot-context');
     }
 
     #[On('update-chatwoot-context')]
