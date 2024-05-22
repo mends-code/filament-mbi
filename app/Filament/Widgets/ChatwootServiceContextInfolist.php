@@ -36,8 +36,8 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
 
     public function createChatwootPayload()
     {
-        if (!$this->filters) return null;
-        
+        if (!$this->filters) return [];
+
         $contactId = $this->filters['chatwootContactId'];
         $conversationDisplayId = $this->filters['chatwootConversationDisplayId'];
         $accountId = $this->filters['chatwootAccountId'];
@@ -61,8 +61,11 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
 
     public function infolist(Infolist $infolist): Infolist
     {
+
+        $chatwootPayload = $this->createChatwootPayload();
+
         return $infolist
-            ->state($this->createChatwootPayload())
+            ->state($chatwootPayload)
             ->schema([
                 Split::make([
                     Section::make('serviceContextSection.contact')
