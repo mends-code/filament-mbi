@@ -33,13 +33,18 @@ class AssistantDashboard extends BaseDashboard
     }
 
     #[On('update-chatwoot-context')]
-    public function getChatwootContext($context)
+    public function updateChatwootContext($context)
     {
-        $this->filters['chatwootContactId'] = json_decode($context)->data->contact->id;
-        $this->filters['chatwootConversationDisplayId'] = json_decode($context)->data->conversation->id;
-        $this->filters['chatwootInboxId'] = json_decode($context)->data->conversation->inbox_id;
-        $this->filters['chatwootAccountId'] = json_decode($context)->data->conversation->account_id;
-        $this->filters['chatwootCurrentAgentId'] = json_decode($context)->data->currentAgent->id;
+        $contextData = json_decode($context)->data;
+
+        $this->filters = [
+            'chatwootContactId' => $contextData->contact->id,
+            'chatwootConversationDisplayId' => $contextData->conversation->id,
+            'chatwootInboxId' => $contextData->conversation->inbox_id,
+            'chatwootAccountId' => $contextData->conversation->account_id,
+            'chatwootCurrentAgentId' => $contextData->currentAgent->id
+        ];
+        
         $this->dispatch('update-chatwoot-payload');
     }
 
