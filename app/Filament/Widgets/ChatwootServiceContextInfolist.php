@@ -34,9 +34,11 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
 
     protected int|string|array $columnSpan = 'full';
 
+    #[Session]
+    public array $chatwootPayload;
+
     public function createChatwootPayload()
     {
-        if (!$this->filters) return [];
 
         $contactId = $this->filters['chatwootContactId'];
         $conversationDisplayId = $this->filters['chatwootConversationDisplayId'];
@@ -51,7 +53,7 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
             ->first();
         $inbox = ChatwootInbox::find($inboxId);
 
-        return [
+        $this->chatwootPayload = [
             'contact' => $contact ? $contact->toArray() : [],
             'account' => $account ? $account->toArray() : [],
             'conversation' => $conversation ? $conversation->toArray() : [],
@@ -61,29 +63,52 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
 
     public function infolist(Infolist $infolist): Infolist
     {
-
-        $chatwootPayload = $this->createChatwootPayload();
-
         return $infolist
-            ->state($chatwootPayload)
+            ->state($this->chatwootPayload)
             ->schema([
                 Split::make([
                     Section::make('serviceContextSection.contact')
                         ->heading('Obsługiwany kontakt')
                         ->description('Dane kontaktowe mogą być wspólne dla różnych rozmów')
                         ->schema([
-                            TextEntry::make('contact.id')->badge()->placeholder('N/A')->label('Identyfikator kontaktu')->inlineLabel()->icon('heroicon-o-clipboard')->copyable(),
-                            TextEntry::make('contact.additional_attributes.country_code')->placeholder('brak kraju')->label('Kraj pobytu')->inlineLabel(),
-                            TextEntry::make('contact.name')->placeholder('N/A')->label('Imię i nazwisko')->inlineLabel(),
-                            TextEntry::make('contact.email')->placeholder('brak adresu email')->label('Adres email')->inlineLabel()->icon('heroicon-o-clipboard')->copyable()->badge()->color('gray'),
-                            TextEntry::make('contact.phone_number')->placeholder('brak numeru telefonu')->label('Numer telefonu')->inlineLabel()->icon('heroicon-o-clipboard')->copyable()->badge()->color('gray'),
+                            TextEntry::make('contact.id')
+                                ->badge()->placeholder('N/A')
+                                ->label('Identyfikator kontaktu')
+                                ->inlineLabel()
+                                ->icon('heroicon-o-clipboard')
+                                ->copyable(),
+                            TextEntry::make('contact.additional_attributes.country_code')
+                                ->placeholder('brak kraju')
+                                ->label('Kraj pobytu')
+                                ->inlineLabel(),
+                            TextEntry::make('contact.name')
+                                ->placeholder('N/A')
+                                ->label('Imię i nazwisko')
+                                ->inlineLabel(),
+                            TextEntry::make('contact.email')
+                                ->placeholder('brak adresu email')
+                                ->label('Adres email')
+                                ->inlineLabel()
+                                ->icon('heroicon-o-clipboard')
+                                ->copyable()
+                                ->badge()
+                                ->color('gray'),
+                            TextEntry::make('contact.phone_number')
+                                ->placeholder('brak numeru telefonu')
+                                ->label('Numer telefonu')
+                                ->inlineLabel()
+                                ->icon('heroicon-o-clipboard')
+                                ->copyable()
+                                ->badge()
+                                ->color('gray'),
                         ])
                         ->columns(1),
                     Section::make('serviceContextSection.conversation')
                         ->heading('Obsługiwana rozmowa')
                         ->description('Aktualna rozmowa z poziomu której otwarto panel')
                         ->schema([
-                            TextEntry::make('conversation.display_id')->badge()->placeholder('N/A')->copyable()->label('Identyfikator rozmowy')->inlineLabel()->icon('heroicon-o-clipboard'),
+                            TextEntry::make('conversation.display_id')
+                                ->badge()->placeholder('N/A')->copyable()->label('Identyfikator rozmowy')->inlineLabel()->icon('heroicon-o-clipboard'),
                             TextEntry::make('account.name')->placeholder('N/A')->label('Konto')->inlineLabel(),
                             TextEntry::make('inbox.name')->placeholder('N/A')->label('Skrzynka odbiorcza')->inlineLabel(),
                             TextEntry::make('contact.created_at')->since()->placeholder('czas pierwszego kontaktu')->label('Kontakt utworzono')->inlineLabel(),
