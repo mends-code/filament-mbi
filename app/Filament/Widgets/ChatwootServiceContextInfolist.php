@@ -66,6 +66,12 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
         ];
     }
 
+    #[On('reset-chatwoot-payload')]
+    public function resetChatwootPayload()
+    {
+        $this->chatwootPayload = [];
+    }
+
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist
