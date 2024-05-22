@@ -34,11 +34,18 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
 
     protected int|string|array $columnSpan = 'full';
 
-    #[Session]
+    public function mount() {
+        $this->dispatch('update-chatwoot-payload');
+    }
+
     public array $chatwootPayload;
 
-    public function createChatwootPayload()
+    #[On('update-chatwoot-payload')]
+    public function updateChatwootPayload()
     {
+
+        if (!$this->filters || $this->filters == [])
+            $this->chatwootPayload = [];
 
         $contactId = $this->filters['chatwootContactId'];
         $conversationDisplayId = $this->filters['chatwootConversationDisplayId'];

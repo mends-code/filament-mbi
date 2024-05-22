@@ -36,6 +36,13 @@ class AssistantDashboard extends BaseDashboard
         $this->filters['chatwootInboxId'] = json_decode($context)->data->conversation->inbox_id;
         $this->filters['chatwootAccountId'] = json_decode($context)->data->conversation->account_id;
         $this->filters['chatwootCurrentAgentId'] = json_decode($context)->data->currentAgent->id;
+        $this->dispatch('update-chatwoot-payload');
+    }
+
+    #[On('set-chatwoot-session')]
+    public function setChatwootSession()
+    {
+        $this->dispatch('update-chatwoot-payload');
     }
 
     protected function getHeaderActions(): array
