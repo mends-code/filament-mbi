@@ -37,13 +37,12 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
     #[Session]
     public array $chatwootPayload;
 
-    #[On('update-chatwoot-payload')]
-    public function updateChatwootPayload()
+    #[On('push-chatwoot-payload')]
+    public function pushChatwootPayload()
     {
         $filters = $this->filters;
 
-        if (!$filters || $filters == [])
-            $this->chatwootPayload = [];
+        if (!$filters || $filters == [] || $filters == null) return;
 
         $contactId = $filters['chatwootContactId'];
         $conversationDisplayId = $filters['chatwootConversationDisplayId'];
@@ -64,6 +63,12 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
             'conversation' => $conversation ? $conversation->toArray() : [],
             'inbox' => $inbox ? $inbox->toArray() : [],
         ];
+    }
+
+    #[On('reset-chatwoot-payload')]
+    public function resetChatwootPayload()
+    {
+        $this->chatwootPayload = [];
     }
 
     public function infolist(Infolist $infolist): Infolist
