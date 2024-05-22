@@ -26,7 +26,7 @@
             }
 
             // Event listener for receiving the Chatwoot context message
-            window.addEventListener('message', function (event) {
+            window.addEventListener('message', function(event) {
                 $wire.dispatch('update-chatwoot-context', {
                     context: event.data
                 });
@@ -39,6 +39,8 @@
                 window.parent.postMessage('chatwoot-dashboard-app:fetch-info', '*');
             });
 
+            /*
+            
             // Additional event listener for popstate event (loading new request or similar)
             window.addEventListener('popstate', function () {
                 $wire.dispatch('update-chatwoot-payload');
@@ -55,6 +57,9 @@
                 $wire.dispatch('update-chatwoot-payload');
                 console.log('update-chatwoot-payload dispatched due to popstate event');
             });
+
+            */
+
         </script>
     @endscript
 </div>
