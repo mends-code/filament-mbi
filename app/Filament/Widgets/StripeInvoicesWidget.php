@@ -7,6 +7,7 @@ use Filament\Tables\Table;
 
 use Filament\Widgets\TableWidget as BaseWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Filament\Tables\Concerns\InteractsWithTable;
 
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\Action;
@@ -27,11 +28,13 @@ class StripeInvoicesWidget extends BaseWidget
 {
     use InteractsWithPageFilters;
 
+    protected static bool $isLazy = false;
+
     protected static ?int $sort = 2;
 
     protected int|string|array $columnSpan = 'full';
 
-    protected function getTableQuery(): Builder|null
+    public function getTableQuery(): Builder|null
     {
         $chatwootContactId = $this->filters['chatwootContactId'] ?? null;
 

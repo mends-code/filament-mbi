@@ -24,11 +24,13 @@ use Filament\Widgets\Widget;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Session;
 
-class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfolists
+class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolists
 {
     use InteractsWithForms, InteractsWithPageFilters, InteractsWithInfolists;
 
     protected static string $view = 'filament.widgets.chatwoot-service-context-infolist';
+
+    protected static bool $isLazy = false;
 
     protected static ?int $sort = 1;
 
