@@ -28,8 +28,6 @@ class StripeInvoicesWidget extends BaseWidget
 {
     use InteractsWithPageFilters;
 
-    protected static bool $isLazy = false;
-
     protected static ?int $sort = 2;
 
     protected int|string|array $columnSpan = 'full';

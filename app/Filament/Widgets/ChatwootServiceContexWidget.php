@@ -30,8 +30,6 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
 
     protected static string $view = 'filament.widgets.chatwoot-service-context-infolist';
 
-    protected static bool $isLazy = false;
-
     protected static ?int $sort = 1;
 
     protected int|string|array $columnSpan = 'full';
