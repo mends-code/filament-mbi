@@ -4,27 +4,19 @@ namespace App\Filament\Widgets;
 
 use Filament\Tables;
 use Filament\Tables\Table;
-
 use Filament\Widgets\TableWidget as BaseWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Tables\Concerns\InteractsWithTable;
-
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Grouping\Group;
-
 use Filament\Forms\Components\Textarea;
-
 use App\Models\StripeInvoice;
-
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\RepeatableEntry;
-
 use Illuminate\Database\Eloquent\Builder;
-
-use Livewire\Attributes\Session;
 
 class StripeInvoicesWidget extends BaseWidget
 {
@@ -34,7 +26,7 @@ class StripeInvoicesWidget extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    public function getTableQuery(): Builder|null
+    protected function getTableQuery(): Builder|null
     {
         $chatwootContactId = $this->filters['chatwootContactId'] ?? null;
 
@@ -45,7 +37,7 @@ class StripeInvoicesWidget extends BaseWidget
             }
         );
     }
-    
+
     public function table(Table $table): Table
     {
         return $table
@@ -162,12 +154,9 @@ class StripeInvoicesWidget extends BaseWidget
                                         'sm' => 2,
                                         'xl' => 4,
                                     ]),
-
                             ])
                             ->columns(1),
-
                     ])
-
             ], position: ActionsPosition::BeforeColumns)
             ->paginated(false)
             ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null));

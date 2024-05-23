@@ -28,8 +28,6 @@ class AssistantDashboard extends BaseDashboard
     protected static ?string $title = "Panel Asystenta";
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
 
-    protected static bool $isLazy = false;
-
     #[On('push-chatwoot-context')]
     public function pushChatwootContext($context)
     {
