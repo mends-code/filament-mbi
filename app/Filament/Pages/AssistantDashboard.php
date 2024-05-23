@@ -51,7 +51,6 @@ class AssistantDashboard extends BaseDashboard
     #[On('reset-chatwoot-context')]
     public function resetChatwootContext()
     {
-        $this->filters = null;
     }
 
     protected function getHeaderActions(): array
