@@ -42,13 +42,8 @@ class AssistantDashboard extends BaseDashboard
         ];
 
         $this->dispatch('push-chatwoot-payload');
+        $this->dispatch('push-invoice-table-context');
     }
-
-    #[On('reset-chatwoot-context')]
-    public function resetChatwootContext()
-    {
-    }
-
     protected function getHeaderActions(): array
     {
 

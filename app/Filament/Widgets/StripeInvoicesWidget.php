@@ -31,10 +31,11 @@ class StripeInvoicesWidget extends BaseWidget
     #[Session]
     public ?int $chatwootContactId;
 
-    public function mount()
+    #[On('push-invoice-table-context')]
+    public function pushInvoiceTableContext()
     {
         $this->resetTable();
-        $this->chatwootContactId = $this->filters['chatwootContactId'];
+        $this->chatwootContactId = $this->filters['chatwootContactId'] ?? null;
     }
 
     protected function getTableQuery(): Builder|null
