@@ -34,9 +34,9 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
 
     protected int|string|array $columnSpan = 'full';
 
-    public function mount()
+    public function boot()
     {
-        $this->chatwootPayload = [];
+        $this->pushChatwootPayload();
     }
 
     #[Session]
@@ -90,7 +90,8 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
                             TextEntry::make('contact.id')
                                 ->badge()->placeholder('N/A')
                                 ->label('Identyfikator kontaktu')
-                                ->inlineLabel(),
+                                ->inlineLabel()
+                                ->icon('heroicon-o-clipboard'),
                             TextEntry::make('contact.additional_attributes.country_code')
                                 ->placeholder('brak kraju')
                                 ->label('Kraj pobytu')
@@ -103,12 +104,14 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
                                 ->placeholder('brak adresu email')
                                 ->label('Adres email')
                                 ->inlineLabel()
+                                ->icon('heroicon-o-clipboard')
                                 ->badge()
                                 ->color('gray'),
                             TextEntry::make('contact.phone_number')
                                 ->placeholder('brak numeru telefonu')
                                 ->label('Numer telefonu')
                                 ->inlineLabel()
+                                ->icon('heroicon-o-clipboard')
                                 ->badge()
                                 ->color('gray'),
                         ])
@@ -118,7 +121,7 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
                         ->description('Aktualna rozmowa z poziomu której otwarto panel')
                         ->schema([
                             TextEntry::make('conversation.display_id')
-                                ->badge()->placeholder('N/A')->label('Identyfikator rozmowy')->inlineLabel(),
+                                ->badge()->placeholder('N/A')->label('Identyfikator rozmowy')->inlineLabel()->icon('heroicon-o-clipboard'),
                             TextEntry::make('account.name')->placeholder('N/A')->label('Konto')->inlineLabel(),
                             TextEntry::make('inbox.name')->placeholder('N/A')->label('Skrzynka odbiorcza')->inlineLabel(),
                             TextEntry::make('contact.created_at')->since()->placeholder('czas pierwszego kontaktu')->label('Kontakt utworzono')->inlineLabel(),
