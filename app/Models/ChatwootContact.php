@@ -13,9 +13,16 @@ class ChatwootContact extends Model
     protected $table = 'mbi_chatwoot.contacts';
 
     protected $fillable = [
-        'name', 'email', 'phone_number',
-        'identifier', 'custom_attributes', 'middle_name', 'last_name', 'location',
-        'country_code', 'blocked'
+        'name',
+        'email',
+        'phone_number',
+        'identifier',
+        'custom_attributes',
+        'middle_name',
+        'last_name',
+        'location',
+        'country_code',
+        'blocked'
     ];
 
     protected $casts = [
@@ -40,6 +47,18 @@ class ChatwootContact extends Model
     public function stripeCustomers()
     {
         return $this->hasMany(StripeCustomer::class, 'chatwoot_contact_id');
+    }
+
+    public function stripeInvoices()
+    {
+        return $this->hasManyThrough(
+            StripeInvoice::class,
+            StripeCustomer::class,
+            'chatwoot_contact_id', // Foreign key on StripeCustomer table
+            'customer_id', // Foreign key on StripeInvoice table
+            'id', // Local key on ChatwootContact table
+            'id' // Local key on StripeCustomer table
+        );
     }
 
     public function conversations()

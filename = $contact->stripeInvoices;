@@ -1,0 +1,20 @@
+[90m= [39m[34;4mApp\Models\ChatwootContact[39;24m {#7297
+    [34mid[39m: [35m704[39m,
+    [34mname[39m: "[32mMateusz Dembek[39m",
+    [34memail[39m: "[32mdembek.mateusz19981@gmail.com[39m",
+    [34mphone_number[39m: "[32m+48789352301[39m",
+    [34maccount_id[39m: [35m1[39m,
+    [34mcreated_at[39m: "[32m2022-10-11 17:02:13.006872[39m",
+    [34mupdated_at[39m: "[32m2024-05-23 10:04:21.707985[39m",
+    [34madditional_attributes[39m: "[32m{"city": "", "country": "Poland", "description": "", "company_name": "", "country_code": "PL", "social_profiles": {"github": "", "twitter": "", "facebook": "", "linkedin": "", "instagram": ""}}[39m",
+    [34midentifier[39m: "[32mbf83a005-6289-44d9-8495-1d3899d993fb[39m",
+    [34mcustom_attributes[39m: "[32m{}[39m",
+    [34mlast_activity_at[39m: "[32m2024-05-23 10:04:21.610744[39m",
+    [34mcontact_type[39m: [35m1[39m,
+    [34mmiddle_name[39m: "",
+    [34mlast_name[39m: "",
+    [34mlocation[39m: "",
+    [34mcountry_code[39m: "[32mPoland[39m",
+    [34mblocked[39m: [36mfalse[39m,
+  }
+
