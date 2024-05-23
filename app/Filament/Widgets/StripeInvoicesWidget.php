@@ -18,6 +18,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Session;
 
 class StripeInvoicesWidget extends BaseWidget
 {
@@ -33,9 +34,17 @@ class StripeInvoicesWidget extends BaseWidget
         $this->resetTable();
     }
 
+    #[Session]
+    public ?string $chatwootContactId;
+
+    public function boot()
+    {
+        $this->chatwootContactId = $this->filters['chatwootContactId'];
+    }
+
     protected function getTableQuery(): Builder|null
     {
-        $chatwootContactId = $this->filters['chatwootContactId'] ?? null;
+        $chatwootContactId = $this->chatwootContactId ?? null;
 
         return StripeInvoice::whereHas(
             'chatwootContact',
