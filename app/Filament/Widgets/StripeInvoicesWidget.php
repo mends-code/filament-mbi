@@ -34,7 +34,6 @@ class StripeInvoicesWidget extends BaseWidget
     #[On('push-invoice-table-context')]
     public function pushInvoiceTableContext()
     {
-        $this->resetTable();
         $this->chatwootContactId = $this->filters['chatwootContactId'] ?? null;
     }
 

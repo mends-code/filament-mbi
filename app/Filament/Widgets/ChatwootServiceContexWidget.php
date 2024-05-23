@@ -17,6 +17,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Split;
+use Filament\Infolists\Components\TextEntry\TextEntrySize;
 
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
@@ -88,10 +89,10 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
                         ->description('Dane kontaktowe mogą być wspólne dla różnych rozmów')
                         ->schema([
                             TextEntry::make('contact.id')
-                                ->badge()->placeholder('N/A')
+                                ->badge()
+                                ->placeholder('N/A')
                                 ->label('Identyfikator kontaktu')
-                                ->inlineLabel()
-                                ->icon('heroicon-o-clipboard'),
+                                ->inlineLabel(),
                             TextEntry::make('contact.additional_attributes.country_code')
                                 ->placeholder('brak kraju')
                                 ->label('Kraj pobytu')
@@ -121,7 +122,7 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
                         ->description('Aktualna rozmowa z poziomu której otwarto panel')
                         ->schema([
                             TextEntry::make('conversation.display_id')
-                                ->badge()->placeholder('N/A')->label('Identyfikator rozmowy')->inlineLabel()->icon('heroicon-o-clipboard'),
+                                ->badge()->placeholder('N/A')->label('Identyfikator rozmowy')->inlineLabel(),
                             TextEntry::make('account.name')->placeholder('N/A')->label('Konto')->inlineLabel(),
                             TextEntry::make('inbox.name')->placeholder('N/A')->label('Skrzynka odbiorcza')->inlineLabel(),
                             TextEntry::make('contact.created_at')->since()->placeholder('czas pierwszego kontaktu')->label('Kontakt utworzono')->inlineLabel(),
