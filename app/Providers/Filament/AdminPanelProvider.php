@@ -70,10 +70,5 @@ class AdminPanelProvider extends PanelProvider
         Table::configureUsing(function (Table $table): void {
             $table->persistFiltersInSession(true);
         });
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::BODY_START,
-            fn(): string => Blade::render('@livewire(\'chatwoot-dashboard-listener-component\')'),
-        );
-
     }
 }
