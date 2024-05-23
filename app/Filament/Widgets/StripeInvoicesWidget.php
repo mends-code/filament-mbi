@@ -24,6 +24,8 @@ use Filament\Infolists\Components\RepeatableEntry;
 
 use Illuminate\Database\Eloquent\Builder;
 
+use Livewire\Attributes\Session;
+
 class StripeInvoicesWidget extends BaseWidget
 {
     use InteractsWithPageFilters;
@@ -43,7 +45,7 @@ class StripeInvoicesWidget extends BaseWidget
             }
         );
     }
-
+    
     public function table(Table $table): Table
     {
         return $table
