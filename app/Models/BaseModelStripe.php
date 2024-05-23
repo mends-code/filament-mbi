@@ -10,4 +10,9 @@ class BaseModelStripe extends Model
     use HasFactory;
 
     protected $keyType = 'string';
+
+    public function getCreatedAttribute()
+    {
+        return $this->data['created'];
+    }
 }
