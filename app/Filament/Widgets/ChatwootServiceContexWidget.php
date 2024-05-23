@@ -42,11 +42,7 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
     }
 
     #[Session]
-<<<<<<< HEAD
     public array $chatwootPayload = [];
-=======
-    public array $chatwootPayload;
->>>>>>> a34fb3ec137ecc14a313ed5006d6d88ca92fd78c
 
     #[On('push-chatwoot-payload')]
     public function pushChatwootPayload()
