@@ -28,17 +28,12 @@ class StripeInvoicesWidget extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    #[On('reset-stripe-invoices-widget-table')]
-    public function resetStripeInvoicesWidgetTable()
+    #[Session]
+    public ?int $chatwootContactId;
+
+    public function mount()
     {
         $this->resetTable();
-    }
-
-    #[Session]
-    public ?string $chatwootContactId;
-
-    public function boot()
-    {
         $this->chatwootContactId = $this->filters['chatwootContactId'];
     }
 
