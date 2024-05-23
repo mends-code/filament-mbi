@@ -48,6 +48,12 @@ class AssistantDashboard extends BaseDashboard
         $this->dispatch('push-chatwoot-payload');
     }
 
+    #[On('reset-chatwoot-context')]
+    public function resetChatwootContext($context)
+    {
+        $this->filters = null;
+    }
+
     protected function getHeaderActions(): array
     {
 
