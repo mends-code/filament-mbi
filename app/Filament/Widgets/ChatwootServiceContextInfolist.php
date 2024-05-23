@@ -91,8 +91,7 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
                                 ->badge()->placeholder('N/A')
                                 ->label('Identyfikator kontaktu')
                                 ->inlineLabel()
-                                ->icon('heroicon-o-clipboard')
-                                ->copyable(),
+                                ->icon('heroicon-o-clipboard'),
                             TextEntry::make('contact.additional_attributes.country_code')
                                 ->placeholder('brak kraju')
                                 ->label('Kraj pobytu')
@@ -106,7 +105,6 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
                                 ->label('Adres email')
                                 ->inlineLabel()
                                 ->icon('heroicon-o-clipboard')
-                                ->copyable()
                                 ->badge()
                                 ->color('gray'),
                             TextEntry::make('contact.phone_number')
@@ -114,7 +112,6 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
                                 ->label('Numer telefonu')
                                 ->inlineLabel()
                                 ->icon('heroicon-o-clipboard')
-                                ->copyable()
                                 ->badge()
                                 ->color('gray'),
                         ])
@@ -124,7 +121,7 @@ class ChatwootServiceContextInfolist extends Widget implements HasForms, HasInfo
                         ->description('Aktualna rozmowa z poziomu której otwarto panel')
                         ->schema([
                             TextEntry::make('conversation.display_id')
-                                ->badge()->placeholder('N/A')->copyable()->label('Identyfikator rozmowy')->inlineLabel()->icon('heroicon-o-clipboard'),
+                                ->badge()->placeholder('N/A')->label('Identyfikator rozmowy')->inlineLabel()->icon('heroicon-o-clipboard'),
                             TextEntry::make('account.name')->placeholder('N/A')->label('Konto')->inlineLabel(),
                             TextEntry::make('inbox.name')->placeholder('N/A')->label('Skrzynka odbiorcza')->inlineLabel(),
                             TextEntry::make('contact.created_at')->since()->placeholder('czas pierwszego kontaktu')->label('Kontakt utworzono')->inlineLabel(),
