@@ -17,6 +17,7 @@ use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Illuminate\Database\Eloquent\Builder;
+use Livewire\Attributes\On;
 
 class StripeInvoicesWidget extends BaseWidget
 {
@@ -25,6 +26,12 @@ class StripeInvoicesWidget extends BaseWidget
     protected static ?int $sort = 2;
 
     protected int|string|array $columnSpan = 'full';
+
+    #[On('reset-stripe-invoices-widget-table')]
+    public function resetStripeInvoicesWidgetTable()
+    {
+        $this->resetTable();
+    }
 
     protected function getTableQuery(): Builder|null
     {
@@ -42,6 +49,7 @@ class StripeInvoicesWidget extends BaseWidget
     {
         return $table
             ->query($this->getTableQuery())
+            ->deferLoading()
             ->heading('Lista faktur')
             ->columns([
                 Tables\Columns\TextColumn::make('id')

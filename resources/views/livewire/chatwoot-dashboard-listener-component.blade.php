@@ -14,6 +14,7 @@
                 function() {
                     $wire.dispatch('reset-chatwoot-context');
                     $wire.dispatch('reset-chatwoot-payload');
+                    $wire.dispatch('reset-stripe-invoices-widget-table');
                 }, {
                     once: true
                 },
