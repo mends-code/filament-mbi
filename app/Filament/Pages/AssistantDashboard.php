@@ -19,7 +19,11 @@ class AssistantDashboard extends BaseDashboard
     protected static ?string $navigationLabel = "Panel Asystenta";
     protected static ?string $title = "Panel Asystenta";
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
-    protected bool $persistsFiltersInSession = true;
+    
+    protected bool $persistsFiltersInSession = false;
+
+    #[Session]
+    public ?array $filters = null;
 
     #[On('set-chatwoot-context')]
     public function setChatwootContext($context)
