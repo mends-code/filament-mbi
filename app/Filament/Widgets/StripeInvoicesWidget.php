@@ -29,17 +29,12 @@ class StripeInvoicesWidget extends BaseWidget
     protected int|string|array $columnSpan = 'full';
 
     #[Session]
-    public ?int $chatwootContactId;
+    public array $filters;
 
-    #[On('push-invoice-table-context')]
-    public function pushInvoiceTableContext()
-    {
-        $this->chatwootContactId = $this->filters['chatwootContactId'] ?? null;
-    }
 
     protected function getTableQuery(): Builder|null
     {
-        $chatwootContactId = $this->chatwootContactId ?? null;
+        $chatwootContactId = $this->filters['chatwootContactId'] ?? null;
 
         return StripeInvoice::whereHas(
             'chatwootContact',
