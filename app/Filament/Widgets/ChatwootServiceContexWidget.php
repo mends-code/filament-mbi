@@ -27,7 +27,7 @@ use Livewire\Attributes\Reactive;
 
 class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolists
 {
-    use InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters;
+    use InteractsWithForms, InteractsWithInfolists;
 
     protected static string $view = 'filament.widgets.chatwoot-service-context-infolist';
 
@@ -35,7 +35,11 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
 
     protected int|string|array $columnSpan = 'full';
 
-    public static bool $isLazy = false;
+    public static bool $isLazy = true;
+
+    #[Reactive] 
+    public ?array $filters = null;
+
 
     public function getChatwootPayload()
     {
