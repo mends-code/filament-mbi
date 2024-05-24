@@ -30,7 +30,7 @@ class StripeInvoicesWidget extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    public static bool $isLazy = true;
+    public static bool $isLazy = false;
     
     public function table(Table $table): Table
     {
