@@ -29,8 +29,6 @@ class AssistantDashboard extends BaseDashboard
             'chatwootAccountId' => $contextData->conversation->account_id,
             'chatwootCurrentAgentId' => $contextData->currentAgent->id
         ];
-
-        $this->dispatch('set-cached-filters');
     }
     protected function getHeaderActions(): array
     {

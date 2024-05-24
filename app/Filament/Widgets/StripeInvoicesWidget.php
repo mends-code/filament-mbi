@@ -31,14 +31,13 @@ class StripeInvoicesWidget extends BaseWidget
 
     public static bool $isLazy = true;
 
+    public static bool $isDiscovered = false;
+
     protected function getTableQuery(): Builder|null
     {
-        $filters = $this->filters;
+        $filters = $this->filters ?? [];
 
-        if (!$filters || $filters == [] || $filters == null)
-            return null;
-
-        $chatwootContactId = $this->filters['chatwootContactId'] ?? null;
+        $chatwootContactId = $filters['chatwootContactId'] ?? null;
 
         return StripeInvoice::whereHas(
             'chatwootContact',
