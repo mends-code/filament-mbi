@@ -19,6 +19,7 @@ use Filament\Infolists\Components\RepeatableEntry;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Session;
+use Livewire\Attributes\Reactive;
 
 class StripeInvoicesWidget extends BaseWidget
 {
@@ -30,18 +31,14 @@ class StripeInvoicesWidget extends BaseWidget
 
     public static bool $isLazy = true;
 
-    #[Session]
-    public array $cachedFilters = [];
-
-    #[On('set-cached-filters')]
-    public function setCachedFilters()
-    {
-        $this->cachedFilters = $this->filters ?? [];
-    }
-
     protected function getTableQuery(): Builder|null
     {
-        $chatwootContactId = $this->cachedFilters['chatwootContactId'] ?? null;
+        $filters = $this->filters;
+
+        if (!$filters || $filters == [] || $filters == null)
+            return null;
+
+        $chatwootContactId = $this->filters['chatwootContactId'] ?? null;
 
         return StripeInvoice::whereHas(
             'chatwootContact',
@@ -172,7 +169,6 @@ class StripeInvoicesWidget extends BaseWidget
                             ->columns(1),
                     ])
             ], position: ActionsPosition::BeforeColumns)
-            ->paginated(false)
-            ->poll('1s');
+            ->paginated(false);
     }
 }
