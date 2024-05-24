@@ -32,6 +32,11 @@ class StripeInvoicesWidget extends BaseWidget
     public array $filters;
 
 
+    public function mount()
+    {
+        $this->chatwootContactId = null;
+    }
+
     protected function getTableQuery(): Builder|null
     {
         $chatwootContactId = $this->filters['chatwootContactId'] ?? null;
