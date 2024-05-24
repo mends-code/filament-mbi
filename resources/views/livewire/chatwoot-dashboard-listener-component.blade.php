@@ -2,7 +2,7 @@
     @script
         <script>
             window.addEventListener('message', function(event) {
-                $wire.dispatch('push-chatwoot-context', {
+                $wire.dispatch('set-chatwoot-context', {
                     context: event.data
                 });
             });
@@ -12,9 +12,7 @@
             window.addEventListener(
                 'load',
                 function() {
-                    $wire.dispatch('reset-chatwoot-context');
-                    $wire.dispatch('reset-chatwoot-payload');
-                    $wire.dispatch('reset-stripe-invoices-widget-table');
+                    $wire.dispatch('reset-cached-filters');
                 }, {
                     once: true
                 },

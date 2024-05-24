@@ -44,6 +44,12 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
         $this->cachedFilters = $this->filters ?? [];
     }
 
+    #[On('reset-cached-filters')]
+    public function resetCachedFilters()
+    {
+        $this->cachedFilters = [];
+    }
+
     public function getChatwootPayload()
     {
         $filters = $this->cachedFilters;

@@ -3,21 +3,10 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\ChatwootContact;
-use App\Models\ChatwootConversation;
-use Filament\Actions\Concerns\HasInfolist;
-use Filament\Forms\Components\Select;
 use Filament\Actions\Action;
-use Filament\Infolists\Infolist;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
-use Illuminate\Support\Facades\Blade;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
 use Livewire\Attributes\On;
 
 class AssistantDashboard extends BaseDashboard
@@ -28,8 +17,8 @@ class AssistantDashboard extends BaseDashboard
     protected static ?string $title = "Panel Asystenta";
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
 
-    #[On('push-chatwoot-context')]
-    public function pushChatwootContext($context)
+    #[On('set-chatwoot-context')]
+    public function setChatwootContext($context)
     {
         $contextData = json_decode($context)->data;
 
