@@ -24,13 +24,14 @@ use Livewire\Attributes\Reactive;
 class StripeInvoicesWidget extends BaseWidget
 {
     
-    use InteractsWithPageFilters;
-
     protected static ?int $sort = 2;
 
     protected int|string|array $columnSpan = 'full';
 
-    public static bool $isLazy = false;
+    public static bool $isLazy = true;
+
+    #[Reactive] 
+    public ?array $filters = null;
     
     public function table(Table $table): Table
     {
