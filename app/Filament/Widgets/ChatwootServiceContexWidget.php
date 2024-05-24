@@ -129,6 +129,7 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
                         ])
                         ->columns(1),
                 ])
+                    ->from('lg'),
             ]);
     }
 }
