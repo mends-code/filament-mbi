@@ -31,24 +31,17 @@ class StripeInvoicesWidget extends BaseWidget
 
     public static bool $isLazy = true;
 
-    protected function getTableQuery(): Builder|null
-    {
-        $filters = $this->filters ?? [];
-
-        $chatwootContactId = $filters['chatwootContactId'] ?? null;
-
-        return StripeInvoice::whereHas(
-            'chatwootContact',
-            function ($query) use ($chatwootContactId) {
-                $query->where('chatwoot_contact_id', $chatwootContactId);
-            }
-        );
-    }
-
     public function table(Table $table): Table
     {
         return $table
-            ->query($this->getTableQuery())
+            ->query(
+                StripeInvoice::whereHas(
+                    'chatwootContact',
+                    function ($query) {
+                        $query->where('chatwoot_contact_id', $this->filters['chatwootContactId']);
+                    }
+                )
+            )
             ->deferLoading()
             ->heading('Lista faktur')
             ->columns([
