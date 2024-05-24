@@ -35,21 +35,23 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
 
     protected int|string|array $columnSpan = 'full';
 
-    public function boot()
+    #[Session]
+    public array $cachedFilters = [];
+
+    public function mount()
     {
-        $this->pushChatwootPayload();
+        $this->cachedFilters = [];
     }
 
-    #[Session]
-    public array $chatwootPayload = [];
-
-    #[On('push-chatwoot-payload')]
-    public function pushChatwootPayload()
+    #[On('set-cached-filters')]
+    public function setCachedFilters()
     {
-        $filters = $this->filters;
+        $this->cachedFilters = $this->filters ?? [];
+    }
 
-        if (!$filters || $filters == [] || $filters == null)
-            return;
+    public function getChatwootPayload()
+    {
+        $filters = $this->filters ?? [];
 
         $contactId = $filters['chatwootContactId'];
         $conversationDisplayId = $filters['chatwootConversationDisplayId'];
@@ -64,7 +66,7 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
             ->first();
         $inbox = ChatwootInbox::find($inboxId);
 
-        $this->chatwootPayload = [
+        return [
             'contact' => $contact ? $contact->toArray() : [],
             'account' => $account ? $account->toArray() : [],
             'conversation' => $conversation ? $conversation->toArray() : [],
@@ -72,16 +74,10 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
         ];
     }
 
-    #[On('reset-chatwoot-payload')]
-    public function resetChatwootPayload()
-    {
-        $this->chatwootPayload = [];
-    }
-
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist
-            ->state($this->chatwootPayload)
+            ->state($this->getChatwootPayload())
             ->schema([
                 Split::make([
                     Section::make('serviceContextSection.contact')
