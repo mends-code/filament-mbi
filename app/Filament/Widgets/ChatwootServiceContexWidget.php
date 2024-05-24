@@ -35,7 +35,7 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
 
     protected int|string|array $columnSpan = 'full';
 
-    public static ?bool $isLazy = false;
+    public static bool $isLazy = false;
 
     #[Session]
     public array $cachedFilters = [];
