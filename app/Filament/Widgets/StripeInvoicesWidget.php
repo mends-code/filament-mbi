@@ -36,9 +36,8 @@ class StripeInvoicesWidget extends BaseWidget
     {
         $this->cachedFilters = $this->filters ?? [];
     }
-    
-    #[On('reset-cached-filters')]
-    public function resetCachedFilters()
+
+    public function mount()
     {
         $this->cachedFilters = [];
     }
