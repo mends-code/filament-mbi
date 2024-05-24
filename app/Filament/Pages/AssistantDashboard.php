@@ -42,7 +42,7 @@ class AssistantDashboard extends BaseDashboard
         ];
 
         $this->dispatch('push-chatwoot-payload');
-        $this->dispatch('push-invoice-table-context');
+        $this->dispatch('set-cached-filters');
     }
     protected function getHeaderActions(): array
     {
