@@ -54,7 +54,7 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
         $filters = $this->cachedFilters;
 
         if (!$filters || $filters == [] || $filters == null)
-            return;
+            return [];
 
         $contactId = $filters['chatwootContactId'];
         $conversationDisplayId = $filters['chatwootConversationDisplayId'];
