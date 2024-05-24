@@ -23,6 +23,7 @@ use Livewire\Attributes\Reactive;
 
 class StripeInvoicesWidget extends BaseWidget
 {
+    
     use InteractsWithPageFilters;
 
     protected static ?int $sort = 2;
