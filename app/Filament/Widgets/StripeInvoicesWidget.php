@@ -31,11 +31,6 @@ class StripeInvoicesWidget extends BaseWidget
     #[Session]
     public array $cachedFilters = [];
 
-    public function mount()
-    {
-        $this->cachedFilters = [];
-    }
-
     #[On('set-cached-filters')]
     public function setCachedFilters()
     {

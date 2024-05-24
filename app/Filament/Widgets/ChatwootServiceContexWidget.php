@@ -38,11 +38,6 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
     #[Session]
     public array $cachedFilters = [];
 
-    public function mount()
-    {
-        $this->cachedFilters = [];
-    }
-
     #[On('set-cached-filters')]
     public function setCachedFilters()
     {
