@@ -35,7 +35,7 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
 
     protected int|string|array $columnSpan = 'full';
 
-    public static bool $isLazy = false;
+    public static bool $isLazy = true;
 
     #[Session]
     public array $cachedFilters = [];
@@ -44,12 +44,6 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
     public function setCachedFilters()
     {
         $this->cachedFilters = $this->filters ?? [];
-    }
-
-    #[On('reset-cached-filters')]
-    public function resetCachedFilters()
-    {
-        $this->cachedFilters = [];
     }
 
     public function getChatwootPayload()

@@ -28,7 +28,7 @@ class StripeInvoicesWidget extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    public static bool $isLazy = false;
+    public static bool $isLazy = true;
 
     #[Session]
     public array $cachedFilters = [];
@@ -37,12 +37,6 @@ class StripeInvoicesWidget extends BaseWidget
     public function setCachedFilters()
     {
         $this->cachedFilters = $this->filters ?? [];
-    }
-
-    #[On('reset-cached-filters')]
-    public function resetCachedFilters()
-    {
-        $this->cachedFilters = [];
     }
 
     protected function getTableQuery(): Builder|null
