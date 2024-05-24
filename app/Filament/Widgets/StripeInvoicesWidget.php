@@ -38,7 +38,7 @@ class StripeInvoicesWidget extends BaseWidget
                 StripeInvoice::whereHas(
                     'chatwootContact',
                     function ($query) {
-                        $query->where('chatwoot_contact_id', $this->filters['chatwootContactId']);
+                        $query->where('chatwoot_contact_id', $this->filters['chatwootContactId'] ?? null);
                     }
                 )
             )
