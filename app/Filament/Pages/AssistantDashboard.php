@@ -19,6 +19,7 @@ use Filament\Forms\Set;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Session;
 
 class AssistantDashboard extends BaseDashboard
 {
@@ -27,6 +28,9 @@ class AssistantDashboard extends BaseDashboard
     protected static ?string $navigationLabel = "Panel Asystenta";
     protected static ?string $title = "Panel Asystenta";
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
+
+    #[Session]
+    public array $filters;
 
     #[On('push-chatwoot-context')]
     public function pushChatwootContext($context)
