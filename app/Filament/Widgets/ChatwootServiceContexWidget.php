@@ -39,12 +39,11 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
 
     public function getChatwootPayload()
     {
-        $filters = $this->filters;
 
-        $contactId = $filters['chatwootContactId'] ?? null;
-        $conversationDisplayId = $filters['chatwootConversationDisplayId'] ?? null;
-        $accountId = $filters['chatwootAccountId'] ?? null;
-        $inboxId = $filters['chatwootInboxId'] ?? null;
+        $contactId = $this->filters['chatwootContactId'] ?? null;
+        $conversationDisplayId = $this->filters['chatwootConversationDisplayId'] ?? null;
+        $accountId = $this->filters['chatwootAccountId'] ?? null;
+        $inboxId = $this->filters['chatwootInboxId'] ?? null;
 
         $contact = ChatwootContact::find($contactId);
         $account = ChatwootAccount::find($accountId);

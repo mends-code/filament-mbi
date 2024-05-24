@@ -31,8 +31,6 @@ class StripeInvoicesWidget extends BaseWidget
 
     public static bool $isLazy = true;
     
-    public static bool $isDiscovered = false;
-
     public function table(Table $table): Table
     {
         return $table
@@ -40,8 +38,7 @@ class StripeInvoicesWidget extends BaseWidget
                 StripeInvoice::whereHas(
                     'chatwootContact',
                     function ($query) {
-                        $filters = $this->filters;
-                        $query->where('chatwoot_contact_id', $filters['chatwootContactId'] ?? null);
+                        $query->where('chatwoot_contact_id', $this->filters['chatwootContactId'] ?? null);
                     }
                 )
             )
@@ -98,11 +95,6 @@ class StripeInvoicesWidget extends BaseWidget
                     ->label('Zobacz fakturę')
                     ->icon('heroicon-o-eye')
                     ->infolist([
-                        Fieldset::make('invoice-data')
-                            ->schema([
-                                TextEntry::make('data.hosted_invoice_url')
-                                    ->label('Link do skopiowania'),
-                            ]),
                         Fieldset::make('invoice-data')
                             ->schema([
                                 TextEntry::make('customer.data.id')->badge()->color('gray')->label('Identyfikator klienta'),
