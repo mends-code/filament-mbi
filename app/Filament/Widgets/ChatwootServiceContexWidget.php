@@ -37,9 +37,6 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
 
     public static bool $isLazy = true;
 
-    #[Session]
-    public ?array $filters = null;
-
     public function getChatwootPayload()
     {
 
