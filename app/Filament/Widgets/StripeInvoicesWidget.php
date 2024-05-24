@@ -30,6 +30,8 @@ class StripeInvoicesWidget extends BaseWidget
     protected int|string|array $columnSpan = 'full';
 
     public static bool $isLazy = true;
+    
+    public static bool $isDiscovered = false;
 
     public function table(Table $table): Table
     {
@@ -38,7 +40,8 @@ class StripeInvoicesWidget extends BaseWidget
                 StripeInvoice::whereHas(
                     'chatwootContact',
                     function ($query) {
-                        $query->where('chatwoot_contact_id', $this->filters['chatwootContactId'] ?? null);
+                        $filters = $this->filters;
+                        $query->where('chatwoot_contact_id', $filters['chatwootContactId'] ?? null);
                     }
                 )
             )
