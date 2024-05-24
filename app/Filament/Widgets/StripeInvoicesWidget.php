@@ -31,8 +31,6 @@ class StripeInvoicesWidget extends BaseWidget
 
     public static bool $isLazy = true;
 
-    public static bool $isDiscovered = false;
-
     protected function getTableQuery(): Builder|null
     {
         $filters = $this->filters ?? [];
