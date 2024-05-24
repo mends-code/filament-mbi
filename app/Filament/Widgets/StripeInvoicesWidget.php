@@ -179,6 +179,6 @@ class StripeInvoicesWidget extends BaseWidget
                     ])
             ], position: ActionsPosition::BeforeColumns)
             ->paginated(false)
-            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null));
+            ->poll('1s');
     }
 }
