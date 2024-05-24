@@ -13,7 +13,6 @@ use Livewire\Attributes\Session;
 class AssistantDashboard extends BaseDashboard
 {
     use InteractsWithPageFilters;
-
     protected static ?string $navigationLabel = "Panel Asystenta";
     protected static ?string $title = "Panel Asystenta";
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";

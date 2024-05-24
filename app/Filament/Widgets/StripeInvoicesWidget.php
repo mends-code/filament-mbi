@@ -19,6 +19,7 @@ use Filament\Infolists\Components\RepeatableEntry;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Session;
+use Livewire\Attributes\Reactive;
 
 class StripeInvoicesWidget extends BaseWidget
 {
@@ -28,31 +29,19 @@ class StripeInvoicesWidget extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    #[Session]
-    public ?int $chatwootContactId;
-
-    #[On('push-invoice-table-context')]
-    public function pushInvoiceTableContext()
-    {
-        $this->chatwootContactId = $this->filters['chatwootContactId'] ?? null;
-    }
-
-    protected function getTableQuery(): Builder|null
-    {
-        $chatwootContactId = $this->chatwootContactId ?? null;
-
-        return StripeInvoice::whereHas(
-            'chatwootContact',
-            function ($query) use ($chatwootContactId) {
-                $query->where('chatwoot_contact_id', $chatwootContactId);
-            }
-        );
-    }
-
+    public static bool $isLazy = true;
+    
     public function table(Table $table): Table
     {
         return $table
-            ->query($this->getTableQuery())
+            ->query(
+                StripeInvoice::whereHas(
+                    'chatwootContact',
+                    function ($query) {
+                        $query->where('chatwoot_contact_id', $this->filters['chatwootContactId'] ?? null);
+                    }
+                )
+            )
             ->deferLoading()
             ->heading('Lista faktur')
             ->columns([
@@ -106,11 +95,6 @@ class StripeInvoicesWidget extends BaseWidget
                     ->label('Zobacz fakturę')
                     ->icon('heroicon-o-eye')
                     ->infolist([
-                        Fieldset::make('invoice-data')
-                            ->schema([
-                                TextEntry::make('data.hosted_invoice_url')
-                                    ->label('Link do skopiowania'),
-                            ]),
                         Fieldset::make('invoice-data')
                             ->schema([
                                 TextEntry::make('customer.data.id')->badge()->color('gray')->label('Identyfikator klienta'),
@@ -170,7 +154,6 @@ class StripeInvoicesWidget extends BaseWidget
                             ->columns(1),
                     ])
             ], position: ActionsPosition::BeforeColumns)
-            ->paginated(false)
-            ->poll(env('FILAMENT_TABLE_POLL_INTERVAL', null));
+            ->paginated(false);
     }
 }

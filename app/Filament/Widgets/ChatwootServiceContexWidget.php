@@ -35,26 +35,15 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
 
     protected int|string|array $columnSpan = 'full';
 
-    public function boot()
+    public static bool $isLazy = true;
+
+    public function getChatwootPayload()
     {
-        $this->pushChatwootPayload();
-    }
 
-    #[Session]
-    public array $chatwootPayload = [];
-
-    #[On('push-chatwoot-payload')]
-    public function pushChatwootPayload()
-    {
-        $filters = $this->filters;
-
-        if (!$filters || $filters == [] || $filters == null)
-            return;
-
-        $contactId = $filters['chatwootContactId'];
-        $conversationDisplayId = $filters['chatwootConversationDisplayId'];
-        $accountId = $filters['chatwootAccountId'];
-        $inboxId = $filters['chatwootInboxId'];
+        $contactId = $this->filters['chatwootContactId'] ?? null;
+        $conversationDisplayId = $this->filters['chatwootConversationDisplayId'] ?? null;
+        $accountId = $this->filters['chatwootAccountId'] ?? null;
+        $inboxId = $this->filters['chatwootInboxId'] ?? null;
 
         $contact = ChatwootContact::find($contactId);
         $account = ChatwootAccount::find($accountId);
@@ -64,7 +53,7 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
             ->first();
         $inbox = ChatwootInbox::find($inboxId);
 
-        $this->chatwootPayload = [
+        return [
             'contact' => $contact ? $contact->toArray() : [],
             'account' => $account ? $account->toArray() : [],
             'conversation' => $conversation ? $conversation->toArray() : [],
@@ -72,16 +61,10 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
         ];
     }
 
-    #[On('reset-chatwoot-payload')]
-    public function resetChatwootPayload()
-    {
-        $this->chatwootPayload = [];
-    }
-
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist
-            ->state($this->chatwootPayload)
+            ->state($this->getChatwootPayload())
             ->schema([
                 Split::make([
                     Section::make('serviceContextSection.contact')
@@ -130,6 +113,7 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
                         ])
                         ->columns(1),
                 ])
+                    ->from('lg'),
             ]);
     }
 }
