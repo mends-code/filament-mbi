@@ -23,11 +23,11 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 
 use Livewire\Attributes\On;
-use Livewire\Attributes\Session;
+use Livewire\Attributes\Reactive;
 
 class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolists
 {
-    use InteractsWithForms, InteractsWithPageFilters, InteractsWithInfolists;
+    use InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters;
 
     protected static string $view = 'filament.widgets.chatwoot-service-context-infolist';
 

@@ -4,10 +4,10 @@ namespace App\Livewire;
 
 use Livewire\Component;
 
-class ChatwootDashboardListenerComponent extends Component
+class DashboardChatwootListenerComponent extends Component
 {
     public function render()
     {
-        return view('livewire.chatwoot-dashboard-listener-component');
+        return view('livewire.dashboard-chatwoot-listener-component');
     }
 }
