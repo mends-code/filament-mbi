@@ -3,33 +3,26 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\ChatwootContact;
-use App\Models\ChatwootConversation;
-use Filament\Actions\Concerns\HasInfolist;
-use Filament\Forms\Components\Select;
 use Filament\Actions\Action;
-use Filament\Infolists\Infolist;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Dashboard as BaseDashboard;
-use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
-use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
-use Illuminate\Support\Facades\Blade;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Reactive;
+use Livewire\Attributes\Session;
 
 class AssistantDashboard extends BaseDashboard
 {
-    use HasFiltersAction, HasFiltersForm;
+    use InteractsWithPageFilters;
 
     protected static ?string $navigationLabel = "Panel Asystenta";
     protected static ?string $title = "Panel Asystenta";
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
+    
+    #[Session]
+    public ?array $filters = null;
 
-    #[On('push-chatwoot-context')]
-    public function pushChatwootContext($context)
+    #[On('set-chatwoot-context')]
+    public function setChatwootContext($context)
     {
         $contextData = json_decode($context)->data;
 
@@ -40,9 +33,6 @@ class AssistantDashboard extends BaseDashboard
             'chatwootAccountId' => $contextData->conversation->account_id,
             'chatwootCurrentAgentId' => $contextData->currentAgent->id
         ];
-
-        $this->dispatch('push-chatwoot-payload');
-        $this->dispatch('push-invoice-table-context');
     }
     protected function getHeaderActions(): array
     {
