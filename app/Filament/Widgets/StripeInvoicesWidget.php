@@ -28,7 +28,7 @@ class StripeInvoicesWidget extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    public static ?bool $isLazy = false;
+    public static bool $isLazy = false;
 
     #[Session]
     public array $cachedFilters = [];
