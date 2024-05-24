@@ -41,14 +41,15 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
     }
 
     #[Session]
-    public array $filters;
-
     public array $chatwootPayload = [];
 
     #[On('push-chatwoot-payload')]
     public function pushChatwootPayload()
     {
         $filters = $this->filters;
+
+        if (!$filters || $filters == [] || $filters == null)
+            return;
 
         $contactId = $filters['chatwootContactId'];
         $conversationDisplayId = $filters['chatwootConversationDisplayId'];
