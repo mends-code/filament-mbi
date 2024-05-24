@@ -73,8 +73,6 @@ class AdminPanelProvider extends PanelProvider
         FilamentView::registerRenderHook(
             PanelsRenderHook::BODY_START,
             fn(): string => Blade::render('@livewire(\'dashboard-chatwoot-listener-component\')'),
-            scopes: \App\Filament\Pages\Dashboard::class,
-
         );
 
     }
