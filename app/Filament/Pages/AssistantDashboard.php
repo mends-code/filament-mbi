@@ -7,20 +7,18 @@ use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
+use Filament\Pages\Dashboard\Concerns\HasFilters;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Attributes\Session;
 
 class AssistantDashboard extends BaseDashboard
 {
-    use HasFiltersAction, HasFiltersForm;
+    use HasFilters;
 
     protected static ?string $navigationLabel = "Panel Asystenta";
     protected static ?string $title = "Panel Asystenta";
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
-
-    #[Session]
-    public ?array $filters = null;
 
     #[On('set-chatwoot-context')]
     public function setChatwootContext($context)
