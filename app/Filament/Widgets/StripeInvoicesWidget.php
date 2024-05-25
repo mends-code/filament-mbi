@@ -30,7 +30,7 @@ class StripeInvoicesWidget extends BaseWidget
 
     public static bool $isLazy = true;
 
-    #[Reactive, Modelable] 
+    #[Reactive] 
     public ?array $filters = null;
     
     public function table(Table $table): Table
