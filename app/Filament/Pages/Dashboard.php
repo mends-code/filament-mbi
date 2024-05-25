@@ -6,7 +6,7 @@ namespace App\Filament\Pages;
 use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Reactive;
+use Livewire\Attributes\Modelable;
 use Livewire\Attributes\Session;
 
 class Dashboard extends BaseDashboard
