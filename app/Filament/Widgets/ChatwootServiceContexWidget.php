@@ -22,7 +22,7 @@ use Filament\Infolists\Components\TextEntry\TextEntrySize;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 
-use Livewire\Attributes\On;
+use Livewire\Attributes\Modelable;
 use Livewire\Attributes\Reactive;
 
 class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolists
@@ -37,7 +37,7 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
 
     public static bool $isLazy = true;
 
-    #[Reactive] 
+    #[Reactive, Modelable] 
     public ?array $filters = null;
 
 

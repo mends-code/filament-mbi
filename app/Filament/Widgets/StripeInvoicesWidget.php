@@ -18,7 +18,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Session;
+use Livewire\Attributes\Modelable;
 use Livewire\Attributes\Reactive;
 
 class StripeInvoicesWidget extends BaseWidget
@@ -30,7 +30,7 @@ class StripeInvoicesWidget extends BaseWidget
 
     public static bool $isLazy = true;
 
-    #[Reactive] 
+    #[Reactive, Modelable] 
     public ?array $filters = null;
     
     public function table(Table $table): Table
