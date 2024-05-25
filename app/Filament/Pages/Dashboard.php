@@ -14,7 +14,7 @@ class Dashboard extends BaseDashboard
     protected static ?string $navigationLabel = "Panel";
     protected static ?string $title = "Panel";
     protected static ?string $navigationIcon = "heroicon-o-hand-raised";
-    
+            
     #[Session(key: 'dashboard-filters')] 
     public ?array $filters = null;
 
