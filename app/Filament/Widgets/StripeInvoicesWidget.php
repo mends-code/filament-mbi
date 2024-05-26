@@ -32,7 +32,7 @@ class StripeInvoicesWidget extends BaseWidget
 
     #[Reactive] 
     public ?array $filters = null;
-    
+
     public function table(Table $table): Table
     {
         return $table
@@ -80,6 +80,7 @@ class StripeInvoicesWidget extends BaseWidget
                         'void' => 'heroicon-o-archive-box'
                     })
             ])
+            ->defaultSort('created', 'desc')
             ->actions([
                 ViewAction::make('hostedInvoiceUrlView')
                     ->label('Pokaż link')

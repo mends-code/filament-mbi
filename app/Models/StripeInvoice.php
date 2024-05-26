@@ -18,12 +18,6 @@ class StripeInvoice extends BaseModelStripe
         'id', 'data', 'customer_id'
     ];
 
-    public function getCreatedAttribute()
-    {
-        return $this->data['created'];
-    }
-
-
     public function customer()
     {
         return $this->belongsTo(StripeCustomer::class, 'customer_id', 'id');
