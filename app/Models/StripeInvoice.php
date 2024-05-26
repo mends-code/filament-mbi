@@ -15,7 +15,9 @@ class StripeInvoice extends BaseModelStripe
     ];
 
     protected $fillable = [
-        'id', 'data', 'customer_id'
+        'id',
+        'data',
+        'customer_id'
     ];
 
     public function customer()
@@ -33,6 +35,14 @@ class StripeInvoice extends BaseModelStripe
             'customer_id', // Local key on StripeInvoice table
             'chatwoot_contact_id' // Local key on StripeCustomer table
         );
+    }
+
+    // Scope for getting all invoices for a given Chatwoot contact ID
+    public function scopeForContact($query, $contactId)
+    {
+        return $query->whereHas('chatwootContact', function ($query) use ($contactId) {
+            $query->where('chatwoot_contact_id', $contactId);
+        });
     }
 
 }

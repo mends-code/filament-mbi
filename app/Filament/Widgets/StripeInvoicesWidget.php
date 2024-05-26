@@ -36,14 +36,7 @@ class StripeInvoicesWidget extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->query(
-                StripeInvoice::whereHas(
-                    'chatwootContact',
-                    function ($query) {
-                        $query->where('chatwoot_contact_id', $this->filters['chatwootContactId'] ?? null);
-                    }
-                )
-            )
+            ->query(StripeInvoice::query()->forContact($this->filters['chatwootContactId']))
             ->deferLoading()
             ->heading('Lista faktur')
             ->columns([
