@@ -77,7 +77,7 @@ class StripeInvoicesWidget extends BaseWidget
                         'open' => 'heroicon-o-lock-open',
                         'paid' => 'heroicon-o-check',
                         'uncollectible' => 'heroicon-o-face-frown',
-                        'void' => 'heroicon-o-archive-box'
+                        'void' => 'heroicon-o-trash'
                     })
             ])
             ->defaultSort('created', 'desc')
