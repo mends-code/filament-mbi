@@ -32,7 +32,7 @@ class StripeInvoicesWidget extends BaseWidget
 
     #[Reactive] 
     public ?array $filters = null;
-
+  
     public function table(Table $table): Table
     {
         return $table
