@@ -23,16 +23,16 @@ use Livewire\Attributes\Reactive;
 
 class StripeInvoicesWidget extends BaseWidget
 {
-    
-    protected static ?int $sort = 2;
+
+    protected static ?int $sort = 4;
 
     protected int|string|array $columnSpan = 'full';
 
     public static bool $isLazy = true;
 
-    #[Reactive] 
+    #[Reactive]
     public ?array $filters = null;
-  
+
     public function table(Table $table): Table
     {
         return $table
@@ -56,7 +56,7 @@ class StripeInvoicesWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('created')
                     ->label('Utworzono')
                     ->since(),
-                Tables\Columns\IconColumn::make('data.status')
+                Tables\Columns\TextColumn::make('data.status')
                     ->label('Status')
                     ->color(fn(string $state): string => match ($state) {
                         'draft' => 'gray',
@@ -65,13 +65,7 @@ class StripeInvoicesWidget extends BaseWidget
                         'uncollectible' => 'danger',
                         'void' => 'gray'
                     })
-                    ->icon(fn(string $state): string => match ($state) {
-                        'draft' => 'heroicon-o-pencil',
-                        'open' => 'heroicon-o-lock-open',
-                        'paid' => 'heroicon-o-check',
-                        'uncollectible' => 'heroicon-o-face-frown',
-                        'void' => 'heroicon-o-trash'
-                    })
+                    ->badge(),
             ])
             ->defaultSort('created', 'desc')
             ->actions([
