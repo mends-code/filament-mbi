@@ -45,4 +45,11 @@ class StripeInvoice extends BaseModelStripe
         });
     }
 
+    // Scope for getting the latest invoice for a given Chatwoot contact ID
+    public function scopeLatestForContact($query, $contactId)
+    {
+        return $query->forContact($contactId)->orderBy('created', 'desc')->first();
+    }
+
+
 }

@@ -11,8 +11,4 @@ class BaseModelStripe extends Model
 
     protected $keyType = 'string';
 
-    public function getCreatedAttribute()
-    {
-        return $this->data['created'];
-    }
 }
