@@ -28,7 +28,7 @@ class StripeLatestInvoiceWidget extends Widget implements HasForms, HasInfolists
 
     protected int|string|array $columnSpan = 'full';
 
-    public static bool $isLazy = false;
+    public static bool $isLazy = true;
 
     #[Reactive]
     public ?array $filters = null;
