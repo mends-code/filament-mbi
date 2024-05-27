@@ -4,12 +4,12 @@ namespace App\Models;
 
 class Patient extends BaseModel
 {
-
     protected $table = 'mbi_filament.patients';
 
     protected $fillable = [
-        'first_name', 'last_name', 'birthdate'
+        'first_name', 'last_name', 'birthdate',
     ];
+
     /**
      * The chatwoot contacts that belong to the patient.
      */

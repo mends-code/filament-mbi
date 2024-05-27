@@ -16,7 +16,7 @@ class AddIndexesToStripeEventsTable extends Migration
         Schema::table('mbi_stripe.events', function (Blueprint $table) {
             // Adding a GIN index on the JSONB column for efficient data querying
             $table->index(['data'], null, 'gin');
-            
+
             // Adding basic indexes on other columns that might be frequently queried
             $table->index('stripe_id');
             $table->index('stripe_object_id');

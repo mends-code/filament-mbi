@@ -27,5 +27,4 @@ class CreateStripeEventsTable extends Migration
     {
         Schema::dropIfExists('mbi_stripe.events');
     }
-
 }

@@ -3,14 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\StripeCustomerResource\Pages;
-use App\Filament\Resources\StripeCustomerResource\RelationManagers;
 use App\Models\StripeCustomer;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class StripeCustomerResource extends Resource
 {
@@ -42,7 +39,7 @@ class StripeCustomerResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([]),

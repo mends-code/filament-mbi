@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 class StripeProduct extends BaseModelStripe
 {
     protected $table = 'mbi_stripe.products';
@@ -14,7 +12,6 @@ class StripeProduct extends BaseModelStripe
     ];
 
     protected $fillable = [
-        'id', 'data'
+        'id', 'data',
     ];
-
 }

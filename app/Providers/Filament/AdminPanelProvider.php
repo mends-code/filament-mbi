@@ -5,24 +5,21 @@ namespace App\Providers\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use App\Http\Middleware\CheckEmbeddedMode;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
-use Filament\SpatieLaravelTranslatablePlugin;
+use Filament\Support\Facades\FilamentView;
 use Filament\Support\View\Components\Modal;
 use Filament\Tables\Table;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Filament\Support\Facades\FilamentView;
-use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -72,7 +69,7 @@ class AdminPanelProvider extends PanelProvider
         });
         FilamentView::registerRenderHook(
             PanelsRenderHook::BODY_START,
-            fn(): string => Blade::render('@livewire(\'dashboard-chatwoot-listener-component\')'),
+            fn (): string => Blade::render('@livewire(\'dashboard-chatwoot-listener-component\')'),
         );
 
     }

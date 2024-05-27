@@ -2,29 +2,21 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\StripeInvoice;
+use Filament\Forms\Components\Textarea;
+use Filament\Infolists\Components\Fieldset;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Tables;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Enums\ActionsPosition;
-use Filament\Tables\Grouping\Group;
-use Filament\Forms\Components\Textarea;
-use App\Models\StripeInvoice;
-use Filament\Infolists\Components\Fieldset;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\RepeatableEntry;
-use Illuminate\Database\Eloquent\Builder;
-use Livewire\Attributes\On;
-use Livewire\Attributes\Modelable;
 use Livewire\Attributes\Reactive;
 
 class StripeInvoicesWidget extends BaseWidget
 {
-
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 5;
 
     protected int|string|array $columnSpan = 'full';
 
@@ -38,7 +30,7 @@ class StripeInvoicesWidget extends BaseWidget
         return $table
             ->query(StripeInvoice::query()->forContact($this->filters['chatwootContactId']))
             ->deferLoading()
-            ->heading('Lista faktur')
+            ->heading('Lista faktur Stripe')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID faktury')
@@ -50,15 +42,15 @@ class StripeInvoicesWidget extends BaseWidget
                     ->color('gray'),
                 Tables\Columns\TextColumn::make('data.total')
                     ->label('Suma')
-                    ->money(fn($record) => $record->data['currency'], divideBy: 100)
+                    ->money(fn ($record) => $record->data['currency'], divideBy: 100)
                     ->badge()
-                    ->color(fn($record) => $record->data['paid'] ? 'success' : 'danger'),
+                    ->color(fn ($record) => $record->data['paid'] ? 'success' : 'danger'),
                 Tables\Columns\TextColumn::make('created')
                     ->label('Utworzono')
                     ->since(),
                 Tables\Columns\TextColumn::make('data.status')
                     ->label('Status')
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'draft' => 'gray',
                         'open' => 'info',
                         'paid' => 'success',
@@ -75,7 +67,7 @@ class StripeInvoicesWidget extends BaseWidget
                     ->form([
                         Textarea::make('data.hosted_invoice_url')
                             ->label('Link do faktury')
-                            ->hint('kliknij dwukrotnie lub zaznacz tekst; następnie skopiuj go do schowka')
+                            ->hint('kliknij dwukrotnie lub zaznacz tekst; następnie skopiuj go do schowka'),
                     ])
                     ->closeModalByClickingAway()
                     ->modalCancelAction(false)
@@ -101,14 +93,14 @@ class StripeInvoicesWidget extends BaseWidget
                                 TextEntry::make('data.id')->badge()->color('gray')->label('ID'),
                                 TextEntry::make('data.total')
                                     ->label('Total')
-                                    ->money(fn($record) => $record->data['currency'], divideBy: 100)
+                                    ->money(fn ($record) => $record->data['currency'], divideBy: 100)
                                     ->badge()
-                                    ->color(fn($record) => $record->data['paid'] ? 'success' : 'danger'),
+                                    ->color(fn ($record) => $record->data['paid'] ? 'success' : 'danger'),
                                 TextEntry::make('data.created')->since()->label('Created At'),
                                 TextEntry::make('data.status')
                                     ->label('Status')
                                     ->badge()
-                                    ->color(fn(string $state): string => match ($state) {
+                                    ->color(fn (string $state): string => match ($state) {
                                         'draft' => 'gray',
                                         'open' => 'info',
                                         'paid' => 'success',
@@ -126,12 +118,12 @@ class StripeInvoicesWidget extends BaseWidget
                                     ->schema([
                                         TextEntry::make('description'),
                                         TextEntry::make('price.unit_amount')
-                                            ->money(fn($record) => $record->data['currency'], divideBy: 100)
+                                            ->money(fn ($record) => $record->data['currency'], divideBy: 100)
                                             ->badge()
                                             ->color('gray'),
                                         TextEntry::make('quantity'),
                                         TextEntry::make('amount')
-                                            ->money(fn($record) => $record->data['currency'], divideBy: 100)
+                                            ->money(fn ($record) => $record->data['currency'], divideBy: 100)
                                             ->badge()
                                             ->color('gray'),
                                     ])
@@ -142,7 +134,7 @@ class StripeInvoicesWidget extends BaseWidget
                                     ]),
                             ])
                             ->columns(1),
-                    ])
+                    ]),
             ], position: ActionsPosition::BeforeColumns)
             ->paginated(false);
     }

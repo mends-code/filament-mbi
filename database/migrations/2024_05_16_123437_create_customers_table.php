@@ -19,5 +19,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('mbi_stripe.customers');
     }
-
 };

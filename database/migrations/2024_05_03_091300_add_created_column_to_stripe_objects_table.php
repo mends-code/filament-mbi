@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * 
+     *
      * Adds a 'created' column to the 'mbi_stripe.objects' table to store the creation timestamp of the Stripe object.
      */
     public function up()
@@ -20,7 +20,7 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     * 
+     *
      * Removes the 'created' column from the 'mbi_stripe.objects' table if necessary.
      */
     public function down()

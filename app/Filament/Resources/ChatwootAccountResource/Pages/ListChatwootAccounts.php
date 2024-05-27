@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\ChatwootAccountResource\Pages;
 
 use App\Filament\Resources\ChatwootAccountResource;
-use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
 class ListChatwootAccounts extends ListRecords

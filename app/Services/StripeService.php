@@ -2,14 +2,13 @@
 
 namespace App\Services;
 
-use Stripe\Stripe;
-use Stripe\Customer;
-use Stripe\Invoice;
-use Stripe\InvoiceItem;
 use App\Models\ChatwootContact;
 use App\Models\StripeCustomer;
 use App\Models\StripePrice;
-use Carbon\Carbon;
+use Stripe\Customer;
+use Stripe\Invoice;
+use Stripe\InvoiceItem;
+use Stripe\Stripe;
 
 class StripeService
 {
@@ -24,13 +23,13 @@ class StripeService
             'name' => $contact->name,
             'email' => $contact->email,
             'phone' => $contact->phone_number,
-            'metadata' => ['chatwoot_contact_id' => $contact->id]
+            'metadata' => ['chatwoot_contact_id' => $contact->id],
         ]);
 
         $stripeCustomer = StripeCustomer::create([
             'id' => $customer->id,
             'data' => $customer->toArray(),
-            'chatwoot_contact_id' => $contact->id
+            'chatwoot_contact_id' => $contact->id,
         ]);
 
         return $stripeCustomer;
@@ -60,12 +59,12 @@ class StripeService
     public function createInvoiceFromPrice($chatwootContactId, $priceId, array $invoiceData = [], $stripeCustomerId = null)
     {
         $contact = ChatwootContact::findOrFail($chatwootContactId);
-        
+
         if ($stripeCustomerId) {
             $stripeCustomer = StripeCustomer::findOrFail($stripeCustomerId);
         } else {
             $stripeCustomer = $contact->stripeCustomers()->first();
-            if (!$stripeCustomer) {
+            if (! $stripeCustomer) {
                 $stripeCustomer = $this->createCustomer($contact);
             }
         }

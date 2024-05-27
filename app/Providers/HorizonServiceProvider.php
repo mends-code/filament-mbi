@@ -13,6 +13,7 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
      */
     public function boot(): void
     {
+
         parent::boot();
 
         // Horizon::routeSmsNotificationsTo('15556667777');

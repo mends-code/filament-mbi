@@ -48,17 +48,17 @@ return new class extends Migration
         ");
 
         // Create a trigger to execute the function after inserting an event
-        DB::unprepared("
+        DB::unprepared('
             CREATE OR REPLACE TRIGGER after_insert_stripe_event
             AFTER INSERT ON mbi_stripe.events
             FOR EACH ROW
             EXECUTE FUNCTION mbi_stripe.process_event_insertion();
-        ");
+        ');
     }
 
     public function down()
     {
-        DB::unprepared("DROP TRIGGER IF EXISTS after_insert_stripe_event ON mbi_stripe.events;");
-        DB::unprepared("DROP FUNCTION IF EXISTS mbi_stripe.process_event_insertion;");
+        DB::unprepared('DROP TRIGGER IF EXISTS after_insert_stripe_event ON mbi_stripe.events;');
+        DB::unprepared('DROP FUNCTION IF EXISTS mbi_stripe.process_event_insertion;');
     }
 };

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class ChatwootContact extends Model
 {
@@ -22,7 +22,7 @@ class ChatwootContact extends Model
         'last_name',
         'location',
         'country_code',
-        'blocked'
+        'blocked',
     ];
 
     protected $casts = [
@@ -67,6 +67,11 @@ class ChatwootContact extends Model
     }
 
     public function getLastActivityAtAttribute($value)
+    {
+        return $value ? Carbon::parse($value)->setTimezone('Europe/Warsaw') : null;
+    }
+
+    public function getCreatedAtAttribute($value)
     {
         return $value ? Carbon::parse($value)->setTimezone('Europe/Warsaw') : null;
     }
