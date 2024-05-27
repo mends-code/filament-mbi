@@ -34,6 +34,7 @@ return new class extends Migration
             $table->integer('created')->nullable();
         });
     }
+
     /**
      * Reverse the migrations.
      */

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->primary(['chatwoot_contact_id', 'patient_id']);
 
             $table->foreign('patient_id')
-                  ->references('id')->on('mbi_filament.patients');
+                ->references('id')->on('mbi_filament.patients');
         });
     }
 

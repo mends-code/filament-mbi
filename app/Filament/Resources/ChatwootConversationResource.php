@@ -3,21 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ChatwootConversationResource\Pages;
-use App\Filament\Resources\ChatwootConversationResource\RelationManagers;
 use App\Models\ChatwootConversation;
-use Filament\Forms;
 use Filament\Infolists;
-use Filament\Forms\Form;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ChatwootConversationResource extends Resource
 {
-
     protected static ?string $navigationGroup = 'Chatwoot';
 
     protected static ?string $model = ChatwootConversation::class;
@@ -43,7 +37,7 @@ class ChatwootConversationResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([])
             ->recordAction(null)
@@ -60,7 +54,6 @@ class ChatwootConversationResource extends Resource
 
             ]);
     }
-
 
     public static function getRelations(): array
     {

@@ -13,7 +13,6 @@
         "laravel/octane": "^2.3",
         "laravel/tinker": "^2.9",
         "nesbot/carbon": "^3.3",
-        "owenvoke/blade-fontawesome": "^2.6",
         "predis/predis": "^2.2",
         "rinvex/countries": "^9.0",
         "stripe/stripe-php": "^14.6",
@@ -22,7 +21,7 @@
     "require-dev": {
         "fakerphp/faker": "^1.23",
         "laravel/dusk": "^8.2",
-        "laravel/pint": "^1.13",
+        "laravel/pint": "^1.16",
         "laravel/sail": "^1.29",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",

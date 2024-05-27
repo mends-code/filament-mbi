@@ -86,6 +86,6 @@ return new class extends Migration
      */
     public function down()
     {
-        DB::unprepared("DROP FUNCTION IF EXISTS update_created_column;");
+        DB::unprepared('DROP FUNCTION IF EXISTS update_created_column;');
     }
 };

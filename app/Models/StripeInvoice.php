@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 class StripeInvoice extends BaseModelStripe
 {
     protected $table = 'mbi_stripe.invoices';
@@ -17,7 +15,7 @@ class StripeInvoice extends BaseModelStripe
     protected $fillable = [
         'id',
         'data',
-        'customer_id'
+        'customer_id',
     ];
 
     public function customer()
@@ -48,8 +46,6 @@ class StripeInvoice extends BaseModelStripe
     // Scope for getting the latest invoice for a given Chatwoot contact ID
     public function scopeLatestForContact($query, $contactId)
     {
-        return $query->forContact($contactId)->orderBy('created', 'desc')->first();
+        return $query->forContact($contactId)->orderBy('created', 'desc');
     }
-
-
 }

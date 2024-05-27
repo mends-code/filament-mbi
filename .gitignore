@@ -25,3 +25,5 @@ frankenphp
 frankenphp-worker.php
 
 .diff
+
+cloud-sql-proxy

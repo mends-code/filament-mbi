@@ -3,21 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\StripeInvoiceResource\Pages;
-use App\Models\StripeCustomer;
 use App\Models\StripeInvoice;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Infolists\Components\Fieldset;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Infolists\Components\Fieldset;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Infolist;
 use Filament\Tables\Filters;
-use Filament\Tables\Grouping\Group;
-use Filament\Tables\Columns\Summarizers\Sum;
-use Filament\Support\Enums\FontFamily;
+use Filament\Tables\Table;
 
 class StripeInvoiceResource extends Resource
 {
@@ -72,7 +66,7 @@ class StripeInvoiceResource extends Resource
                     ->trueIcon('heroicon-o-check')
                     ->falseIcon('heroicon-o-x-mark')
                     ->trueColor('success')
-                    ->falseColor('warning')
+                    ->falseColor('warning'),
             ])
             ->filters([
                 Filters\SelectFilter::make('data.status')
@@ -81,14 +75,14 @@ class StripeInvoiceResource extends Resource
                         'open' => 'open',
                         'paid' => 'paid',
                         'uncollectible' => 'uncollectible',
-                        'void' => 'void'
-                    ])
+                        'void' => 'void',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
 
                     Tables\Actions\ViewAction::make(),
-                ])
+                ]),
             ])
             ->bulkActions([
                 // Define bulk actions here

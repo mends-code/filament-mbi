@@ -3,13 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ChatwootAccountResource\Pages;
-use App\Filament\Resources\ChatwootAccountResource\RelationManagers;
 use App\Models\ChatwootAccount;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\FormsComponent;
-use Filament\Infolists\Infolist;
 use Filament\Infolists\Components;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,9 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ChatwootAccountResource extends Resource
-
 {
-
     protected static ?string $navigationGroup = 'Chatwoot';
 
     protected static ?string $model = ChatwootAccount::class;

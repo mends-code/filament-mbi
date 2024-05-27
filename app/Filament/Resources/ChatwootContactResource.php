@@ -5,23 +5,16 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ChatwootContactResource\Pages;
 use App\Filament\Resources\ChatwootContactResource\RelationManagers;
 use App\Models\ChatwootContact;
-use App\Models\StripePrice;
-use App\Models\StripeInvoice;
-use App\Services\StripeService;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Rinvex\Country\CountryLoader;
-use Illuminate\Support\Facades\App;
-use Livewire\Livewire;
 
 class ChatwootContactResource extends Resource
 {
@@ -45,12 +38,14 @@ class ChatwootContactResource extends Resource
     {
         $countries = collect(CountryLoader::countries())->mapWithKeys(function ($country) {
             $label = sprintf(
-                "%s %s",
+                '%s %s',
                 $country['emoji'],
                 $country['iso_3166_1_alpha2'],
             );
+
             return [$country['name'] => $label];
         });
+
         return $countries;
     }
 
@@ -95,7 +90,7 @@ class ChatwootContactResource extends Resource
                         true: fn (Builder $query) => $query->whereNotNull('last_activity_at'),
                         false: fn (Builder $query) => $query->whereNull('last_activity_at'),
                         blank: fn (Builder $query) => $query,
-                    )->default(true)
+                    )->default(true),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

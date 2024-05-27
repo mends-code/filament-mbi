@@ -8,7 +8,9 @@ use Illuminate\Filesystem\Filesystem;
 class MakeService extends Command
 {
     protected $signature = 'make:service {name}';
+
     protected $description = 'Create a new service class';
+
     protected Filesystem $files;
 
     public function __construct(Filesystem $files)
@@ -24,6 +26,7 @@ class MakeService extends Command
 
         if ($this->files->exists($path)) {
             $this->error("Service {$name} already exists!");
+
             return;
         }
 
@@ -38,12 +41,12 @@ class MakeService extends Command
 
     protected function getStub()
     {
-        return __DIR__ . '/stubs/service.stub';
+        return __DIR__.'/stubs/service.stub';
     }
 
     protected function makeDirectory($path)
     {
-        if (!$this->files->isDirectory(dirname($path))) {
+        if (! $this->files->isDirectory(dirname($path))) {
             $this->files->makeDirectory(dirname($path), 0755, true, true);
         }
     }

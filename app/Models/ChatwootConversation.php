@@ -7,7 +7,9 @@ use Carbon\Carbon;
 class ChatwootConversation extends BaseModelChatwoot
 {
     protected $table = 'mbi_chatwoot.conversations';
+
     protected $fillable = [];
+
     protected $casts = [
         'last_activity_at' => 'timestamp',
         'waiting_since' => 'timestamp',
@@ -37,7 +39,7 @@ class ChatwootConversation extends BaseModelChatwoot
         return $value ? Carbon::parse($value, 'UTC')->timezone('Europe/Warsaw') : null;
     }
 
-    public function getWaitingSinceAtribute($value)
+    public function getWaitingSinceAttribute($value)
     {
         return $value ? Carbon::parse($value, 'UTC')->timezone('Europe/Warsaw') : null;
     }
