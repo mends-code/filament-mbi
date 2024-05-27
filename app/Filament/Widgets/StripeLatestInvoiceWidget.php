@@ -120,7 +120,7 @@ class StripeLatestInvoiceWidget extends Widget implements HasForms, HasInfolists
                                     ->money(fn() => $latestInvoice['data']['currency'], divideBy: 100)
                                     ->badge()
                                     ->color('gray')
-                                    ->label('Cena łączna'),
+                                    ->label('Suma'),
                             ])
                             ->columns([
                                 'sm' => 2,
