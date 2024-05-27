@@ -73,7 +73,6 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
                 Split::make([
                     Section::make('serviceContextSection.contact')
                         ->heading('Obsługiwany kontakt')
-                        ->description('Dane kontaktowe mogą być wspólne dla różnych rozmów')
                         ->schema([
                             TextEntry::make('contact.id')
                                 ->badge()
@@ -106,8 +105,7 @@ class ChatwootServiceContexWidget extends Widget implements HasForms, HasInfolis
                         ->columns(1),
                     Section::make('serviceContextSection.conversation')
                         ->heading('Obsługiwana rozmowa')
-                        ->description('Aktualna rozmowa z poziomu której otwarto panel')
-                        ->schema([
+                            ->schema([
                             TextEntry::make('conversation.display_id')
                                 ->badge()->placeholder('N/A')->label('Identyfikator rozmowy')->inlineLabel(),
                             TextEntry::make('account.name')->placeholder('N/A')->label('Konto')->inlineLabel(),

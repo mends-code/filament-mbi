@@ -1,5 +1,3 @@
 <x-filament-widgets::widget>
-    <x-filament::section>
-        {{ $this->infolist }}
-    </x-filament::section>
+    {{ $this->infolist }}
 </x-filament-widgets::widget>
