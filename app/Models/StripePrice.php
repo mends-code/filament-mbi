@@ -9,7 +9,7 @@ class StripePrice extends BaseModelStripe
     protected $casts = [
         'id' => 'string',
         'data' => 'json',
-        'active_since' => 'timestamp'
+        'active_since' => 'timestamp',
     ];
 
     protected $fillable = [

@@ -13,6 +13,7 @@ return [
     |
     */
 
-    'embedded_host_url' => env('CHATWOOT_EMBEDDED_HOST_URL', null),
-
+    'endpoint' => env('CHATWOOT_ENDPOINT', 'https://app.chatwoot.com'),
+    'platform_app_api_key' => env('CHATWOOT_PLATFORM_APP_API_KEY', ''),
+    'user_api_key' => env('CHATWOOT_USER_API_KEY', ''),
 ];
