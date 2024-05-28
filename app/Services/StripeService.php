@@ -10,12 +10,45 @@ use Stripe\Customer;
 use Stripe\Invoice;
 use Stripe\InvoiceItem;
 use Stripe\Stripe;
+use Illuminate\Support\Facades\Validator;
 
 class StripeService
 {
     public function __construct()
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('stripe.secret'));
+    }
+
+    /**
+     * Validate the email address.
+     *
+     * @param  string  $email
+     * @return bool
+     */
+    protected function isValidEmail($email)
+    {
+        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+    }
+
+    /**
+     * Get the fallback email if the provided one is invalid.
+     *
+     * @param  string|null  $email
+     * @param  int  $contactId
+     * @return string
+     */
+    protected function getEmail($email, $contactId)
+    {
+        if (empty($email) || !$this->isValidEmail($email)) {
+            $defaultEmail = config('stripe.customer.default.email');
+            $emailParts = explode('@', $defaultEmail);
+            if (count($emailParts) === 2) {
+                $emailParts[0] .= '+' . $contactId;
+                return implode('@', $emailParts);
+            }
+            return $defaultEmail;
+        }
+        return $email;
     }
 
     /**
@@ -25,9 +58,11 @@ class StripeService
      */
     public function createCustomer(ChatwootContact $contact)
     {
+        $email = $this->getEmail($contact->email, $contact->id);
+
         $customer = Customer::create([
             'name' => $contact->name,
-            'email' => $contact->email,
+            'email' => $email,
             'phone' => $contact->phone_number,
             'metadata' => ['chatwoot_contact_id' => $contact->id],
         ]);
@@ -44,13 +79,16 @@ class StripeService
      * Update a Stripe customer with new details.
      *
      * @param  string  $stripeCustomerId
+     * @param  array  $customerData
      * @return StripeCustomer
      */
     public function updateCustomer($stripeCustomerId, array $customerData)
     {
+        $email = $this->getEmail($customerData['email'], $customerData['chatwoot_contact_id']);
+
         $customer = Customer::retrieve($stripeCustomerId);
         $customer->name = $customerData['name'];
-        $customer->email = $customerData['email'];
+        $customer->email = $email;
         $customer->phone = $customerData['phone'];
         $customer->metadata = ['chatwoot_contact_id' => $customerData['chatwoot_contact_id']];
         $customer->save();
@@ -66,14 +104,16 @@ class StripeService
     }
 
     /**
-     * Create an invoice for a given customer and price.
+     * Create a quick invoice for a given customer and price.
      * If no customer is provided, create a new one.
      *
      * @param  int  $priceId
      * @param  string|null  $stripeCustomerId
+     * @param  string  $collectionMethod  // 'charge_automatically' or 'send_invoice'
+     * @param  int  $daysUntilDue
      * @return StripeInvoice
      */
-    public function createInvoice($chatwootContactId, $priceId, $stripeCustomerId = null)
+    public function createQuickInvoice($chatwootContactId, $priceId, $stripeCustomerId = null, $collectionMethod = 'send_invoice', $daysUntilDue = 0)
     {
         $contact = ChatwootContact::findOrFail($chatwootContactId);
 
@@ -91,8 +131,9 @@ class StripeService
         // Create the invoice
         $invoice = Invoice::create([
             'customer' => $stripeCustomer->id,
-            'collection_method' => 'send_invoice',
-            'days_until_due' => 0,
+            'collection_method' => $collectionMethod,
+            'days_until_due' => $daysUntilDue,
+            'currency' => strtoupper($stripePrice->data['currency']),
         ]);
 
         // Add invoice item using price ID

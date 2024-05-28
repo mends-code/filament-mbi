@@ -65,8 +65,9 @@ class Dashboard extends BaseDashboard
                         ->required(),
                 ])
                 ->action(function (array $data) {
-                    // Handle the form submission here, for example:
-                    $this->createInvoice($this->filters['chatwootContactId'], $data['priceId'], $this->filters['stripeCustomerId']);
+                    $stripeService = app(StripeService::class);
+
+                    return $stripeService->createQuickInvoice($this->filters['chatwootContactId'], $data['priceId'], $this->filters['stripeCustomerId']);
                 }),
 
             Action::make('makeAppointment')->color('gray')->label('Umów wizytę')->icon('heroicon-o-calendar')->tooltip('wkrótce'),
