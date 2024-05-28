@@ -6,6 +6,7 @@ use App\Models\ChatwootContact;
 use App\Models\StripeCustomer;
 use App\Models\StripeInvoice;
 use App\Models\StripePrice;
+use Illuminate\Support\Facades\Log;
 use Stripe\Customer;
 use Stripe\Invoice;
 use Stripe\InvoiceItem;
@@ -16,6 +17,7 @@ class StripeService
     public function __construct()
     {
         Stripe::setApiKey(config('stripe.secret'));
+        Log::info('Stripe API key set.');
     }
 
     /**
@@ -39,6 +41,7 @@ class StripeService
     protected function getEmail($email, $contactId)
     {
         if (empty($email) || ! $this->isValidEmail($email)) {
+            Log::warning('Invalid email provided, using default.', ['email' => $email, 'contactId' => $contactId]);
             $defaultEmail = config('stripe.customer.default.email');
             $emailParts = explode('@', $defaultEmail);
             if (count($emailParts) === 2) {
@@ -69,6 +72,8 @@ class StripeService
             'metadata' => ['chatwoot_contact_id' => $contact->id],
         ]);
 
+        Log::info('Created Stripe customer', ['customer' => $customer->id]);
+
         $stripeCustomer = StripeCustomer::updateOrCreate(
             ['id' => $customer->id],
             [
@@ -96,6 +101,8 @@ class StripeService
         $customer->metadata = ['chatwoot_contact_id' => $customerData['chatwoot_contact_id']];
         $customer->save();
 
+        Log::info('Updated Stripe customer', ['customer' => $stripeCustomerId]);
+
         $stripeCustomer = StripeCustomer::updateOrCreate(
             ['id' => $stripeCustomerId],
             [
@@ -119,17 +126,21 @@ class StripeService
     public function createQuickInvoice($chatwootContactId, $priceId, $stripeCustomerId = null, $collectionMethod = 'send_invoice', $daysUntilDue = 0)
     {
         $contact = ChatwootContact::findOrFail($chatwootContactId);
+        Log::info('Fetching Chatwoot contact', ['contact' => $contact->id]);
 
         if ($stripeCustomerId) {
             $stripeCustomer = StripeCustomer::findOrFail($stripeCustomerId);
+            Log::info('Stripe customer found', ['stripeCustomerId' => $stripeCustomerId]);
         } else {
             $stripeCustomer = StripeCustomer::latestForContact($chatwootContactId)->first();
             if (! $stripeCustomer) {
+                Log::info('Creating new Stripe customer for contact', ['contact' => $contact->id]);
                 $stripeCustomer = $this->createCustomer($contact);
             }
         }
 
         $stripePrice = StripePrice::findOrFail($priceId);
+        Log::info('Stripe price found', ['priceId' => $priceId]);
 
         // Create the invoice
         $invoice = Invoice::create([
@@ -138,6 +149,7 @@ class StripeService
             'days_until_due' => $daysUntilDue,
             'currency' => strtoupper($stripePrice->data['currency']),
         ]);
+        Log::info('Created Stripe invoice', ['invoice' => $invoice->id]);
 
         // Add invoice item using price ID
         InvoiceItem::create([
@@ -145,8 +157,10 @@ class StripeService
             'price' => $stripePrice->id,
             'invoice' => $invoice->id,
         ]);
+        Log::info('Added invoice item', ['invoice' => $invoice->id, 'price' => $stripePrice->id]);
 
         $finalizedInvoice = Invoice::retrieve($invoice->finalizeInvoice()->id);
+        Log::info('Finalized Stripe invoice', ['invoice' => $finalizedInvoice->id]);
 
         // Update local StripeInvoice model
         $stripeInvoice = StripeInvoice::updateOrCreate([

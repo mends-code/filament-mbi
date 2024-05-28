@@ -15,6 +15,7 @@ use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Infolists\Infolist;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
+use Illuminate\Support\Facades\Log;
 
 class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
@@ -31,13 +32,23 @@ class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasI
     public function getContactPayload()
     {
         $contactId = $this->filters['chatwootContactId'] ?? null;
+        Log::info('Fetching contact data', ['contactId' => $contactId]);
+
         $contact = ChatwootContact::find($contactId);
+
+        if ($contact) {
+            Log::info('Contact found', ['contact' => $contact->toArray()]);
+        } else {
+            Log::warning('Contact not found', ['contactId' => $contactId]);
+        }
 
         return ['contact' => $contact ? $contact->toArray() : []];
     }
 
     public function infolist(Infolist $infolist): Infolist
     {
+        Log::info('Generating infolist for Chatwoot contact widget');
+
         return $infolist
             ->state($this->getContactPayload())
             ->schema([

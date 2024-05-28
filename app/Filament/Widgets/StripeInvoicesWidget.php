@@ -13,6 +13,7 @@ use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Support\Facades\Log;
 
 class StripeInvoicesWidget extends BaseWidget
 {
@@ -27,6 +28,8 @@ class StripeInvoicesWidget extends BaseWidget
     public function table(Table $table): Table
     {
         $chatwootContactId = $this->filters['chatwootContactId'] ?? null;
+
+        Log::info('Fetching Stripe invoices for Chatwoot contact', ['chatwootContactId' => $chatwootContactId]);
 
         return $table
             ->query(StripeInvoice::query()->forContact($chatwootContactId))

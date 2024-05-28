@@ -15,6 +15,7 @@ use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Infolists\Infolist;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
+use Illuminate\Support\Facades\Log;
 
 class StripeCustomerDataWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
@@ -32,17 +33,29 @@ class StripeCustomerDataWidget extends Widget implements HasActions, HasForms, H
     {
         $customerId = $this->filters['stripeCustomerId'] ?? null;
 
+        Log::info('Fetching Stripe customer data', ['customerId' => $customerId]);
+
         if (! $customerId) {
+            Log::warning('No Stripe customer ID provided in filters.');
+
             return [];
         }
 
         $customer = StripeCustomer::find($customerId);
+
+        if ($customer) {
+            Log::info('Stripe customer found', ['customer' => $customer->toArray()]);
+        } else {
+            Log::warning('Stripe customer not found', ['customerId' => $customerId]);
+        }
 
         return $customer ? $customer->toArray() : [];
     }
 
     public function infolist(Infolist $infolist): Infolist
     {
+        Log::info('Generating infolist for Stripe customer widget');
+
         return $infolist
             ->state($this->getCustomerData())
             ->schema([
