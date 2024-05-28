@@ -13,6 +13,8 @@ use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Contracts\Pagination\CursorPaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 
 class StripeInvoicesWidget extends BaseWidget
@@ -23,7 +25,12 @@ class StripeInvoicesWidget extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    public static bool $isLazy = true;
+    public static bool $isLazy = false;
+
+    protected function paginateTableQuery(Builder $query): CursorPaginator
+    {
+        return $query->cursorPaginate(($this->getTableRecordsPerPage() === 'all') ? $query->count() : $this->getTableRecordsPerPage());
+    }
 
     public function table(Table $table): Table
     {
@@ -33,6 +40,9 @@ class StripeInvoicesWidget extends BaseWidget
 
         return $table
             ->query(StripeInvoice::query()->forContact($chatwootContactId))
+            ->paginated()
+            ->extremePaginationLinks()
+            ->paginationPageOptions([5])
             ->deferLoading()
             ->heading('Lista faktur Stripe')
             ->columns([
@@ -139,7 +149,6 @@ class StripeInvoicesWidget extends BaseWidget
                             ])
                             ->columns(1),
                     ]),
-            ], position: ActionsPosition::BeforeColumns)
-            ->paginated(false);
+            ], position: ActionsPosition::BeforeColumns);
     }
-}
+    }
