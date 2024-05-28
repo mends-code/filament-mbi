@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\ChatwootContact;
 use App\Models\StripeCustomer;
+use App\Models\StripeInvoice;
 use App\Models\StripePrice;
 use Stripe\Customer;
 use Stripe\Invoice;
@@ -17,6 +18,11 @@ class StripeService
         Stripe::setApiKey(env('STRIPE_SECRET'));
     }
 
+    /**
+     * Create a Stripe customer from a ChatwootContact.
+     *
+     * @return StripeCustomer
+     */
     public function createCustomer(ChatwootContact $contact)
     {
         $customer = Customer::create([
@@ -29,41 +35,52 @@ class StripeService
         $stripeCustomer = StripeCustomer::create([
             'id' => $customer->id,
             'data' => $customer->toArray(),
-            'chatwoot_contact_id' => $contact->id,
         ]);
 
         return $stripeCustomer;
     }
 
-    public function updateCustomer($stripeCustomerId, ChatwootContact $contact)
+    /**
+     * Update a Stripe customer with new details.
+     *
+     * @param  string  $stripeCustomerId
+     * @return StripeCustomer
+     */
+    public function updateCustomer($stripeCustomerId, array $customerData)
     {
         $customer = Customer::retrieve($stripeCustomerId);
-        $customer->name = $contact->name;
-        $customer->email = $contact->email;
-        $customer->phone = $contact->phone_number;
-        $customer->metadata = ['chatwoot_contact_id' => $contact->id];
-        $customer->update($stripeCustomerId);
+        $customer->name = $customerData['name'];
+        $customer->email = $customerData['email'];
+        $customer->phone = $customerData['phone'];
+        $customer->metadata = ['chatwoot_contact_id' => $customerData['chatwoot_contact_id']];
+        $customer->save();
 
-        $stripeCustomer = StripeCustomer::where('id', $stripeCustomerId)->first();
-        if ($stripeCustomer) {
-            $stripeCustomer->data = $customer->toArray();
-            $stripeCustomer->chatwoot_contact_id = $contact->id;
-            $stripeCustomer->save();
-        } else {
-            $stripeCustomer = $this->createCustomer($contact);
-        }
+        $stripeCustomer = StripeCustomer::updateOrCreate(
+            ['id' => $stripeCustomerId],
+            [
+                'data' => $customer->toArray(),
+            ]
+        );
 
         return $stripeCustomer;
     }
 
-    public function createInvoiceFromPrice($chatwootContactId, $priceId, array $invoiceData = [], $stripeCustomerId = null)
+    /**
+     * Create an invoice for a given customer and price.
+     * If no customer is provided, create a new one.
+     *
+     * @param  int  $priceId
+     * @param  string|null  $stripeCustomerId
+     * @return StripeInvoice
+     */
+    public function createInvoice($chatwootContactId, $priceId, $stripeCustomerId = null)
     {
         $contact = ChatwootContact::findOrFail($chatwootContactId);
 
         if ($stripeCustomerId) {
             $stripeCustomer = StripeCustomer::findOrFail($stripeCustomerId);
         } else {
-            $stripeCustomer = $contact->stripeCustomers()->first();
+            $stripeCustomer = StripeCustomer::latestForContact($chatwootContactId)->first();
             if (! $stripeCustomer) {
                 $stripeCustomer = $this->createCustomer($contact);
             }
@@ -72,17 +89,27 @@ class StripeService
         $stripePrice = StripePrice::findOrFail($priceId);
 
         // Create the invoice
-        $invoice = Invoice::create(array_merge([
+        $invoice = Invoice::create([
             'customer' => $stripeCustomer->id,
-        ], $invoiceData));
+            'collection_method' => 'send_invoice',
+            'days_until_due' => 0,
+        ]);
 
-        // Add invoice items using price IDs
+        // Add invoice item using price ID
         InvoiceItem::create([
             'customer' => $stripeCustomer->id,
             'price' => $stripePrice->id,
             'invoice' => $invoice->id,
         ]);
 
-        return Invoice::retrieve($invoice->finalizeInvoice()->id);
+        $finalizedInvoice = Invoice::retrieve($invoice->finalizeInvoice()->id);
+
+        // Update local StripeInvoice model
+        $stripeInvoice = StripeInvoice::create([
+            'id' => $finalizedInvoice->id,
+            'data' => $finalizedInvoice->toArray(),
+        ]);
+
+        return $stripeInvoice;
     }
 }
