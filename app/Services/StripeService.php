@@ -10,7 +10,6 @@ use Stripe\Customer;
 use Stripe\Invoice;
 use Stripe\InvoiceItem;
 use Stripe\Stripe;
-use Illuminate\Support\Facades\Validator;
 
 class StripeService
 {
@@ -39,15 +38,18 @@ class StripeService
      */
     protected function getEmail($email, $contactId)
     {
-        if (empty($email) || !$this->isValidEmail($email)) {
+        if (empty($email) || ! $this->isValidEmail($email)) {
             $defaultEmail = config('stripe.customer.default.email');
             $emailParts = explode('@', $defaultEmail);
             if (count($emailParts) === 2) {
-                $emailParts[0] .= '+' . $contactId;
+                $emailParts[0] .= '+'.$contactId;
+
                 return implode('@', $emailParts);
             }
+
             return $defaultEmail;
         }
+
         return $email;
     }
 
@@ -67,10 +69,12 @@ class StripeService
             'metadata' => ['chatwoot_contact_id' => $contact->id],
         ]);
 
-        $stripeCustomer = StripeCustomer::create([
-            'id' => $customer->id,
-            'data' => $customer->toArray(),
-        ]);
+        $stripeCustomer = StripeCustomer::updateOrCreate(
+            ['id' => $customer->id],
+            [
+                'data' => $customer->toArray(),
+            ]
+        );
 
         return $stripeCustomer;
     }
@@ -79,7 +83,6 @@ class StripeService
      * Update a Stripe customer with new details.
      *
      * @param  string  $stripeCustomerId
-     * @param  array  $customerData
      * @return StripeCustomer
      */
     public function updateCustomer($stripeCustomerId, array $customerData)

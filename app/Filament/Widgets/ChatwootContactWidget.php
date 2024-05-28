@@ -16,7 +16,7 @@ use Filament\Infolists\Infolist;
 use Filament\Widgets\Widget;
 use Livewire\Attributes\Reactive;
 
-class ChatwootContactWidget extends Widget implements HasActions, HasInfolists, HasForms
+class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
     use InteractsWithActions, InteractsWithForms, InteractsWithInfolists;
 
