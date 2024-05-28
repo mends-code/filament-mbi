@@ -13,12 +13,13 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
 use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Infolists\Infolist;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
-use Livewire\Attributes\Reactive;
+use Illuminate\Support\Facades\Log;
 
 class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
-    use InteractsWithActions, InteractsWithForms, InteractsWithInfolists;
+    use InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters;
 
     protected static string $view = 'filament.widgets.chatwoot-contact-widget';
 
@@ -28,19 +29,26 @@ class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasI
 
     public static bool $isLazy = true;
 
-    #[Reactive]
-    public ?array $filters = null;
-
     public function getContactPayload()
     {
         $contactId = $this->filters['chatwootContactId'] ?? null;
+        Log::info('Fetching contact data', ['contactId' => $contactId]);
+
         $contact = ChatwootContact::find($contactId);
+
+        if ($contact) {
+            Log::info('Contact found', ['contact' => $contact->toArray()]);
+        } else {
+            Log::warning('Contact not found', ['contactId' => $contactId]);
+        }
 
         return ['contact' => $contact ? $contact->toArray() : []];
     }
 
     public function infolist(Infolist $infolist): Infolist
     {
+        Log::info('Generating infolist for Chatwoot contact widget');
+
         return $infolist
             ->state($this->getContactPayload())
             ->schema([

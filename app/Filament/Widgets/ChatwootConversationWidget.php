@@ -15,12 +15,13 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
 use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Infolists\Infolist;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
-use Livewire\Attributes\Reactive;
+use Illuminate\Support\Facades\Log;
 
 class ChatwootConversationWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
-    use InteractsWithActions, InteractsWithForms, InteractsWithInfolists;
+    use InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters;
 
     protected static string $view = 'filament.widgets.chatwoot-conversation-widget';
 
@@ -30,20 +31,41 @@ class ChatwootConversationWidget extends Widget implements HasActions, HasForms,
 
     public static bool $isLazy = true;
 
-    #[Reactive]
-    public ?array $filters = null;
-
     public function getConversationPayload()
     {
         $conversationDisplayId = $this->filters['chatwootConversationDisplayId'] ?? null;
         $accountId = $this->filters['chatwootAccountId'] ?? null;
         $inboxId = $this->filters['chatwootInboxId'] ?? null;
 
+        Log::info('Fetching conversation data', [
+            'conversationDisplayId' => $conversationDisplayId,
+            'accountId' => $accountId,
+            'inboxId' => $inboxId,
+        ]);
+
         $account = ChatwootAccount::find($accountId);
         $conversation = ChatwootConversation::where('account_id', $accountId)
             ->where('display_id', $conversationDisplayId)
             ->first();
         $inbox = ChatwootInbox::find($inboxId);
+
+        if ($account) {
+            Log::info('Account found', ['account' => $account->toArray()]);
+        } else {
+            Log::warning('Account not found', ['accountId' => $accountId]);
+        }
+
+        if ($conversation) {
+            Log::info('Conversation found', ['conversation' => $conversation->toArray()]);
+        } else {
+            Log::warning('Conversation not found', ['conversationDisplayId' => $conversationDisplayId]);
+        }
+
+        if ($inbox) {
+            Log::info('Inbox found', ['inbox' => $inbox->toArray()]);
+        } else {
+            Log::warning('Inbox not found', ['inboxId' => $inboxId]);
+        }
 
         return [
             'account' => $account ? $account->toArray() : [],
@@ -54,6 +76,8 @@ class ChatwootConversationWidget extends Widget implements HasActions, HasForms,
 
     public function infolist(Infolist $infolist): Infolist
     {
+        Log::info('Generating infolist for Chatwoot conversation widget');
+
         return $infolist
             ->state($this->getConversationPayload())
             ->schema([

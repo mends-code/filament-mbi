@@ -1,9 +1,11 @@
 <?php
 
+// app/Filament/Widgets/StripeLatestInvoiceDataWidget.php
+
 namespace App\Filament\Widgets;
 
+use App\Jobs\SendStripeInvoiceLinkJob;
 use App\Models\StripeInvoice;
-use App\Services\ChatwootService;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -14,13 +16,13 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
 use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Infolists\Infolist;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Log;
-use Livewire\Attributes\Reactive;
 
 class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
-    use InteractsWithActions, InteractsWithForms, InteractsWithInfolists;
+    use InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters;
 
     protected static string $view = 'filament.widgets.stripe-latest-invoice-data-widget';
 
@@ -30,8 +32,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
 
     public static bool $isLazy = true;
 
-    #[Reactive]
-    public ?array $filters = null;
+    public $invoiceId;
 
     public function getLatestInvoiceData()
     {
@@ -49,6 +50,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
 
         if ($invoice) {
             Log::info('Latest invoice found', ['invoiceId' => $invoice->id]);
+            $this->invoiceId = $invoice->id; // Set invoice ID for later use
         } else {
             Log::warning('No invoice found for contact', ['contactId' => $contactId]);
         }
@@ -56,7 +58,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
         return $invoice ? $invoice->toArray() : [];
     }
 
-    public function sendStripeInvoiceLink(ChatwootService $chatwootService)
+    public function sendStripeInvoiceLink()
     {
         $accountId = $this->filters['chatwootAccountId'] ?? null;
         $contactId = $this->filters['chatwootContactId'] ?? null;
@@ -68,51 +70,21 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
             'conversationId' => $conversationId,
         ]);
 
-        if (! $accountId || ! $contactId || ! $conversationId) {
+        if (! $this->invoiceId || ! $accountId || ! $contactId || ! $conversationId) {
             Log::error('Missing required filters for sending invoice link', [
+                'invoiceId' => $this->invoiceId,
                 'accountId' => $accountId,
                 'contactId' => $contactId,
                 'conversationId' => $conversationId,
             ]);
 
-            // Handle error
             return;
         }
 
-        $invoice = StripeInvoice::latestForContact($contactId)->first();
+        // Dispatch the job
+        SendStripeInvoiceLinkJob::dispatch($this->invoiceId, $accountId, $contactId, $conversationId);
 
-        if (! $invoice) {
-            Log::error('No invoice found for contact', ['contactId' => $contactId]);
-
-            // Handle error
-            return;
-        }
-
-        // Build the messages
-        $messages = [
-            'Link do faktury:',
-            $invoice->data['hosted_invoice_url'],
-            'Łączna kwota do zapłaty:',
-            ($invoice->data['total'] / 100).' '.strtoupper($invoice->data['currency']),
-            'Prosimy o płatność w terminie.',
-        ];
-
-        Log::info('Sending messages to Chatwoot', ['messages' => $messages]);
-
-        // Send the messages
-        $responses = $chatwootService->sendMessages($accountId, $conversationId, $messages);
-
-        // Check for errors in the responses
-        foreach ($responses as $response) {
-            if (isset($response['error'])) {
-                Log::error('Error sending message to Chatwoot', ['response' => $response]);
-
-                // Handle error
-                return;
-            }
-        }
-
-        Log::info('Messages sent successfully');
+        Log::info('Job dispatched for sending invoice link');
     }
 
     public function infolist(Infolist $infolist): Infolist
@@ -128,10 +100,14 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                     ->heading('Ostatnia faktura Stripe')
                     ->headerActions([
                         Action::make('sendStripeInvoiceLink')
+                            ->disabled(! $this->invoiceId)
                             ->label('Wyślij link')
                             ->link()
                             ->icon('heroicon-o-link')
                             ->tooltip('w trakcie testów')
+                            ->form([
+
+                            ])
                             ->action('sendStripeInvoiceLink'),
                     ])
                     ->schema([

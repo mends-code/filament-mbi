@@ -11,24 +11,38 @@ use Filament\Tables;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Livewire\Attributes\Reactive;
+use Illuminate\Contracts\Pagination\CursorPaginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 class StripeInvoicesWidget extends BaseWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?int $sort = 5;
 
     protected int|string|array $columnSpan = 'full';
 
-    public static bool $isLazy = true;
+    public static bool $isLazy = false;
 
-    #[Reactive]
-    public ?array $filters = null;
+    protected function paginateTableQuery(Builder $query): CursorPaginator
+    {
+        return $query->cursorPaginate(($this->getTableRecordsPerPage() === 'all') ? $query->count() : $this->getTableRecordsPerPage());
+    }
 
     public function table(Table $table): Table
     {
+        $chatwootContactId = $this->filters['chatwootContactId'] ?? null;
+
+        Log::info('Fetching Stripe invoices for Chatwoot contact', ['chatwootContactId' => $chatwootContactId]);
+
         return $table
-            ->query(StripeInvoice::query()->forContact($this->filters['chatwootContactId']))
+            ->query(StripeInvoice::query()->forContact($chatwootContactId))
+            ->paginated()
+            ->extremePaginationLinks()
+            ->paginationPageOptions([5])
             ->deferLoading()
             ->heading('Lista faktur Stripe')
             ->columns([
@@ -135,7 +149,6 @@ class StripeInvoicesWidget extends BaseWidget
                             ])
                             ->columns(1),
                     ]),
-            ], position: ActionsPosition::BeforeColumns)
-            ->paginated(false);
+            ], position: ActionsPosition::BeforeColumns);
     }
-}
+    }

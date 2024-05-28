@@ -2,19 +2,19 @@
 
 namespace App\Filament\Pages;
 
+use App\Jobs\CreateStripeInvoiceJob;
 use App\Models\StripeCustomer;
 use App\Models\StripePrice;
-use App\Services\StripeService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Radio;
 use Filament\Pages\Dashboard as BaseDashboard;
-use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
+use Filament\Pages\Dashboard\Concerns\HasFilters;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Session;
 
 class Dashboard extends BaseDashboard
 {
-    use HasFiltersAction;
+    use HasFilters;
 
     protected static ?string $navigationLabel = 'Panel';
 
@@ -22,11 +22,8 @@ class Dashboard extends BaseDashboard
 
     protected static ?string $navigationIcon = 'heroicon-o-hand-raised';
 
-    #[Session(key: 'dashboard-filters')]
-    public ?array $filters = null;
-
-    #[On('set-chatwoot-context')]
-    public function setChatwootContext($context)
+    #[On('set-dashboard-context')]
+    public function setDashboardContext($context)
     {
         $contextData = json_decode($context)->data;
 
@@ -40,6 +37,13 @@ class Dashboard extends BaseDashboard
             'chatwootCurrentAgentId' => $contextData->currentAgent->id ?? null,
             'stripeCustomerId' => $customer ? $customer->id : null,
         ];
+
+        Log::info('Dashboard context set', [
+            'class' => __CLASS__,
+            'method' => __METHOD__,
+            'filters' => $this->filters,
+            'timestamp' => now(),
+        ]);
     }
 
     protected function getHeaderActions(): array
@@ -65,30 +69,24 @@ class Dashboard extends BaseDashboard
                         ->required(),
                 ])
                 ->action(function (array $data) {
-                    $stripeService = app(StripeService::class);
+                    $logContext = [
+                        'class' => __CLASS__,
+                        'method' => __METHOD__,
+                        'action' => 'createInvoice',
+                        'contactId' => $this->filters['chatwootContactId'],
+                        'priceId' => $data['priceId'],
+                        'customerId' => $this->filters['stripeCustomerId'],
+                        'timestamp' => now(),
+                    ];
 
-                    return $stripeService->createQuickInvoice($this->filters['chatwootContactId'], $data['priceId'], $this->filters['stripeCustomerId']);
+                    Log::info('Dispatching CreateStripeInvoiceJob', $logContext);
+
+                    CreateStripeInvoiceJob::dispatch($this->filters['chatwootContactId'], $data['priceId'], $this->filters['stripeCustomerId']);
                 }),
 
             Action::make('makeAppointment')->color('gray')->label('Umów wizytę')->icon('heroicon-o-calendar')->tooltip('wkrótce'),
             Action::make('sendEmail')->color('gray')->label('Wyślij email')->icon('heroicon-o-envelope')->tooltip('wkrótce'),
             Action::make('sendSMS')->color('gray')->label('Wyślij sms')->icon('heroicon-o-chat-bubble-bottom-center-text')->tooltip('wkrótce'),
         ];
-    }
-
-    private function createInvoice($contactId, $priceId, $customerId)
-    {
-        $stripeService = app(StripeService::class);
-
-        try {
-
-            return $stripeService->createInvoice($contactId, $priceId, $customerId);
-
-            // Optionally, you can handle any post-invoice creation logic here
-            // For example, you might want to refresh the dashboard or display a success message
-
-        } catch (\Exception $e) {
-            // Handle any errors that may occur during the invoice creation process
-        }
     }
 }
