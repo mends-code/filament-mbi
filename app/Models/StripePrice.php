@@ -9,6 +9,7 @@ class StripePrice extends BaseModelStripe
     protected $casts = [
         'id' => 'string',
         'data' => 'json',
+        'active_since' => 'timestamp'
     ];
 
     protected $fillable = [
@@ -18,5 +19,10 @@ class StripePrice extends BaseModelStripe
     public function product()
     {
         return $this->belongsTo(StripeProduct::class, 'product_id', 'id');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->whereNotNull('active_since');
     }
 }

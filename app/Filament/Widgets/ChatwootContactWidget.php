@@ -6,6 +6,7 @@ use App\Models\ChatwootContact;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Infolists\Components\Actions\Action;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
@@ -15,7 +16,7 @@ use Filament\Infolists\Infolist;
 use Filament\Widgets\Widget;
 use Livewire\Attributes\Reactive;
 
-class ChatwootContactWidget extends Widget implements HasActions, HasInfolists
+class ChatwootContactWidget extends Widget implements HasActions, HasInfolists, HasForms
 {
     use InteractsWithActions, InteractsWithForms, InteractsWithInfolists;
 
