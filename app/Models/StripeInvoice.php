@@ -1,6 +1,10 @@
 <?php
 
+// app/Models/StripeInvoice.php
+
 namespace App\Models;
+
+use App\Models\Scopes\ExcludeVoidedInvoices;
 
 class StripeInvoice extends BaseModelStripe
 {
@@ -17,6 +21,11 @@ class StripeInvoice extends BaseModelStripe
         'data',
         'customer_id',
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new ExcludeVoidedInvoices);
+    }
 
     public function customer()
     {
@@ -47,5 +56,11 @@ class StripeInvoice extends BaseModelStripe
     public function scopeLatestForContact($query, $contactId)
     {
         return $query->forContact($contactId)->orderBy('created', 'desc');
+    }
+
+    // Method to include voided invoices
+    public function scopeWithVoided($query)
+    {
+        return $query->withoutGlobalScope(ExcludeVoidedInvoices::class);
     }
 }

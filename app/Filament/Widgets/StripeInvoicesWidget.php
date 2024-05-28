@@ -11,24 +11,25 @@ use Filament\Tables;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Livewire\Attributes\Reactive;
 
 class StripeInvoicesWidget extends BaseWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?int $sort = 5;
 
     protected int|string|array $columnSpan = 'full';
 
     public static bool $isLazy = true;
 
-    #[Reactive]
-    public ?array $filters = null;
-
     public function table(Table $table): Table
     {
+        $chatwootContactId = $this->filters['chatwootContactId'] ?? null;
+
         return $table
-            ->query(StripeInvoice::query()->forContact($this->filters['chatwootContactId']))
+            ->query(StripeInvoice::query()->forContact($chatwootContactId))
             ->deferLoading()
             ->heading('Lista faktur Stripe')
             ->columns([

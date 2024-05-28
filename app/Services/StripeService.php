@@ -149,10 +149,11 @@ class StripeService
         $finalizedInvoice = Invoice::retrieve($invoice->finalizeInvoice()->id);
 
         // Update local StripeInvoice model
-        $stripeInvoice = StripeInvoice::create([
-            'id' => $finalizedInvoice->id,
-            'data' => $finalizedInvoice->toArray(),
-        ]);
+        $stripeInvoice = StripeInvoice::updateOrCreate([
+            'id' => $finalizedInvoice->id],
+            [
+                'data' => $finalizedInvoice->toArray(),
+            ]);
 
         return $stripeInvoice;
     }

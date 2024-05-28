@@ -4,11 +4,11 @@
             window.addEventListener(
                 'message',
                 function(event) {
-                    $wire.dispatch('set-chatwoot-context', {
+                    $wire.dispatch('set-dashboard-context', {
                         context: event.data
                     });
                 });
-            $wire.on('get-chatwoot-context', () => {
+            $wire.on('get-dashboard-context', () => {
                 window.parent.postMessage('chatwoot-dashboard-app:fetch-info', '*');
             });
         </script>
