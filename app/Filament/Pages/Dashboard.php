@@ -40,12 +40,6 @@ class Dashboard extends BaseDashboard
 
     public function boot()
     {
-        $this->dispatchWidgetUpdateEvents();
-    }
-
-    public function dispatchWidgetUpdateEvents()
-    {
-        $this->dispatch('update-chatwoot-contact-widget');
     }
 
     #[On('prune-dashboard-filters')]
@@ -69,8 +63,6 @@ class Dashboard extends BaseDashboard
         Arr::set($this->filters, 'chatwootCurrentAgentId', $contextData->currentAgent->id ?? null);
         Arr::set($this->filters, 'stripeCustomerId', $customer ? $customer->id : null);
         Arr::set($this->filters, 'stripeInvoiceId', $invoice ? $invoice->id : null);
-
-        $this->dispatchWidgetUpdateEvents();
     }
 
     protected function getHeaderActions(): array

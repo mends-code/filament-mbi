@@ -43,6 +43,7 @@ class StripeInvoicesWidget extends BaseWidget
             ->paginated()
             ->extremePaginationLinks()
             ->paginationPageOptions([5])
+            ->deferLoading()
             ->heading('Lista faktur Stripe')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
