@@ -49,6 +49,7 @@ class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasI
         return ['contact' => $contact ? $contact->toArray() : []];
     }
 
+    #[On('test-update')]
     public function infolist(Infolist $infolist): Infolist
     {
         Log::info('Generating infolist for Chatwoot contact widget');

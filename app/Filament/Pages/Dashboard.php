@@ -33,15 +33,6 @@ class Dashboard extends BaseDashboard
 
     }
 
-    public function hydrate()
-    {
-        $this->dispatch('update-dashboard-filters');
-    }
-
-    public function boot()
-    {
-    }
-
     #[On('prune-dashboard-filters')]
     public function pruneDashboardFilters()
     {
@@ -63,6 +54,7 @@ class Dashboard extends BaseDashboard
         Arr::set($this->filters, 'chatwootCurrentAgentId', $contextData->currentAgent->id ?? null);
         Arr::set($this->filters, 'stripeCustomerId', $customer ? $customer->id : null);
         Arr::set($this->filters, 'stripeInvoiceId', $invoice ? $invoice->id : null);
+        $this->dispatch('test-update');
     }
 
     protected function getHeaderActions(): array
