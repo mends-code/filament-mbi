@@ -42,6 +42,7 @@ class StripeInvoicesWidget extends BaseWidget
             ->query(StripeInvoice::query()->forContact($chatwootContactId))
             ->paginated()
             ->extremePaginationLinks()
+            ->deferLoading()
             ->paginationPageOptions([5])
             ->heading('Lista faktur Stripe')
             ->columns([
