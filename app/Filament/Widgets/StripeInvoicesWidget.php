@@ -19,13 +19,14 @@ use Illuminate\Support\Facades\Log;
 
 class StripeInvoicesWidget extends BaseWidget
 {
-    use InteractsWithPageFilters;
 
     protected static ?int $sort = 5;
 
     protected int|string|array $columnSpan = 'full';
 
-    public static bool $isLazy = false;
+    public static bool $isLazy = true;
+
+    public ?array $filters = null;
 
     protected function paginateTableQuery(Builder $query): CursorPaginator
     {
