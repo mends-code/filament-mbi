@@ -25,8 +25,7 @@ class Dashboard extends BaseDashboard
 
     public function mount()
     {
-        $this->js('$wire.on("clear-dashboard-context", () => console.log("clear-dashboard-context");');
-        $this->dispatch('clear-dashboard-context');
+        $this->js('document.addEventListener("DOMContentLoaded", () => $wire.dispatch("clear-dashboard-context"), { once: true }); console.log("clear-dashboard-context");');
         $this->js('window.addEventListener("message", event => $wire.dispatch("set-dashboard-context", { context: event.data }));console.log("set-dashboard-context")');
     }
 
