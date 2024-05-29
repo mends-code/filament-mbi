@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Log;
 
 class StripeInvoicesWidget extends BaseWidget
 {
+    use InteractsWithPageFilters;
 
     protected static ?int $sort = 5;
 
@@ -31,6 +32,13 @@ class StripeInvoicesWidget extends BaseWidget
     protected function paginateTableQuery(Builder $query): CursorPaginator
     {
         return $query->cursorPaginate(($this->getTableRecordsPerPage() === 'all') ? $query->count() : $this->getTableRecordsPerPage());
+    }
+
+    public ?int $chatwootContactId = null;
+
+    public function hydrate()
+    {
+        $this->chatwootContactId = $this->filters['chatwootContactId'] ?? null;
     }
 
     public function table(Table $table): Table
