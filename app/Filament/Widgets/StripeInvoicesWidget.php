@@ -69,7 +69,8 @@ class StripeInvoicesWidget extends BaseWidget
                         'open' => 'info',
                         'paid' => 'success',
                         'uncollectible' => 'danger',
-                        'void' => 'gray'
+                        'void' => 'gray',
+                        'deleted' => 'gray'
                     })
                     ->badge(),
             ])
@@ -151,4 +152,4 @@ class StripeInvoicesWidget extends BaseWidget
                     ]),
             ], position: ActionsPosition::BeforeColumns);
     }
-    }
+}

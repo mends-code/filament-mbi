@@ -138,7 +138,8 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                                 'open' => 'info',
                                 'paid' => 'success',
                                 'uncollectible' => 'danger',
-                                'void' => 'gray'
+                                'void' => 'gray',
+                                'deleted' => 'gray'
                             })
                             ->inlineLabel()
                             ->badge(),
