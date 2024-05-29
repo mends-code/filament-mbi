@@ -8,19 +8,20 @@ use App\Models\StripePrice;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Radio;
 use Filament\Pages\Dashboard as BaseDashboard;
-use Filament\Pages\Dashboard\Concerns\HasFilters;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Session;
 
 class Dashboard extends BaseDashboard
 {
-    use HasFilters;
-
     protected static ?string $navigationLabel = 'Panel';
 
     protected static ?string $title = 'Panel';
 
     protected static ?string $navigationIcon = 'heroicon-o-hand-raised';
+
+    #[Session]
+    public ?array $filters = null;
 
     #[On('set-dashboard-context')]
     public function setDashboardContext($context)
