@@ -27,16 +27,7 @@ class Dashboard extends BaseDashboard
 
     public function mount()
     {
-        $this->pruneDashboardFilters();
         $this->js('window.addEventListener("message", event => $wire.dispatch("set-dashboard-filters", { context: event.data }));console.log("set-dashboard-filters")');
-        $this->js('$wire.on("update-dashboard-filters", () => window.parent.postMessage("chatwoot-dashboard-app:fetch-info", "*"));console.log("update-dashboard-filters")');
-
-    }
-
-    #[On('prune-dashboard-filters')]
-    public function pruneDashboardFilters()
-    {
-        $this->filters = null;
     }
 
     #[On('set-dashboard-filters')]
@@ -54,7 +45,6 @@ class Dashboard extends BaseDashboard
         Arr::set($this->filters, 'chatwootCurrentAgentId', $contextData->currentAgent->id ?? null);
         Arr::set($this->filters, 'stripeCustomerId', $customer ? $customer->id : null);
         Arr::set($this->filters, 'stripeInvoiceId', $invoice ? $invoice->id : null);
-        $this->dispatch('test-update');
     }
 
     protected function getHeaderActions(): array
