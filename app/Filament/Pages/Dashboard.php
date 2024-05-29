@@ -23,6 +23,16 @@ class Dashboard extends BaseDashboard
     #[Session]
     public ?array $filters = null;
 
+    public function mount()
+    {
+        $this->js('window.addEventListener(\'message\', event => $wire.dispatch(\'set-dashboard-context\', { context: event.data }));console.log(\'set-dashboard-context\')');
+    }
+
+    public function boot()
+    {
+        $this->js('$wire.on(\'get-dashboard-context\', () => window.parent.postMessage(\'chatwoot-dashboard-app:fetch-info\', \'*\'));console.log(\'get-dashboard-context\')');
+    }
+
     #[On('set-dashboard-context')]
     public function setDashboardContext($context)
     {
