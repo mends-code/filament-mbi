@@ -25,20 +25,11 @@ class StripeInvoicesWidget extends BaseWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    public static bool $isLazy = true;
-
-    public ?array $filters = null;
+    public static bool $isLazy = false;
 
     protected function paginateTableQuery(Builder $query): CursorPaginator
     {
         return $query->cursorPaginate(($this->getTableRecordsPerPage() === 'all') ? $query->count() : $this->getTableRecordsPerPage());
-    }
-
-    public ?int $chatwootContactId = null;
-
-    public function hydrate()
-    {
-        $this->chatwootContactId = $this->filters['chatwootContactId'] ?? null;
     }
 
     public function table(Table $table): Table
