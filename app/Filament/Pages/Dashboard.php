@@ -4,10 +4,12 @@ namespace App\Filament\Pages;
 
 use App\Jobs\CreateStripeInvoiceJob;
 use App\Models\StripeCustomer;
+use App\Models\StripeInvoice;
 use App\Models\StripePrice;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Radio;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Session;
@@ -25,43 +27,38 @@ class Dashboard extends BaseDashboard
 
     public function mount()
     {
-        $this->js('document.addEventListener("DOMContentLoaded", () => $wire.dispatch("clear-dashboard-context"), { once: true }); console.log("clear-dashboard-context");');
-        $this->js('window.addEventListener("message", event => $wire.dispatch("set-dashboard-context", { context: event.data }));console.log("set-dashboard-context")');
+        $this->pruneDashboardFilters();
+        $this->js('window.addEventListener("message", event => $wire.dispatch("set-dashboard-filters", { context: event.data }));console.log("set-dashboard-filters")');
+        $this->js('$wire.on("update-dashboard-filters", () => window.parent.postMessage("chatwoot-dashboard-app:fetch-info", "*"));console.log("update-dashboard-filters")');
+
     }
 
-    public function booted()
+    public function hydrate()
     {
-        $this->js('$wire.on("get-dashboard-context", () => window.parent.postMessage("chatwoot-dashboard-app:fetch-info", "*"));console.log("get-dashboard-context")');
+        $this->dispatch('update-dashboard-filters');
     }
 
-    #[On('clear-dashboard-context')]
-    public function clearDashboardContext()
+    #[On('prune-dashboard-filters')]
+    public function pruneDashboardFilters()
     {
         $this->filters = null;
     }
 
-    #[On('set-dashboard-context')]
-    public function setDashboardContext($context)
+    #[On('set-dashboard-filters')]
+    public function setDashboardFilters($context)
     {
         $contextData = json_decode($context)->data;
 
         $customer = StripeCustomer::latestForContact($contextData->contact->id)->first();
+        $invoice = StripeInvoice::latestForContact($contextData->contact->id)->first();
 
-        $this->filters = [
-            'chatwootContactId' => $contextData->contact->id ?? null,
-            'chatwootConversationDisplayId' => $contextData->conversation->id ?? null,
-            'chatwootInboxId' => $contextData->conversation->inbox_id ?? null,
-            'chatwootAccountId' => $contextData->conversation->account_id ?? null,
-            'chatwootCurrentAgentId' => $contextData->currentAgent->id ?? null,
-            'stripeCustomerId' => $customer ? $customer->id : null,
-        ];
-
-        Log::info('Dashboard context set', [
-            'class' => __CLASS__,
-            'method' => __METHOD__,
-            'filters' => $this->filters,
-            'timestamp' => now(),
-        ]);
+        Arr::set($this->filters, 'chatwootContactId', $contextData->contact->id ?? null);
+        Arr::set($this->filters, 'chatwootConversationDisplayId', $contextData->conversation->id ?? null);
+        Arr::set($this->filters, 'chatwootInboxId', $contextData->conversation->inbox_id ?? null);
+        Arr::set($this->filters, 'chatwootAccountId', $contextData->conversation->account_id ?? null);
+        Arr::set($this->filters, 'chatwootCurrentAgentId', $contextData->currentAgent->id ?? null);
+        Arr::set($this->filters, 'stripeCustomerId', $customer ? $customer->id : null);
+        Arr::set($this->filters, 'stripeInvoiceId', $invoice ? $invoice->id : null);
     }
 
     protected function getHeaderActions(): array

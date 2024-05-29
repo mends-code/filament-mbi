@@ -29,7 +29,7 @@ class ChatwootConversationWidget extends Widget implements HasActions, HasForms,
 
     protected int|string|array $columnSpan = 1;
 
-    public static bool $isLazy = true;
+    public static bool $isLazy = false;
 
     public function getConversationPayload()
     {
