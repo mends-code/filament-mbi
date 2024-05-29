@@ -1,9 +1,8 @@
 <?php
 
-// app/Models/StripeInvoice.php
-
 namespace App\Models;
 
+use App\Models\Scopes\ExcludeDeletedInvoices;
 use App\Models\Scopes\ExcludeVoidedInvoices;
 
 class StripeInvoice extends BaseModelStripe
@@ -25,6 +24,7 @@ class StripeInvoice extends BaseModelStripe
     protected static function booted()
     {
         static::addGlobalScope(new ExcludeVoidedInvoices);
+        static::addGlobalScope(new ExcludeDeletedInvoices);
     }
 
     public function customer()
@@ -44,7 +44,6 @@ class StripeInvoice extends BaseModelStripe
         );
     }
 
-    // Scope for getting all invoices for a given Chatwoot contact ID
     public function scopeForContact($query, $contactId)
     {
         return $query->whereHas('chatwootContact', function ($query) use ($contactId) {
@@ -52,15 +51,18 @@ class StripeInvoice extends BaseModelStripe
         });
     }
 
-    // Scope for getting the latest invoice for a given Chatwoot contact ID
     public function scopeLatestForContact($query, $contactId)
     {
         return $query->forContact($contactId)->orderBy('created', 'desc');
     }
 
-    // Method to include voided invoices
     public function scopeWithVoided($query)
     {
         return $query->withoutGlobalScope(ExcludeVoidedInvoices::class);
+    }
+
+    public function scopeWithDeleted($query)
+    {
+        return $query->withoutGlobalScope(ExcludeDeletedInvoices::class);
     }
 }
