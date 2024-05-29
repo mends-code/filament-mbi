@@ -27,15 +27,7 @@ class Dashboard extends BaseDashboard
 
     public function mount()
     {
-        $this->pruneDashboardFilters();
         $this->js('window.addEventListener("message", event => $wire.dispatch("set-dashboard-filters", { context: event.data }));console.log("set-dashboard-filters")');
-
-    }
-
-    #[On('prune-dashboard-filters')]
-    public function pruneDashboardFilters()
-    {
-        $this->filters = null;
     }
 
     #[On('set-dashboard-filters')]
