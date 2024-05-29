@@ -25,12 +25,20 @@ class Dashboard extends BaseDashboard
 
     public function mount()
     {
-        $this->js('window.addEventListener(\'message\', event => $wire.dispatch(\'set-dashboard-context\', { context: event.data }));console.log(\'set-dashboard-context\')');
+        $this->js('$wire.on("clear-dashboard-context", () => console.log("clear-dashboard-context");');
+        $this->dispatch('clear-dashboard-context');
+        $this->js('window.addEventListener("message", event => $wire.dispatch("set-dashboard-context", { context: event.data }));console.log("set-dashboard-context")');
     }
 
-    public function boot()
+    public function booted()
     {
-        $this->js('$wire.on(\'get-dashboard-context\', () => window.parent.postMessage(\'chatwoot-dashboard-app:fetch-info\', \'*\'));console.log(\'get-dashboard-context\')');
+        $this->js('$wire.on("get-dashboard-context", () => window.parent.postMessage("chatwoot-dashboard-app:fetch-info", "*"));console.log("get-dashboard-context")');
+    }
+
+    #[On('clear-dashboard-context')]
+    public function clearDashboardContext()
+    {
+        $this->filters = null;
     }
 
     #[On('set-dashboard-context')]
