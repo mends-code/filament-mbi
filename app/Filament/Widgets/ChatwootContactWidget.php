@@ -16,6 +16,7 @@ use Filament\Infolists\Infolist;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\On;
 
 class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
@@ -29,7 +30,10 @@ class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasI
 
     public static bool $isLazy = false;
 
-    public function getContactPayload()
+    public array $chatwootContactPayload = [];
+
+    #[On('update-chatwoot-contact-widget')]
+    public function updateChatwootContactPayload()
     {
         $contactId = $this->filters['chatwootContactId'] ?? null;
         Log::info('Fetching contact data', ['contactId' => $contactId]);
@@ -42,7 +46,7 @@ class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasI
             Log::warning('Contact not found', ['contactId' => $contactId]);
         }
 
-        return ['contact' => $contact ? $contact->toArray() : []];
+        $this->chatwootContactPayload = ['contact' => $contact ? $contact->toArray() : []];
     }
 
     public function infolist(Infolist $infolist): Infolist
@@ -50,7 +54,7 @@ class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasI
         Log::info('Generating infolist for Chatwoot contact widget');
 
         return $infolist
-            ->state($this->getContactPayload())
+            ->state($this->chatwootContactPayload)
             ->schema([
                 Section::make('serviceContextSection.contact')
                     ->heading('Obsługiwany kontakt Chatwoot')
