@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\ChatwootContact;
 use App\Models\StripeCustomer;
-use App\Models\StripeInvoice;
 use App\Models\StripePrice;
 use Illuminate\Support\Facades\Log;
 use Stripe\Customer;
@@ -74,7 +73,6 @@ class StripeService
         ]);
 
         Log::info('Created Stripe customer', ['customer' => $customer->id]);
-
 
         return $customer;
     }

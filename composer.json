@@ -15,10 +15,11 @@
         "nesbot/carbon": "^3.3",
         "predis/predis": "^2.2",
         "rinvex/countries": "^9.0",
-        "stripe/stripe-php": "^14.6",
-        "barryvdh/laravel-debugbar": "^3.13"
+        "stripe/stripe-php": "^14.6"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.13",
+        "barryvdh/laravel-ide-helper": "^3.0",
         "fakerphp/faker": "^1.23",
         "laravel/dusk": "^8.2",
         "laravel/pint": "^1.16",

@@ -4,6 +4,26 @@ namespace App\Models;
 
 use App\Models\Scopes\ExcludeDataStatus;
 
+/**
+ * 
+ *
+ * @property array $data
+ * @property int $created
+ * @property string|null $customer_id
+ * @property string $id
+ * @property-read \App\Models\ChatwootContact|null $chatwootContact
+ * @property-read \App\Models\StripeCustomer|null $customer
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice forContact($contactId)
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice latestForContact($contactId)
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice query()
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice whereCreated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice whereCustomerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice whereData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice whereId($value)
+ * @mixin \Eloquent
+ */
 class StripeInvoice extends BaseModelStripe
 {
     protected $table = 'mbi_stripe.invoices';
