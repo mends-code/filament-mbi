@@ -31,7 +31,7 @@ class StripeCustomerDataWidget extends Widget implements HasActions, HasForms, H
 
     public function getCustomerData()
     {
-        $customer = StripeCustomer::latestForContact($this->filters['chatwootContactId'])->first();
+        $customer = StripeCustomer::latestForContact($this->filters['chatwootContactId'] ?? null)->first();
 
         if ($customer) {
             Log::info('Stripe customer found', ['customer' => $customer->toArray()]);

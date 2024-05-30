@@ -35,7 +35,7 @@ class StripeInvoicesWidget extends BaseWidget
     {
 
         return $table
-            ->query(StripeInvoice::query()->forContact($this->filters['areFiltersReady'] ? $this->filters['chatwootContactId'] : null))
+            ->query(StripeInvoice::query()->forContact($this->filters['chatwootContactId'] ?? null))
             ->paginated()
             ->poll('5s')
             ->extremePaginationLinks()

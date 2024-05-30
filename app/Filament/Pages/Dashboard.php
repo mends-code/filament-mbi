@@ -10,7 +10,7 @@ use Filament\Pages\Dashboard as BaseDashboard;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Session;
+use Livewire\Attributes\Computed;
 
 class Dashboard extends BaseDashboard
 {
@@ -20,7 +20,7 @@ class Dashboard extends BaseDashboard
 
     protected static ?string $navigationIcon = 'heroicon-o-hand-raised';
 
-    #[Session]
+    #[Computed]
     public ?array $filters = null;
 
     public function mount()
@@ -38,17 +38,11 @@ class Dashboard extends BaseDashboard
         Arr::set($this->filters, 'chatwootInboxId', $contextData->conversation->inbox_id ?? null);
         Arr::set($this->filters, 'chatwootAccountId', $contextData->conversation->account_id ?? null);
         Arr::set($this->filters, 'chatwootCurrentAgentId', $contextData->currentAgent->id ?? null);
-        Arr::set($this->filters, 'areFiltersReady', true);
     }
 
-    public function boot()
+    public function hydrate()
     {
-        Arr::set($this->filters, 'areFiltersReady', false);
-    }
-
-    public function dehydrate()
-    {
-        Arr::set($this->filters, 'areFiltersReady', true);
+        Arr::set($this->filters, 'areFiltersReady', true);  
     }
 
     protected function getHeaderActions(): array
