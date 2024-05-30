@@ -10,7 +10,7 @@ use Filament\Pages\Dashboard as BaseDashboard;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Computed;
+use Livewire\Attributes\Session;
 
 class Dashboard extends BaseDashboard
 {
@@ -20,7 +20,7 @@ class Dashboard extends BaseDashboard
 
     protected static ?string $navigationIcon = 'heroicon-o-hand-raised';
 
-    #[Computed]
+    #[Session]
     public ?array $filters = null;
 
     public function mount()
