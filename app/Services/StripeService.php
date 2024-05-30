@@ -75,16 +75,8 @@ class StripeService
 
         Log::info('Created Stripe customer', ['customer' => $customer->id]);
 
-        $stripeCustomer = StripeCustomer::updateOrCreate(
-            ['id' => $customer->id],
-            [
-                'data' => $customer->toArray(),
-            ]
-        );
 
-        Log::info("StripeCustomer record updated/created for Stripe customer ID: {$customer->id}");
-
-        return $stripeCustomer;
+        return $customer;
     }
 
     /**
@@ -106,16 +98,8 @@ class StripeService
         $customer->update($customer->id);
 
         Log::info('Updated Stripe customer', ['customer' => $stripeCustomerId]);
-        $stripeCustomer = StripeCustomer::updateOrCreate(
-            ['id' => $stripeCustomerId],
-            [
-                'data' => $customer->toArray(),
-            ]
-        );
 
-        Log::info("StripeCustomer record updated/created for Stripe customer ID: {$stripeCustomerId}");
-
-        return $stripeCustomer;
+        return $customer;
     }
 
     /**
@@ -126,7 +110,7 @@ class StripeService
      * @param  string|null  $stripeCustomerId
      * @param  string  $collectionMethod  // 'charge_automatically' or 'send_invoice'
      * @param  int  $daysUntilDue
-     * @return StripeInvoice
+     * @return Invoice
      */
     public function createQuickInvoice($chatwootContactId, $priceId, $stripeCustomerId = null, $collectionMethod = 'send_invoice', $daysUntilDue = 0)
     {
@@ -160,13 +144,6 @@ class StripeService
 
         Log::info("Invoice created: {$invoice->id}");
 
-        // Update local StripeInvoice model
-        StripeInvoice::updateOrCreate(
-            ['id' => $invoice->id],
-            [
-                'data' => $invoice->toArray(),
-            ]);
-
         // Add invoice item using price ID
         InvoiceItem::create([
             'customer' => $stripeCustomer->id,
@@ -180,13 +157,6 @@ class StripeService
 
         Log::info("Invoice finalized: {$finalizedInvoice->id}");
 
-        // Update local StripeInvoice model
-        $stripeInvoice = StripeInvoice::updateOrCreate([
-            'id' => $finalizedInvoice->id],
-            [
-                'data' => $finalizedInvoice->toArray(),
-            ]);
-
-        return $stripeInvoice;
+        return $finalizedInvoice;
     }
 }
