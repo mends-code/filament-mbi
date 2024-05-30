@@ -3,8 +3,6 @@
 namespace App\Models;
 
 /**
- * 
- *
  * @property array $data
  * @property int $created
  * @property int|null $chatwoot_contact_id
@@ -12,6 +10,7 @@ namespace App\Models;
  * @property-read \App\Models\ChatwootContact|null $chatwootContact
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StripeInvoice> $invoices
  * @property-read int|null $invoices_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|StripeCustomer latestForContact($chatwootContactId)
  * @method static \Illuminate\Database\Eloquent\Builder|StripeCustomer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|StripeCustomer newQuery()
@@ -20,6 +19,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|StripeCustomer whereCreated($value)
  * @method static \Illuminate\Database\Eloquent\Builder|StripeCustomer whereData($value)
  * @method static \Illuminate\Database\Eloquent\Builder|StripeCustomer whereId($value)
+ *
  * @mixin \Eloquent
  */
 class StripeCustomer extends BaseModelStripe

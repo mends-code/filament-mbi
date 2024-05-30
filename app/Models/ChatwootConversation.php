@@ -5,8 +5,6 @@ namespace App\Models;
 use Carbon\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property int $account_id
  * @property int $inbox_id
@@ -36,6 +34,7 @@ use Carbon\Carbon;
  * @property-read \App\Models\ChatwootAccount|null $account
  * @property-read \App\Models\ChatwootContact|null $contact
  * @property-read \App\Models\ChatwootInbox|null $inbox
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootConversation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootConversation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootConversation query()
@@ -65,6 +64,7 @@ use Carbon\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootConversation whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootConversation whereUuid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootConversation whereWaitingSince($value)
+ *
  * @mixin \Eloquent
  */
 class ChatwootConversation extends BaseModelChatwoot

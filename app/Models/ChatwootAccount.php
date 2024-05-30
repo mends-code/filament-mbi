@@ -3,8 +3,6 @@
 namespace App\Models;
 
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property \Illuminate\Support\Carbon $created_at
@@ -17,6 +15,7 @@ namespace App\Models;
  * @property string|null $limits
  * @property string|null $custom_attributes
  * @property int|null $status
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootAccount newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootAccount newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootAccount query()
@@ -32,6 +31,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootAccount whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootAccount whereSupportEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootAccount whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ChatwootAccount extends BaseModelChatwoot

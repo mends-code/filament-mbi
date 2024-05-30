@@ -3,8 +3,6 @@
 namespace App\Models;
 
 /**
- * 
- *
  * @property int $id
  * @property int $channel_id
  * @property int $account_id
@@ -29,6 +27,7 @@ namespace App\Models;
  * @property string|null $business_name
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ChatwootConversation> $conversations
  * @property-read int|null $conversations_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootInbox newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootInbox newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootInbox query()
@@ -54,6 +53,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootInbox whereTimezone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootInbox whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootInbox whereWorkingHoursEnabled($value)
+ *
  * @mixin \Eloquent
  */
 class ChatwootInbox extends BaseModelChatwoot

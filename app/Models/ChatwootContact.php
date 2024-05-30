@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 
- *
  * @property int $id
  * @property string|null $name
  * @property string|null $email
@@ -35,6 +33,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read int|null $stripe_customers_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StripeInvoice> $stripeInvoices
  * @property-read int|null $stripe_invoices_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootContact newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootContact newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootContact query()
@@ -55,6 +54,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootContact whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootContact wherePhoneNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ChatwootContact whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ChatwootContact extends Model

@@ -3,8 +3,6 @@
 namespace App\Models;
 
 /**
- * 
- *
  * @property int $id
  * @property string $first_name
  * @property string $last_name
@@ -16,6 +14,7 @@ namespace App\Models;
  * @property int|null $updated_by
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ChatwootContact> $chatwootContacts
  * @property-read int|null $chatwoot_contacts_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Patient newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Patient newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Patient onlyTrashed()
@@ -31,6 +30,7 @@ namespace App\Models;
  * @method static \Illuminate\Database\Eloquent\Builder|Patient whereUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Patient withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Patient withoutTrashed()
+ *
  * @mixin \Eloquent
  */
 class Patient extends BaseModel
