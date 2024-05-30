@@ -21,7 +21,7 @@ class StripeInvoicesWidget extends BaseWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?int $sort = 5;
+    protected static ?int $sort = -1;
 
     protected int|string|array $columnSpan = 'full';
 
@@ -34,17 +34,11 @@ class StripeInvoicesWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
-        $chatwootContactId = $this->filters['chatwootContactId'] ?? null;
-
-        if (! $this->filters['areFiltersReady']) {
-            $chatwootContactId = null;
-        }
-
-        Log::info('Fetching Stripe invoices for Chatwoot contact', ['chatwootContactId' => $chatwootContactId]);
 
         return $table
-            ->query(StripeInvoice::query()->forContact($chatwootContactId))
+            ->query(StripeInvoice::query()->forContact($this->filters['chatwootContactId']))
             ->paginated()
+            ->poll('5s')
             ->extremePaginationLinks()
             ->deferLoading()
             ->paginationPageOptions([5])

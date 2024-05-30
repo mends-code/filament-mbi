@@ -23,9 +23,13 @@ class Dashboard extends BaseDashboard
     #[Session]
     public ?array $filters = null;
 
-    public function mount()
+    public function __construct()
     {
         Arr::set($this->filters, 'areFiltersReady', false);
+    }
+
+    public function mount()
+    {
         $this->js('window.addEventListener("message", event => $wire.dispatch("set-dashboard-filters", { context: event.data }));console.log("set-dashboard-filters")');
     }
 
