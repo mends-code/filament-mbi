@@ -2,8 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\ExcludeDeletedInvoices;
-use App\Models\Scopes\ExcludeVoidedInvoices;
+use App\Models\Scopes\ExcludeDataStatus;
 
 class StripeInvoice extends BaseModelStripe
 {
@@ -23,8 +22,7 @@ class StripeInvoice extends BaseModelStripe
 
     protected static function booted()
     {
-        static::addGlobalScope(new ExcludeVoidedInvoices);
-        static::addGlobalScope(new ExcludeDeletedInvoices);
+        static::addGlobalScope(new ExcludeDataStatus(['deleted', 'draft', 'void']));
     }
 
     public function customer()
@@ -54,15 +52,5 @@ class StripeInvoice extends BaseModelStripe
     public function scopeLatestForContact($query, $contactId)
     {
         return $query->forContact($contactId)->orderBy('created', 'desc');
-    }
-
-    public function scopeWithVoided($query)
-    {
-        return $query->withoutGlobalScope(ExcludeVoidedInvoices::class);
-    }
-
-    public function scopeWithDeleted($query)
-    {
-        return $query->withoutGlobalScope(ExcludeDeletedInvoices::class);
     }
 }

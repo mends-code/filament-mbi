@@ -6,10 +6,17 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
-class ExcludeDeletedInvoices implements Scope
+class ExcludeDataStatus implements Scope
 {
+    protected $statuses;
+
+    public function __construct(array $statuses)
+    {
+        $this->statuses = $statuses;
+    }
+
     public function apply(Builder $builder, Model $model)
     {
-        $builder->where('data->status', '!=', 'deleted');
+        $builder->whereNotIn('data->status', $this->statuses);
     }
 }

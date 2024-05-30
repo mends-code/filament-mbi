@@ -103,7 +103,7 @@ class StripeService
         $customer->email = $email;
         $customer->phone = $customerData['phone'];
         $customer->metadata = ['chatwoot_contact_id' => $customerData['chatwoot_contact_id']];
-        $customer->save();
+        $customer->update($customer->id);
 
         Log::info('Updated Stripe customer', ['customer' => $stripeCustomerId]);
         $stripeCustomer = StripeCustomer::updateOrCreate(

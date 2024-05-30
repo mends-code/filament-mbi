@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Jobs\CreateStripeInvoiceJob;
+use App\Models\StripeCustomer;
 use App\Models\StripePrice;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Radio;
@@ -40,11 +41,6 @@ class Dashboard extends BaseDashboard
         Arr::set($this->filters, 'chatwootCurrentAgentId', $contextData->currentAgent->id ?? null);
     }
 
-    public function hydrate()
-    {
-        Arr::set($this->filters, 'areFiltersReady', true);  
-    }
-
     protected function getHeaderActions(): array
     {
         return [
@@ -68,19 +64,22 @@ class Dashboard extends BaseDashboard
                         ->required(),
                 ])
                 ->action(function (array $data) {
+
+                    $customer = StripeCustomer::latestForContact($this->filters['chatwootContactId'] ?? null)->first() ?? null;
+
                     $logContext = [
                         'class' => __CLASS__,
                         'method' => __METHOD__,
                         'action' => 'createInvoice',
                         'contactId' => $this->filters['chatwootContactId'],
                         'priceId' => $data['priceId'],
-                        'customerId' => $this->filters['stripeCustomerId'],
+                        'customerId' => $customer->id,
                         'timestamp' => now(),
                     ];
 
                     Log::info('Dispatching CreateStripeInvoiceJob', $logContext);
 
-                    CreateStripeInvoiceJob::dispatch($this->filters['chatwootContactId'], $data['priceId'], $this->filters['stripeCustomerId']);
+                    CreateStripeInvoiceJob::dispatch($this->filters['chatwootContactId'], $data['priceId'], $customer->id);
                 }),
 
             Action::make('makeAppointment')->color('gray')->label('Umów wizytę')->icon('heroicon-o-calendar')->tooltip('wkrótce'),

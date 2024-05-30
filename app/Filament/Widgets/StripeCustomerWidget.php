@@ -17,7 +17,7 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Log;
 
-class StripeCustomerDataWidget extends Widget implements HasActions, HasForms, HasInfolists
+class StripeCustomerWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
     use InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters;
 
