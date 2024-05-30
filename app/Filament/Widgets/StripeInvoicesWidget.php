@@ -4,28 +4,35 @@ namespace App\Filament\Widgets;
 
 use App\Models\StripeInvoice;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Concerns\InteractsWithInfolists;
+use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Tables;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Filament\Widgets\TableWidget as BaseWidget;
+use Filament\Widgets\Widget;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Log;
 
-class StripeInvoicesWidget extends BaseWidget
+class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, HasTable
 {
-    use InteractsWithPageFilters;
+    use InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, InteractsWithTable;
+
+    protected static string $view = 'filament.widgets.stripe-invoices-widget';
 
     protected static ?int $sort = 5;
 
     protected int|string|array $columnSpan = 'full';
 
-    public static bool $isLazy = false;
+    public static bool $isLazy = true;
 
     protected function paginateTableQuery(Builder $query): CursorPaginator
     {
@@ -34,16 +41,12 @@ class StripeInvoicesWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
-        $chatwootContactId = $this->filters['chatwootContactId'] ?? null;
-
-        Log::info('Fetching Stripe invoices for Chatwoot contact', ['chatwootContactId' => $chatwootContactId]);
 
         return $table
-            ->query(StripeInvoice::query()->forContact($chatwootContactId))
+            ->query(StripeInvoice::query()->forContact($this->filters['chatwootContactId'] ?? null))
             ->paginated()
             ->extremePaginationLinks()
             ->paginationPageOptions([5])
-            ->deferLoading()
             ->heading('Lista faktur Stripe')
             ->columns([
                 Tables\Columns\TextColumn::make('id')

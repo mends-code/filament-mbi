@@ -2,9 +2,28 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\ExcludeDeletedInvoices;
-use App\Models\Scopes\ExcludeVoidedInvoices;
+use App\Models\Scopes\ExcludeDataStatus;
 
+/**
+ * 
+ *
+ * @property array $data
+ * @property int $created
+ * @property string|null $customer_id
+ * @property string $id
+ * @property-read \App\Models\ChatwootContact|null $chatwootContact
+ * @property-read \App\Models\StripeCustomer|null $customer
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice forContact($contactId)
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice latestForContact($contactId)
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice query()
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice whereCreated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice whereCustomerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice whereData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice whereId($value)
+ * @mixin \Eloquent
+ */
 class StripeInvoice extends BaseModelStripe
 {
     protected $table = 'mbi_stripe.invoices';
@@ -23,8 +42,7 @@ class StripeInvoice extends BaseModelStripe
 
     protected static function booted()
     {
-        static::addGlobalScope(new ExcludeVoidedInvoices);
-        static::addGlobalScope(new ExcludeDeletedInvoices);
+        static::addGlobalScope(new ExcludeDataStatus(['deleted', 'draft', 'void']));
     }
 
     public function customer()
@@ -54,15 +72,5 @@ class StripeInvoice extends BaseModelStripe
     public function scopeLatestForContact($query, $contactId)
     {
         return $query->forContact($contactId)->orderBy('created', 'desc');
-    }
-
-    public function scopeWithVoided($query)
-    {
-        return $query->withoutGlobalScope(ExcludeVoidedInvoices::class);
-    }
-
-    public function scopeWithDeleted($query)
-    {
-        return $query->withoutGlobalScope(ExcludeDeletedInvoices::class);
     }
 }

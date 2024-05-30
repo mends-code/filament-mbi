@@ -17,7 +17,7 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Log;
 
-class StripeCustomerDataWidget extends Widget implements HasActions, HasForms, HasInfolists
+class StripeCustomerWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
     use InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters;
 
@@ -31,22 +31,12 @@ class StripeCustomerDataWidget extends Widget implements HasActions, HasForms, H
 
     public function getCustomerData()
     {
-        $customerId = $this->filters['stripeCustomerId'] ?? null;
-
-        Log::info('Fetching Stripe customer data', ['customerId' => $customerId]);
-
-        if (! $customerId) {
-            Log::warning('No Stripe customer ID provided in filters.');
-
-            return [];
-        }
-
-        $customer = StripeCustomer::find($customerId);
+        $customer = StripeCustomer::latestForContact($this->filters['chatwootContactId'] ?? null)->first();
 
         if ($customer) {
             Log::info('Stripe customer found', ['customer' => $customer->toArray()]);
         } else {
-            Log::warning('Stripe customer not found', ['customerId' => $customerId]);
+            Log::warning('Stripe customer not found');
         }
 
         return $customer ? $customer->toArray() : [];

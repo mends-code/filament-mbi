@@ -29,7 +29,9 @@ class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasI
 
     public static bool $isLazy = true;
 
-    public function getContactPayload()
+    public array $chatwootContactPayload = [];
+
+    public function updateChatwootContactPayload()
     {
         $contactId = $this->filters['chatwootContactId'] ?? null;
         Log::info('Fetching contact data', ['contactId' => $contactId]);
@@ -40,6 +42,8 @@ class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasI
             Log::info('Contact found', ['contact' => $contact->toArray()]);
         } else {
             Log::warning('Contact not found', ['contactId' => $contactId]);
+
+            return [];
         }
 
         return ['contact' => $contact ? $contact->toArray() : []];
@@ -50,7 +54,7 @@ class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasI
         Log::info('Generating infolist for Chatwoot contact widget');
 
         return $infolist
-            ->state($this->getContactPayload())
+            ->state($this->updateChatwootContactPayload())
             ->schema([
                 Section::make('serviceContextSection.contact')
                     ->heading('Obsługiwany kontakt Chatwoot')
