@@ -2,20 +2,20 @@
 
 namespace App\Filament\Pages;
 
+use App\HasSessionFilters;
 use App\Jobs\CreateStripeInvoiceJob;
 use App\Models\StripeCustomer;
 use App\Models\StripePrice;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Radio;
 use Filament\Pages\Dashboard as BaseDashboard;
-use Filament\Pages\Dashboard\Concerns\HasFilters;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 
 class Dashboard extends BaseDashboard
 {
-    use HasFilters;
+    use HasSessionFilters;
 
     protected static ?string $navigationLabel = 'Panel';
 
