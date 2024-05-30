@@ -23,11 +23,6 @@ class Dashboard extends BaseDashboard
     #[Session]
     public ?array $filters = null;
 
-    public function __construct()
-    {
-        Arr::set($this->filters, 'areFiltersReady', false);
-    }
-
     public function mount()
     {
         $this->js('window.addEventListener("message", event => $wire.dispatch("set-dashboard-filters", { context: event.data }));console.log("set-dashboard-filters")');
@@ -43,6 +38,16 @@ class Dashboard extends BaseDashboard
         Arr::set($this->filters, 'chatwootInboxId', $contextData->conversation->inbox_id ?? null);
         Arr::set($this->filters, 'chatwootAccountId', $contextData->conversation->account_id ?? null);
         Arr::set($this->filters, 'chatwootCurrentAgentId', $contextData->currentAgent->id ?? null);
+        Arr::set($this->filters, 'areFiltersReady', true);
+    }
+
+    public function boot()
+    {
+        Arr::set($this->filters, 'areFiltersReady', false);
+    }
+
+    public function dehydrate()
+    {
         Arr::set($this->filters, 'areFiltersReady', true);
     }
 

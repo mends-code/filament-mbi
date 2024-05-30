@@ -15,7 +15,6 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Log;
 
 class StripeInvoicesWidget extends BaseWidget
 {
@@ -36,7 +35,7 @@ class StripeInvoicesWidget extends BaseWidget
     {
 
         return $table
-            ->query(StripeInvoice::query()->forContact($this->filters['chatwootContactId']))
+            ->query(StripeInvoice::query()->forContact($this->filters['areFiltersReady'] ? $this->filters['chatwootContactId'] : null))
             ->paginated()
             ->poll('5s')
             ->extremePaginationLinks()
