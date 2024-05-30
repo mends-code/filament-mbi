@@ -3,8 +3,6 @@
 namespace App\Filament\Pages;
 
 use App\Jobs\CreateStripeInvoiceJob;
-use App\Models\StripeCustomer;
-use App\Models\StripeInvoice;
 use App\Models\StripePrice;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Radio;
@@ -27,6 +25,7 @@ class Dashboard extends BaseDashboard
 
     public function mount()
     {
+        Arr::set($this->filters, 'areFiltersReady', false);
         $this->js('window.addEventListener("message", event => $wire.dispatch("set-dashboard-filters", { context: event.data }));console.log("set-dashboard-filters")');
     }
 
@@ -35,16 +34,12 @@ class Dashboard extends BaseDashboard
     {
         $contextData = json_decode($context)->data;
 
-        $customer = StripeCustomer::latestForContact($contextData->contact->id)->first();
-        $invoice = StripeInvoice::latestForContact($contextData->contact->id)->first();
-
         Arr::set($this->filters, 'chatwootContactId', $contextData->contact->id ?? null);
         Arr::set($this->filters, 'chatwootConversationDisplayId', $contextData->conversation->id ?? null);
         Arr::set($this->filters, 'chatwootInboxId', $contextData->conversation->inbox_id ?? null);
         Arr::set($this->filters, 'chatwootAccountId', $contextData->conversation->account_id ?? null);
         Arr::set($this->filters, 'chatwootCurrentAgentId', $contextData->currentAgent->id ?? null);
-        Arr::set($this->filters, 'stripeCustomerId', $customer ? $customer->id : null);
-        Arr::set($this->filters, 'stripeInvoiceId', $invoice ? $invoice->id : null);
+        Arr::set($this->filters, 'areFiltersReady', true);
     }
 
     protected function getHeaderActions(): array

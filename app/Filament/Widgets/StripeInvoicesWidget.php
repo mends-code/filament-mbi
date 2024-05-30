@@ -36,6 +36,10 @@ class StripeInvoicesWidget extends BaseWidget
     {
         $chatwootContactId = $this->filters['chatwootContactId'] ?? null;
 
+        if (! $this->filters['areFiltersReady']) {
+            $chatwootContactId = null;
+        }
+
         Log::info('Fetching Stripe invoices for Chatwoot contact', ['chatwootContactId' => $chatwootContactId]);
 
         return $table
