@@ -11,6 +11,10 @@ namespace App\Models;
  * @property-read \App\Models\StripeProduct|null $product
  *
  * @method static \Illuminate\Database\Eloquent\Builder|StripePrice active()
+ * @method static \Illuminate\Database\Eloquent\Builder|StripePrice currency($currency)
+ * @method static \Illuminate\Database\Eloquent\Builder|StripePrice oneTime()
+ * @method static \Illuminate\Database\Eloquent\Builder|StripePrice recurring()
+ * @method static \Illuminate\Database\Eloquent\Builder|StripePrice forProduct($product_id)
  * @method static \Illuminate\Database\Eloquent\Builder|StripePrice newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|StripePrice newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|StripePrice query()
@@ -29,7 +33,9 @@ class StripePrice extends BaseModelStripe
     protected $casts = [
         'id' => 'string',
         'data' => 'json',
-        'active_since' => 'timestamp',
+        'currency' => 'string',
+        'type' => 'string',
+        'livemode' => 'boolean',
     ];
 
     protected $fillable = [
@@ -43,11 +49,31 @@ class StripePrice extends BaseModelStripe
 
     public function scopeActive($query)
     {
-        return $query->whereNotNull('active_since');
+        return $query->where('active', true);
     }
 
-    public function scopeFilterByCurrency($query, $currency)
+    public function scopeCurrency($query, $currency)
     {
-        return $query->where('data->currency', $currency);
+        return $query->where('currency', $currency);
+    }
+
+    public function scopeOneTime($query)
+    {
+        return $query->where('type', 'one_time');
+    }
+
+    public function scopeRecurring($query)
+    {
+        return $query->where('type', 'recurring');
+    }
+
+    public function scopeForProduct($query, $product_id)
+    {
+        return $query->where('product_id', $product_id);
+    }
+
+    public function scopeLiveMode($query)
+    {
+        return $query->where('livemode', true);
     }
 }

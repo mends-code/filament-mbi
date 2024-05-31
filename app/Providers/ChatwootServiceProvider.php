@@ -14,7 +14,7 @@ class ChatwootServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(ChatwootService::class, function ($app) {
+        $this->app->singleton(ChatwootService::class, function () {
             return new ChatwootService();
         });
     }
