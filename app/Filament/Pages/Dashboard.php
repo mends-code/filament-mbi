@@ -63,11 +63,7 @@ class Dashboard extends BaseDashboard
                     Select::make('currency')
                         ->label('Wybierz walutę')
                         ->native(false)
-                        ->options([
-                            'usd' => 'USD',
-                            'eur' => 'EUR',
-                            // Add other currencies as needed
-                        ])
+                        ->options(fn () => $this->getPriceCurrencies)
                         ->required()
                         ->reactive(),
                     Repeater::make('items')
@@ -86,7 +82,7 @@ class Dashboard extends BaseDashboard
                                 ->visible(fn (callable $get) => $get('productId'))
                                 ->label('Cena')
                                 ->options(fn (callable $get) => collect($this->getPriceOptions) //livewire converts calculated method to cached 
-                                    ->filter(fn ($price) => ($price['product_id'] === $get('productId'))) // it seems that this filtering does not work - 
+                                    ->filter(fn ($price) => ($price['product_id'] === $get('productId')) && ($price['currency'] === $get('../../currency'))) // it seems that this filtering does not work - 
                                     ->mapWithKeys(fn ($price) => [$price['id'] => ($price['unit_amount'] / 100).' '.strtoupper($price['currency'])])
                                 )
                                 ->required(),
@@ -130,6 +126,14 @@ class Dashboard extends BaseDashboard
                 'currency' => $price->currency,
             ];
         })->toArray();
+    }
+
+    #[Computed(persist: true, cache: true)] // this provides caching to lower server load
+    protected function getPriceCurrencies()
+    {
+        $products = StripePrice::active()->get()->unique('currency');
+
+        return $products->pluck('currency', 'currency')->toArray();
     }
 
     public function handleCreateInvoice(array $data)
