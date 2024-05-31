@@ -25,7 +25,7 @@ class Dashboard extends BaseDashboard
 
     public function mount()
     {
-        $this->js('window.addEventListener("message", event => $wire.dispatch("set-dashboard-filters", { context: event.data }));console.log("set-dashboard-filters")');
+        $this->js('window.addEventListener("message", event => $wire.dispatch("set-dashboard-filters", { context: event.data })); console.log("Filters set")');
     }
 
     #[On('set-dashboard-filters')]
@@ -38,6 +38,14 @@ class Dashboard extends BaseDashboard
         Arr::set($this->filters, 'chatwootInboxId', $contextData->conversation->inbox_id ?? null);
         Arr::set($this->filters, 'chatwootAccountId', $contextData->conversation->account_id ?? null);
         Arr::set($this->filters, 'chatwootCurrentAgentId', $contextData->currentAgent->id ?? null);
+
+        Log::info('Filters set', [
+            'contactId' => $this->filters['chatwootContactId'],
+            'conversationId' => $this->filters['chatwootConversationDisplayId'],
+            'inboxId' => $this->filters['chatwootInboxId'],
+            'accountId' => $this->filters['chatwootAccountId'],
+            'currentAgentId' => $this->filters['chatwootCurrentAgentId'],
+        ]);
     }
 
     protected function getHeaderActions(): array
@@ -59,31 +67,35 @@ class Dashboard extends BaseDashboard
                             }
 
                             return $options;
-                        })
-                        ->required(),
+                        }),
                 ])
-                ->action(function (array $data) {
-
-                    $customer = StripeCustomer::latestForContact($this->filters['chatwootContactId'] ?? null)->first() ?? null;
-
-                    $logContext = [
-                        'class' => __CLASS__,
-                        'method' => __METHOD__,
-                        'action' => 'createInvoice',
-                        'contactId' => $this->filters['chatwootContactId'],
-                        'priceId' => $data['priceId'],
-                        'customerId' => $customer->id,
-                        'timestamp' => now(),
-                    ];
-
-                    Log::info('Dispatching CreateStripeInvoiceJob', $logContext);
-
-                    CreateStripeInvoiceJob::dispatch($this->filters['chatwootContactId'], $data['priceId'], $customer->id);
-                }),
+                ->action(fn (array $data) => $this->handleCreateInvoice($data)),
 
             Action::make('makeAppointment')->color('gray')->label('Umów wizytę')->icon('heroicon-o-calendar')->tooltip('wkrótce'),
             Action::make('sendEmail')->color('gray')->label('Wyślij email')->icon('heroicon-o-envelope')->tooltip('wkrótce'),
             Action::make('sendSMS')->color('gray')->label('Wyślij sms')->icon('heroicon-o-chat-bubble-bottom-center-text')->tooltip('wkrótce'),
         ];
+    }
+
+    public function handleCreateInvoice(array $data)
+    {
+        $contactId = $this->filters['chatwootContactId'] ?? null;
+        $currentAgentId = $this->filters['chatwootCurrentAgentId'] ?? null;
+
+        if ($contactId) {
+            $customer = StripeCustomer::latestForContact($contactId)->first();
+            $items = $data['items'];
+
+            Log::info('Dispatching CreateStripeInvoiceJob', [
+                'contactId' => $contactId,
+                'items' => $items,
+                'customerId' => $customer->id ?? null,
+                'agentId' => $currentAgentId,
+            ]);
+
+            CreateStripeInvoiceJob::dispatch($contactId, $items, $customer->id ?? null, $currentAgentId);
+        } else {
+            Log::warning('No contact ID found in filters.');
+        }
     }
 }

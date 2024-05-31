@@ -1,7 +1,5 @@
 <?php
 
-// app/Jobs/CreateStripeInvoiceJob.php
-
 namespace App\Jobs;
 
 use App\Services\StripeService;
@@ -18,20 +16,23 @@ class CreateStripeInvoiceJob implements ShouldQueue
 
     protected $contactId;
 
-    protected $priceId;
+    protected $items;
 
     protected $customerId;
+
+    protected $chatwootAgentId;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($contactId, $priceId, $customerId = null)
+    public function __construct($contactId, array $items, $customerId = null, $chatwootAgentId = null)
     {
         $this->contactId = $contactId;
-        $this->priceId = $priceId;
+        $this->items = $items;
         $this->customerId = $customerId;
+        $this->chatwootAgentId = $chatwootAgentId;
     }
 
     /**
@@ -43,12 +44,13 @@ class CreateStripeInvoiceJob implements ShouldQueue
     {
         Log::info('Creating invoice', [
             'contactId' => $this->contactId,
-            'priceId' => $this->priceId,
+            'items' => $this->items,
             'customerId' => $this->customerId,
+            'chatwootAgentId' => $this->chatwootAgentId,
         ]);
 
         try {
-            $invoice = $stripeService->createQuickInvoice($this->contactId, $this->priceId, $this->customerId);
+            $invoice = $stripeService->createInvoice($this->contactId, $this->items, $this->customerId, $this->chatwootAgentId);
 
             Log::info('Invoice created successfully', ['invoiceId' => $invoice->id]);
         } catch (\Exception $e) {
