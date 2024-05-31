@@ -45,4 +45,9 @@ class StripePrice extends BaseModelStripe
     {
         return $query->whereNotNull('active_since');
     }
+
+    public function scopeFilterByCurrency($query, $currency)
+    {
+        return $query->where('data->currency', $currency);
+    }
 }

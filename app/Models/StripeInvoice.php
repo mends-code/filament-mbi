@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\ExcludeDataStatus;
+use App\Models\Scopes\ExcludeDataStatusScope;
 
 /**
  * @property array $data
@@ -42,7 +42,7 @@ class StripeInvoice extends BaseModelStripe
 
     protected static function booted()
     {
-        static::addGlobalScope(new ExcludeDataStatus(['deleted', 'draft', 'void']));
+        static::addGlobalScope(new ExcludeDataStatusScope(['deleted', 'draft', 'void']));
     }
 
     public function customer()
