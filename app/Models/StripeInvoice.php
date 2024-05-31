@@ -2,13 +2,18 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\ExcludeDataStatusScope;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * @property array $data
  * @property int $created
  * @property string|null $customer_id
  * @property string $id
+ * @property string|null $currency
+ * @property string|null $status
+ * @property bool $paid
+ * @property int $total
+ * @property bool $livemode
  * @property-read \App\Models\ChatwootContact|null $chatwootContact
  * @property-read \App\Models\StripeCustomer|null $customer
  *
@@ -32,17 +37,22 @@ class StripeInvoice extends BaseModelStripe
         'id' => 'string',
         'data' => 'json',
         'created' => 'timestamp',
+        'currency' => 'string',
+        'status' => 'string',
+        'paid' => 'boolean',
+        'total' => 'integer',
+        'livemode' => 'boolean',
     ];
 
     protected $fillable = [
-        'id',
-        'data',
-        'customer_id',
+        'id', 'data', 'customer_id',
     ];
 
-    protected static function booted()
+    protected static function booted(): void
     {
-        static::addGlobalScope(new ExcludeDataStatusScope(['deleted', 'draft', 'void']));
+        static::addGlobalScope('excludeDeletedDraftVoid', function (Builder $builder) {
+            $builder->whereNotIn('status', ['deleted', 'draft', 'void']);
+        });
     }
 
     public function customer()
@@ -73,4 +83,15 @@ class StripeInvoice extends BaseModelStripe
     {
         return $query->forContact($contactId)->orderBy('created', 'desc');
     }
+
+    public function scopePaid($query)
+    {
+        return $query->where('paid', true);
+    }
+
+    public function scopeUnpaid($query)
+    {
+        return $query->where('paid', false);
+    }
+
 }

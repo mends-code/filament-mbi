@@ -6,11 +6,15 @@ use App\HasSessionFilters;
 use App\Jobs\CreateStripeInvoiceJob;
 use App\Models\StripeCustomer;
 use App\Models\StripePrice;
+use App\Models\StripeProduct;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 
 class Dashboard extends BaseDashboard
@@ -56,18 +60,46 @@ class Dashboard extends BaseDashboard
                 ->label('Wystaw fakturę')
                 ->icon('heroicon-s-document-plus')
                 ->form([
-                    Radio::make('priceId')
-                        ->label('Wybierz usługę')
-                        ->options(function () {
-                            $prices = StripePrice::active()->get();
-                            $options = [];
-                            foreach ($prices as $price) {
-                                $description = $price->product->data['name'].' - '.($price->data['unit_amount'] / 100).' '.strtoupper($price->data['currency']);
-                                $options[$price->id] = $description;
-                            }
-
-                            return $options;
-                        }),
+                    Select::make('currency')
+                        ->label('Wybierz walutę')
+                        ->native(false)
+                        ->options([
+                            'usd' => 'USD',
+                            'eur' => 'EUR',
+                            // Add other currencies as needed
+                        ])
+                        ->required()
+                        ->reactive(),
+                    Repeater::make('items')
+                        ->label('Dodaj usługi')
+                        ->schema([
+                            Select::make('productId')
+                                ->label('Wybierz usługę')
+                                ->options(fn () => $this->getProductOptions)
+                                ->required()
+                                ->live()
+                                ->native(false)
+                                ->afterStateUpdated(fn (callable $set) => $set('priceId', null)), // Clear price on product change
+                            Select::make('priceId')
+                                ->native(false)
+                                ->live()
+                                ->visible(fn (callable $get) => $get('productId'))
+                                ->label('Cena')
+                                ->options(fn (callable $get) => collect($this->getPriceOptions) //livewire converts calculated method to cached 
+                                    ->filter(fn ($price) => ($price['product_id'] === $get('productId'))) // it seems that this filtering does not work - 
+                                    ->mapWithKeys(fn ($price) => [$price['id'] => ($price['unit_amount'] / 100).' '.strtoupper($price['currency'])])
+                                )
+                                ->required(),
+                            TextInput::make('quantity')
+                                ->label('Ilość')
+                                ->visible(fn (callable $get) => $get('priceId'))
+                                ->numeric()
+                                ->default(1)
+                                ->required(),
+                        ])
+                        // current solution works flawlessly; howver
+                        ->columns(3)
+                        ->required(),
                 ])
                 ->action(fn (array $data) => $this->handleCreateInvoice($data)),
 
@@ -75,6 +107,29 @@ class Dashboard extends BaseDashboard
             Action::make('sendEmail')->color('gray')->label('Wyślij email')->icon('heroicon-o-envelope')->tooltip('wkrótce'),
             Action::make('sendSMS')->color('gray')->label('Wyślij sms')->icon('heroicon-o-chat-bubble-bottom-center-text')->tooltip('wkrótce'),
         ];
+    }
+
+    #[Computed(persist: true, cache: true)] // this provides caching to lower server load
+    protected function getProductOptions()
+    {
+        $products = StripeProduct::active()->get();
+
+        return $products->pluck('name', 'id')->toArray();
+    }
+
+    #[Computed(persist: true, cache: true)] // this provides caching to lower server load
+    protected function getPriceOptions()
+    {
+        $prices = StripePrice::active()->oneTime()->get();
+
+        return $prices->map(function ($price) {
+            return [
+                'id' => $price->id,
+                'product_id' => $price->product_id,
+                'unit_amount' => $price->unit_amount,
+                'currency' => $price->currency,
+            ];
+        })->toArray();
     }
 
     public function handleCreateInvoice(array $data)

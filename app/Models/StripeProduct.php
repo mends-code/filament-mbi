@@ -6,6 +6,9 @@ namespace App\Models;
  * @property array $data
  * @property int $created
  * @property string $id
+ * @property string|null $default_price
+ * @property bool $active
+ * @property bool $livemode
  *
  * @method static \Illuminate\Database\Eloquent\Builder|StripeProduct newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|StripeProduct newQuery()
@@ -23,9 +26,27 @@ class StripeProduct extends BaseModelStripe
     protected $casts = [
         'id' => 'string',
         'data' => 'json',
+        'default_price' => 'string',
+        'active' => 'boolean',
+        'livemode' => 'boolean',
     ];
 
     protected $fillable = [
         'id', 'data',
     ];
+
+    public function prices()
+    {
+        return $this->hasMany(StripePrice::class, 'product_id', 'id');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
+    }
+
+    public function scopeLiveMode($query)
+    {
+        return $query->where('livemode', true);
+    }
 }
