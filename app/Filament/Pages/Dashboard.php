@@ -68,10 +68,10 @@ class Dashboard extends BaseDashboard
                         ->live(debounce: '500ms')
                         ->options(fn () => $this->getPriceCurrencies)
                         ->required()
-                        ->afterStateUpdated(fn (callable $set) => $set('items.productId', null))
+                        ->afterStateUpdated(fn (callable $set) => $set('items', null))
                         ->reactive(),
                     Repeater::make('items')
-                        ->disabled(fn (callable $get) => ! $get('currency'))
+                        ->visible(fn (callable $get) => $get('currency'))
                         ->label('Dodaj usługi')
                         ->schema([
                             Select::make('productId')
