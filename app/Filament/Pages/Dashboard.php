@@ -71,7 +71,7 @@ class Dashboard extends BaseDashboard
                         ->afterStateUpdated(fn (callable $set) => $set('items.productId', null))
                         ->reactive(),
                     Repeater::make('items')
-                        ->disabled(fn (callable $get) => ! $get('../currency'))
+                        ->disabled(fn (callable $get) => ! $get('currency'))
                         ->label('Dodaj usługi')
                         ->schema([
                             Select::make('productId')
