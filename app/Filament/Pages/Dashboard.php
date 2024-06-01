@@ -63,38 +63,45 @@ class Dashboard extends BaseDashboard
                     Select::make('currency')
                         ->label('Wybierz walutę')
                         ->native(false)
+                        ->searchable()
+                        ->preload()
+                        ->live(debounce: '500ms')
                         ->options(fn () => $this->getPriceCurrencies)
                         ->required()
+                        ->afterStateUpdated(fn (callable $set) => $set('items.productId', null))
                         ->reactive(),
                     Repeater::make('items')
+                        ->disabled(fn (callable $get) => ! $get('../currency'))
                         ->label('Dodaj usługi')
                         ->schema([
                             Select::make('productId')
                                 ->label('Wybierz usługę')
                                 ->options(fn () => $this->getProductOptions)
                                 ->required()
-                                ->live()
+                                ->searchable()
+                                ->preload()
+                                ->live(debounce: '500ms')
                                 ->native(false)
                                 ->afterStateUpdated(fn (callable $set) => $set('priceId', null)), // Clear price on product change
                             Select::make('priceId')
                                 ->native(false)
-                                ->live()
-                                ->visible(fn (callable $get) => $get('productId'))
+                                ->live(debounce: '500ms')
+                                ->disabled(fn (callable $get) => ! $get('productId'))
                                 ->label('Cena')
-                                ->options(fn (callable $get) => collect($this->getPriceOptions) //livewire converts calculated method to cached 
-                                    ->filter(fn ($price) => ($price['product_id'] === $get('productId')) && ($price['currency'] === $get('../../currency'))) // it seems that this filtering does not work - 
+                                ->options(fn (callable $get) => collect($this->getPriceOptions) //livewire converts calculated method to cached
+                                    ->filter(fn ($price) => ($price['product_id'] === $get('productId')) && ($price['currency'] === $get('../../currency'))) // it seems that this filtering does not work -
                                     ->mapWithKeys(fn ($price) => [$price['id'] => ($price['unit_amount'] / 100).' '.strtoupper($price['currency'])])
                                 )
                                 ->required(),
                             TextInput::make('quantity')
                                 ->label('Ilość')
-                                ->visible(fn (callable $get) => $get('priceId'))
+                                ->live(debounce: '500ms')
+                                ->disabled(fn (callable $get) => ! $get('priceId'))
                                 ->numeric()
                                 ->default(1)
                                 ->required(),
                         ])
                         // current solution works flawlessly; howver
-                        ->columns(3)
                         ->required(),
                 ])
                 ->action(fn (array $data) => $this->handleCreateInvoice($data)),
