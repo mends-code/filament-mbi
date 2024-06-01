@@ -86,6 +86,7 @@ class Dashboard extends BaseDashboard
                             Select::make('priceId')
                                 ->native(false)
                                 ->live(debounce: '500ms')
+                                ->preload()
                                 ->disabled(fn (callable $get) => ! $get('productId'))
                                 ->label('Cena')
                                 ->options(fn (callable $get) => collect($this->getPriceOptions) //livewire converts calculated method to cached
