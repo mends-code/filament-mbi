@@ -71,7 +71,6 @@ class Dashboard extends BaseDashboard
                         ->required()
                         ->afterStateUpdated(fn (callable $set) => $set('items', null)),
                     Repeater::make('items')
-                        ->visible(fn (callable $get) => $get('currency'))
                         ->label('Dodaj usługi')
                         ->schema([
                             Select::make('productId')
