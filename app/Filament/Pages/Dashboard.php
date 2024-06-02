@@ -72,11 +72,11 @@ class Dashboard extends BaseDashboard
                                 ->searchable()
                                 ->preload()
                                 ->reactive()
-                                ->native(false),
+                                ->native(false)
+                                ->afterStateUpdated(fn (callable $set) => $set('priceId', null)),
                             Select::make('priceId')
                                 ->native(false)
                                 ->reactive()
-                                ->searchable()
                                 ->preload()
                                 ->hidden(fn (callable $get) => ! $get('productId'))
                                 ->label('Cena')
