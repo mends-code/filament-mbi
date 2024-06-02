@@ -73,7 +73,15 @@ class StripePrice extends BaseModelStripe
 
     public function scopeForProduct($query, $product_id)
     {
-        return $query->where('product_id', $product_id);
+        return $query->where('product_id', $product_id); //in StripeProduct there is default_price collumn with price id; use this to make a new scope default for product or something similiar, to return only one default price for given product;
+    }
+
+    public function scopeDefaultForProduct($query, $product_id)
+    {
+        return $query->whereHas('product', function ($query) use ($product_id) {
+            $query->where('id', $product_id)
+                ->whereColumn('default_price', 'mbi_stripe.prices.id');
+        });
     }
 
     public function scopeLiveMode($query)

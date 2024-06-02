@@ -16,6 +16,7 @@ use Filament\Pages\Dashboard as BaseDashboard;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Computed;
 
 class Dashboard extends BaseDashboard
 {
@@ -60,36 +61,29 @@ class Dashboard extends BaseDashboard
                 ->label('Wystaw fakturę')
                 ->icon('heroicon-s-document-plus')
                 ->form([
-                    Hidden::make('currency'),
-                    Repeater::make('items')
-                        ->label('Dodaj usługi')
-                        ->reorderable(false)
-                        ->schema([
-                            Select::make('productId')
-                                ->label('Wybierz usługę')
-                                ->options(fn (callable $get) => $this->getProductOptionsForCurrency($get('../../currency')))
-                                ->required()
-                                ->searchable()
-                                ->preload()
-                                ->reactive()
-                                ->native(false)
-                                ->afterStateUpdated(fn (callable $set, $state) => $this->updatePriceAndCurrency($set, $state)),
-                            Select::make('priceId')
-                                ->native(false)
-                                ->reactive()
-                                ->preload()
-                                ->hidden(fn (callable $get) => ! $get('productId'))
-                                ->label('Cena')
-                                ->options(fn (callable $get) => $this->getPriceOptionsForProductAndCurrency($get('productId'), $get('../../currency')))
-                                ->required(),
-                            TextInput::make('quantity')
-                                ->label('Ilość')
-                                ->reactive()
-                                ->hidden(fn (callable $get) => ! $get('priceId'))
-                                ->numeric()
-                                ->default(1)
-                                ->required(),
-                        ])
+                    Select::make('productId')
+                        ->label('Wybierz usługę')
+                        ->options(fn () => $this->getGlobalProductOptions)
+                        ->required()
+                        ->searchable()
+                        ->preload()
+                        ->reactive()
+                        ->native(false)
+                        ->afterStateUpdated(fn (callable $set, $state) => $set('priceId', null)),
+                    Select::make('priceId')
+                        ->native(false)
+                        ->reactive()
+                        ->preload()
+                        ->hidden(fn (callable $get) => ! $get('productId'))
+                        ->label('Cena')
+                        ->options(fn (callable $get) => $this->getGlobalPriceOptionsForProduct($get('productId')))
+                        ->required(),
+                    TextInput::make('quantity')
+                        ->label('Ilość')
+                        ->reactive()
+                        ->hidden(fn (callable $get) => ! $get('priceId'))
+                        ->numeric()
+                        ->default(1)
                         ->required(),
                 ])
                 ->action(fn (array $data) => $this->handleCreateInvoice($data)),
@@ -100,46 +94,30 @@ class Dashboard extends BaseDashboard
         ];
     }
 
-    protected function getCurrencyOptions()
+    #[Computed(persist: true, cache: true)]
+    protected function getGlobalProductOptions()
     {
-        return StripePrice::active()
-            ->distinct()
-            ->pluck('currency', 'currency')
-            ->toArray();
+        return StripeProduct::active()->pluck('name', 'id')->toArray();
     }
 
-    protected function getProductOptionsForCurrency($currency)
-    {
-        return StripeProduct::active()
-            ->currency($currency)
-            ->pluck('name', 'id')
-            ->toArray();
-    }
-
-    protected function getPriceOptionsForProductAndCurrency($productId, $currency)
+    #[Computed(persist: true, cache: true)]
+    protected function getGlobalPriceOptions()
     {
         return StripePrice::active()
-            ->forProduct($productId)
-            ->currency($currency)
             ->get()
-            ->mapWithKeys(function ($price) {
-                return [$price->id => ($price->unit_amount / 100).' '.strtoupper($price->currency)];
+            ->groupBy('product_id')
+            ->map(function ($prices) {
+                return $prices->mapWithKeys(function ($price) {
+                    return [$price->id => ($price->unit_amount / 100).' '.strtoupper($price->currency)];
+                })->toArray();
             })
             ->toArray();
     }
 
-    protected function getPriceCurrency($priceId)
+    protected function getGlobalPriceOptionsForProduct($productId)
     {
-        return StripePrice::find($priceId)->currency ?? null; // Corrected method to fetch the currency
-    }
-
-    protected function updatePriceAndCurrency(callable $set, $productId)
-    {
-        $price = StripePrice::where('product_id', $productId)->first();
-        if ($price) {
-            $set('../../currency', $price->currency);
-            $set('priceId', null);
-        }
+        $allPrices = $this->getGlobalPriceOptions;
+        return $allPrices[$productId] ?? [];
     }
 
     public function handleCreateInvoice(array $data)
@@ -149,7 +127,7 @@ class Dashboard extends BaseDashboard
 
         if ($contactId) {
             $customer = StripeCustomer::latestForContact($contactId)->first();
-            $items = $data['items'];
+            $items = [$data];
 
             Log::info('Dispatching CreateStripeInvoiceJob', [
                 'contactId' => $contactId,
