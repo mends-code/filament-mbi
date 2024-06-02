@@ -8,6 +8,7 @@ use App\Models\StripeCustomer;
 use App\Models\StripePrice;
 use App\Models\StripeProduct;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -59,15 +60,7 @@ class Dashboard extends BaseDashboard
                 ->label('Wystaw fakturę')
                 ->icon('heroicon-s-document-plus')
                 ->form([
-                    Select::make('currency')
-                        ->label('Wybierz walutę')
-                        ->native(false)
-                        ->searchable()
-                        ->preload()
-                        ->reactive()
-                        ->options(fn () => $this->getCurrencyOptions())
-                        ->required()
-                        ->afterStateUpdated(fn (callable $set) => $set('items', null)),
+                    Hidden::make('currency'),
                     Repeater::make('items')
                         ->label('Dodaj usługi')
                         ->reorderable(false)
@@ -117,9 +110,7 @@ class Dashboard extends BaseDashboard
 
     protected function getProductOptionsForCurrency($currency)
     {
-        return StripeProduct::whereHas('prices', function ($query) use ($currency) {
-            $query->currency($currency);
-        })
+        return StripeProduct::currency($currency)
             ->pluck('name', 'id')
             ->toArray();
     }

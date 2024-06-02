@@ -40,7 +40,16 @@ class StripeProduct extends BaseModelStripe
         return $this->hasMany(StripePrice::class, 'product_id', 'id');
     }
 
-    // make scope for currency - get currencies  through prices
+    public function scopeCurrency($query, $currency)
+    {
+        if (empty($currency)) {
+            return $query;
+        }
+
+        return $query->whereHas('prices', function ($priceQuery) use ($currency) {
+            $priceQuery->where('currency', $currency);
+        });
+    }
 
     public function scopeActive($query)
     {
