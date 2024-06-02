@@ -118,10 +118,7 @@ class Dashboard extends BaseDashboard
     {
         return StripePrice::forProduct($productId)
             ->currency($currency)
-            ->get()
-            ->mapWithKeys(function ($price) {
-                return [$price->id => ($price->unit_amount / 100).' '.strtoupper($price->currency)];
-            })
+            ->pluck('unit_amount', 'id')
             ->toArray();
     }
 
