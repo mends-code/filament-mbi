@@ -70,14 +70,14 @@ class Dashboard extends BaseDashboard
                                 ->options(fn (callable $get) => $this->getProductOptionsForCurrency($get('../../currency')))
                                 ->required()
                                 ->searchable()
+                                ->preload()
                                 ->reactive()
-                                ->live()
-                                ->native(false)
-                                ->afterStateUpdated(fn (callable $set) => $set('priceId', null)), // Clear price on product change
+                                ->native(false),
                             Select::make('priceId')
                                 ->native(false)
                                 ->reactive()
-                                ->live()
+                                ->searchable()
+                                ->preload()
                                 ->disabled(fn (callable $get) => ! $get('productId'))
                                 ->label('Cena')
                                 ->options(fn (callable $get) => $this->getPriceOptionsForProductAndCurrency($get('productId'), $get('../../currency')))
@@ -85,7 +85,6 @@ class Dashboard extends BaseDashboard
                             TextInput::make('quantity')
                                 ->label('Ilość')
                                 ->reactive()
-                                ->live()
                                 ->disabled(fn (callable $get) => ! $get('priceId'))
                                 ->numeric()
                                 ->default(1)
@@ -119,7 +118,10 @@ class Dashboard extends BaseDashboard
     {
         return StripePrice::forProduct($productId)
             ->currency($currency)
-            ->pluck('unit_amount', 'id')
+            ->get()
+            ->mapWithKeys(function ($price) {
+                return [$price->id => ($price->unit_amount / 100).' '.strtoupper($price->currency)];
+            })
             ->toArray();
     }
 
