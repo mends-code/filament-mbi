@@ -67,17 +67,16 @@ class Dashboard extends BaseDashboard
                         ->preload()
                         ->live()
                         ->reactive()
-                        ->options(fn () => $this->getPriceCurrencies)
+                        ->options(fn () => $this->getCurrencyOptions())
                         ->required()
-                        ->afterStateUpdated(fn (callable $set) => $set('items', null))
-                        ->reactive(),
+                        ->afterStateUpdated(fn (callable $set) => $set('items', null)),
                     Repeater::make('items')
                         ->visible(fn (callable $get) => $get('currency'))
                         ->label('Dodaj usługi')
                         ->schema([
                             Select::make('productId')
                                 ->label('Wybierz usługę')
-                                ->options(fn () => $this->getProductOptions)
+                                ->options(fn (callable $get) => $this->getProductOptionsForCurrency($get('currency')))
                                 ->required()
                                 ->searchable()
                                 ->preload()
@@ -92,10 +91,7 @@ class Dashboard extends BaseDashboard
                                 ->preload()
                                 ->disabled(fn (callable $get) => ! $get('productId'))
                                 ->label('Cena')
-                                ->options(fn (callable $get) => collect($this->getPriceOptions) //livewire converts calculated method to cached
-                                    ->filter(fn ($price) => ($price['product_id'] === $get('productId')) && ($price['currency'] === $get('../../currency'))) // it seems that this filtering does not work -
-                                    ->mapWithKeys(fn ($price) => [$price['id'] => ($price['unit_amount'] / 100).' '.strtoupper($price['currency'])])
-                                )
+                                ->options(fn (callable $get) => $this->getPriceOptionsForProductAndCurrency($get('productId'), $get('../../currency')))
                                 ->required(),
                             TextInput::make('quantity')
                                 ->label('Ilość')
@@ -106,7 +102,6 @@ class Dashboard extends BaseDashboard
                                 ->default(1)
                                 ->required(),
                         ])
-                        // current solution works flawlessly; howver
                         ->required(),
                 ])
                 ->action(fn (array $data) => $this->handleCreateInvoice($data)),
@@ -118,34 +113,49 @@ class Dashboard extends BaseDashboard
     }
 
     #[Computed(persist: true, cache: true)] // this provides caching to lower server load
-    protected function getProductOptions()
-    {
-        $products = StripeProduct::active()->get();
-
-        return $products->pluck('name', 'id')->toArray();
-    }
-
-    #[Computed(persist: true, cache: true)] // this provides caching to lower server load
-    protected function getPriceOptions()
+    protected function getGlobalOptions()
     {
         $prices = StripePrice::active()->oneTime()->get();
 
-        return $prices->map(function ($price) {
-            return [
+        $options = [];
+        foreach ($prices as $price) {
+            $options[$price->currency][$price->product_id][] = [
                 'id' => $price->id,
-                'product_id' => $price->product_id,
                 'unit_amount' => $price->unit_amount,
                 'currency' => $price->currency,
             ];
-        })->toArray();
+        }
+
+        $products = StripeProduct::active()->get();
+        foreach ($products as $product) {
+            foreach ($options as $currency => &$products) {
+                if (isset($products[$product->id])) {
+                    $products[$product->id]['name'] = $product->name;
+                }
+            }
+        }
+
+        return $options;
     }
 
-    #[Computed(persist: true, cache: true)] // this provides caching to lower server load
-    protected function getPriceCurrencies()
+    protected function getCurrencyOptions()
     {
-        $products = StripePrice::active()->get()->unique('currency');
+        $options = $this->getGlobalOptions();
+        return array_keys($options);
+    }
 
-        return $products->pluck('currency', 'currency')->toArray();
+    protected function getProductOptionsForCurrency($currency)
+    {
+        $options = $this->getGlobalOptions();
+        return isset($options[$currency]) ? array_map(fn ($product) => $product['name'], $options[$currency]) : [];
+    }
+
+    protected function getPriceOptionsForProductAndCurrency($productId, $currency)
+    {
+        $options = $this->getGlobalOptions();
+        return isset($options[$currency][$productId]) 
+            ? array_column($options[$currency][$productId], 'unit_amount', 'id') 
+            : [];
     }
 
     public function handleCreateInvoice(array $data)
