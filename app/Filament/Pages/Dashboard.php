@@ -73,7 +73,7 @@ class Dashboard extends BaseDashboard
                                 ->preload()
                                 ->reactive()
                                 ->native(false)
-                                ->afterStateUpdated(fn (callable $set) => $set('priceId', null)),
+                                ->afterStateUpdated(fn (callable $set, $state) => $this->updatePriceAndCurrency($set, $state)),
                             Select::make('priceId')
                                 ->native(false)
                                 ->reactive()
@@ -102,27 +102,44 @@ class Dashboard extends BaseDashboard
 
     protected function getCurrencyOptions()
     {
-        return StripePrice::distinct()
+        return StripePrice::active()
+            ->distinct()
             ->pluck('currency', 'currency')
             ->toArray();
     }
 
     protected function getProductOptionsForCurrency($currency)
     {
-        return StripeProduct::currency($currency)
+        return StripeProduct::active()
+            ->currency($currency)
             ->pluck('name', 'id')
             ->toArray();
     }
 
     protected function getPriceOptionsForProductAndCurrency($productId, $currency)
     {
-        return StripePrice::forProduct($productId)
+        return StripePrice::active()
+            ->forProduct($productId)
             ->currency($currency)
             ->get()
             ->mapWithKeys(function ($price) {
                 return [$price->id => ($price->unit_amount / 100).' '.strtoupper($price->currency)];
             })
             ->toArray();
+    }
+
+    protected function getPriceCurrency($priceId)
+    {
+        return StripePrice::find($priceId)->currency ?? null; // Corrected method to fetch the currency
+    }
+
+    protected function updatePriceAndCurrency(callable $set, $productId)
+    {
+        $price = StripePrice::where('product_id', $productId)->first();
+        if ($price) {
+            $set('../../currency', $price->currency);
+            $set('priceId', null);
+        }
     }
 
     public function handleCreateInvoice(array $data)
