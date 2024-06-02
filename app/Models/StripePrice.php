@@ -54,6 +54,10 @@ class StripePrice extends BaseModelStripe
 
     public function scopeCurrency($query, $currency)
     {
+        if (empty($currency)) {
+            return $query;
+        }
+
         return $query->where('currency', $currency);
     }
 
