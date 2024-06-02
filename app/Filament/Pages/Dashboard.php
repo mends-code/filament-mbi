@@ -75,7 +75,7 @@ class Dashboard extends BaseDashboard
                         ->schema([
                             Select::make('productId')
                                 ->label('Wybierz usługę')
-                                ->options(fn (callable $get) => $this->getProductOptionsForCurrency($get('currency')))
+                                ->options(fn (callable $get) => $this->getProductOptionsForCurrency($get('../../currency')))
                                 ->required()
                                 ->searchable()
                                 ->preload()
@@ -126,10 +126,12 @@ class Dashboard extends BaseDashboard
         }
 
         $products = StripeProduct::active()->get();
-        foreach ($products as $product) {
-            foreach ($options as $currency => &$products) {
-                if (isset($products[$product->id])) {
-                    $products[$product->id]['name'] = $product->name;
+        foreach ($options as $currency => &$productsArray) {
+            foreach ($productsArray as $productId => &$productOptions) {
+                foreach ($products as $product) {
+                    if ($product->id == $productId) {
+                        $productOptions['name'] = $product->name;
+                    }
                 }
             }
         }
@@ -146,7 +148,7 @@ class Dashboard extends BaseDashboard
     protected function getProductOptionsForCurrency($currency)
     {
         $options = $this->getGlobalOptions();
-        return isset($options[$currency]) ? array_map(fn ($product) => $product['name'], $options[$currency]) : [];
+        return isset($options[$currency]) ? array_column($options[$currency], 'name', array_keys($options[$currency])) : [];
     }
 
     protected function getPriceOptionsForProductAndCurrency($productId, $currency)
