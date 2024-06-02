@@ -8,15 +8,13 @@ use App\Models\StripeCustomer;
 use App\Models\StripePrice;
 use App\Models\StripeProduct;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
-use Livewire\Attributes\On;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 
 class Dashboard extends BaseDashboard
 {
@@ -94,16 +92,17 @@ class Dashboard extends BaseDashboard
         ];
     }
 
-    #[Computed(persist: true, cache: true)]
+    #[Computed]
     protected function getGlobalProductOptions()
     {
         return StripeProduct::active()->pluck('name', 'id')->toArray();
     }
 
-    #[Computed(persist: true, cache: true)]
-    protected function getGlobalPriceOptions()
+    #[Computed]
+    protected function getGlobalPriceOptions() // get these prices and then use products only for them - ie in case, when there is product without any prices for one time
     {
         return StripePrice::active()
+            ->oneTime()
             ->get()
             ->groupBy('product_id')
             ->map(function ($prices) {
@@ -117,6 +116,7 @@ class Dashboard extends BaseDashboard
     protected function getGlobalPriceOptionsForProduct($productId)
     {
         $allPrices = $this->getGlobalPriceOptions;
+
         return $allPrices[$productId] ?? [];
     }
 
