@@ -140,13 +140,13 @@ class Dashboard extends BaseDashboard
 
     protected function getCurrencyOptions()
     {
-        $options = $this->getGlobalOptions();
+        $options = $this->getGlobalOptions;
         return array_keys($options);
     }
 
     protected function getProductOptionsForCurrency($currency)
     {
-        $options = $this->getGlobalOptions();
+        $options = $this->getGlobalOptions;
         return isset($options[$currency]) 
             ? array_map(fn ($product) => $product['name'], array_filter($options[$currency], fn ($product) => isset($product['name']))) 
             : [];
@@ -154,7 +154,7 @@ class Dashboard extends BaseDashboard
 
     protected function getPriceOptionsForProductAndCurrency($productId, $currency)
     {
-        $options = $this->getGlobalOptions();
+        $options = $this->getGlobalOptions;
         return isset($options[$currency][$productId]) 
             ? array_column($options[$currency][$productId], 'unit_amount', 'id') 
             : [];
