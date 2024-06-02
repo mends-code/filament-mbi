@@ -78,14 +78,14 @@ class Dashboard extends BaseDashboard
                                 ->reactive()
                                 ->searchable()
                                 ->preload()
-                                ->disabled(fn (callable $get) => ! $get('productId'))
+                                ->hidden(fn (callable $get) => ! $get('productId'))
                                 ->label('Cena')
                                 ->options(fn (callable $get) => $this->getPriceOptionsForProductAndCurrency($get('productId'), $get('../../currency')))
                                 ->required(),
                             TextInput::make('quantity')
                                 ->label('Ilość')
                                 ->reactive()
-                                ->disabled(fn (callable $get) => ! $get('priceId'))
+                                ->hidden(fn (callable $get) => ! $get('priceId'))
                                 ->numeric()
                                 ->default(1)
                                 ->required(),
