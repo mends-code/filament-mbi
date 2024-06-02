@@ -64,7 +64,6 @@ class Dashboard extends BaseDashboard
                     Repeater::make('items')
                         ->label('Dodaj usługi')
                         ->reorderable(false)
-                        ->hidden(fn (callable $get) => ! $get('currency'))
                         ->schema([
                             Select::make('productId')
                                 ->label('Wybierz usługę')
