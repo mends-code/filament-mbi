@@ -72,6 +72,7 @@ class Dashboard extends BaseDashboard
                         ->afterStateUpdated(fn (callable $set) => $set('items', null)),
                     Repeater::make('items')
                         ->label('Dodaj usługi')
+                        ->reorderable(false)
                         ->schema([
                             Select::make('productId')
                                 ->label('Wybierz usługę')
@@ -126,12 +127,10 @@ class Dashboard extends BaseDashboard
         }
 
         $products = StripeProduct::active()->get();
-        foreach ($options as $currency => &$productsArray) {
-            foreach ($productsArray as $productId => &$productOptions) {
-                foreach ($products as $product) {
-                    if ($product->id == $productId) {
-                        $productOptions['name'] = $product->name;
-                    }
+        foreach ($products as $product) {
+            foreach ($options as $currency => &$productsArray) {
+                if (isset($productsArray[$product->id])) {
+                    $productsArray[$product->id]['name'] = $product->name;
                 }
             }
         }
@@ -142,20 +141,25 @@ class Dashboard extends BaseDashboard
     protected function getCurrencyOptions()
     {
         $options = $this->getGlobalOptions();
+
         return array_keys($options);
     }
 
     protected function getProductOptionsForCurrency($currency)
     {
         $options = $this->getGlobalOptions();
-        return isset($options[$currency]) ? array_column($options[$currency], 'name', array_keys($options[$currency])) : [];
+
+        return isset($options[$currency])
+            ? array_map(fn ($product) => $product['name'], $options[$currency])
+            : [];
     }
 
     protected function getPriceOptionsForProductAndCurrency($productId, $currency)
     {
         $options = $this->getGlobalOptions();
-        return isset($options[$currency][$productId]) 
-            ? array_column($options[$currency][$productId], 'unit_amount', 'id') 
+
+        return isset($options[$currency][$productId])
+            ? array_column($options[$currency][$productId], 'unit_amount', 'id')
             : [];
     }
 
