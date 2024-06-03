@@ -135,7 +135,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                             ->placeholder('brak danych')
                             ->color(fn (string $state): string => match ($state) {
                                 'draft' => 'gray',
-                                'open' => 'info',
+                                'open' => 'warning',
                                 'paid' => 'success',
                                 'uncollectible' => 'danger',
                                 'void' => 'gray',

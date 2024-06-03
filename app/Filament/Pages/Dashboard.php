@@ -8,6 +8,7 @@ use App\Models\StripeCustomer;
 use App\Models\StripePrice;
 use App\Models\StripeProduct;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\Dashboard as BaseDashboard;
@@ -57,32 +58,38 @@ class Dashboard extends BaseDashboard
             Action::make('createInvoice')
                 ->modal()
                 ->label('Wystaw fakturę')
+                ->modalDescription('Wybierz walutę, konkretną usługę oraz jej cenę. W przypadku płatności za kilka takich samych usług możesz ustawić żądaną ilość.')
                 ->icon('heroicon-s-document-plus')
                 ->form([
-                    Select::make('productId')
-                        ->label('Wybierz usługę')
-                        ->options(fn () => $this->getGlobalProductOptions)
-                        ->required()
-                        ->searchable()
-                        ->preload()
-                        ->reactive()
-                        ->native(false)
-                        ->afterStateUpdated(fn (callable $set, $state) => $set('priceId', null)),
-                    Select::make('priceId')
-                        ->native(false)
-                        ->reactive()
-                        ->preload()
-                        ->hidden(fn (callable $get) => ! $get('productId'))
-                        ->label('Cena')
-                        ->options(fn (callable $get) => $this->getGlobalPriceOptionsForProduct($get('productId')))
-                        ->required(),
-                    TextInput::make('quantity')
-                        ->label('Ilość')
-                        ->reactive()
-                        ->hidden(fn (callable $get) => ! $get('priceId'))
-                        ->numeric()
-                        ->default(1)
-                        ->required(),
+                    Grid::make([
+                        'default' => 3,
+                    ])
+                        ->schema([
+                            Select::make('productId')
+                                ->label('Wybierz usługę')
+                                ->options(fn () => $this->getGlobalProductOptions())
+                                ->required()
+                                ->searchable()
+                                ->preload()
+                                ->reactive()
+                                ->native(false)
+                                ->afterStateUpdated(fn (callable $set) => $set('priceId', null)),
+                            Select::make('priceId')
+                                ->native(false)
+                                ->reactive()
+                                ->preload()
+                                ->hidden(fn (callable $get) => ! $get('productId'))
+                                ->label('Cena')
+                                ->options(fn (callable $get) => $this->getGlobalPriceOptionsForProduct($get('productId')))
+                                ->required(),
+                            TextInput::make('quantity')
+                                ->label('Ilość')
+                                ->reactive()
+                                ->hidden(fn (callable $get) => ! $get('priceId'))
+                                ->numeric()
+                                ->default(1)
+                                ->required(),
+                        ]),
                 ])
                 ->action(fn (array $data) => $this->handleCreateInvoice($data)),
 
@@ -92,14 +99,14 @@ class Dashboard extends BaseDashboard
         ];
     }
 
-    #[Computed]
+    #[Computed(persist: true, cache: true)]
     protected function getGlobalProductOptions()
     {
         return StripeProduct::active()->pluck('name', 'id')->toArray();
     }
 
-    #[Computed]
-    protected function getGlobalPriceOptions() // get these prices and then use products only for them - ie in case, when there is product without any prices for one time
+    #[Computed(persist: true, cache: true)]
+    protected function getGlobalPriceOptions()
     {
         return StripePrice::active()
             ->oneTime()
@@ -115,7 +122,7 @@ class Dashboard extends BaseDashboard
 
     protected function getGlobalPriceOptionsForProduct($productId)
     {
-        $allPrices = $this->getGlobalPriceOptions;
+        $allPrices = $this->getGlobalPriceOptions();
 
         return $allPrices[$productId] ?? [];
     }
@@ -127,7 +134,12 @@ class Dashboard extends BaseDashboard
 
         if ($contactId) {
             $customer = StripeCustomer::latestForContact($contactId)->first();
-            $items = [$data];
+            $items = [
+                [
+                    'priceId' => $data['priceId'],
+                    'quantity' => $data['quantity'],
+                ],
+            ];
 
             Log::info('Dispatching CreateStripeInvoiceJob', [
                 'contactId' => $contactId,

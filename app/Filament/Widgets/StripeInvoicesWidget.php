@@ -69,7 +69,7 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
                     ->label('Status')
                     ->color(fn (string $state): string => match ($state) {
                         'draft' => 'gray',
-                        'open' => 'info',
+                        'open' => 'warning',
                         'paid' => 'success',
                         'uncollectible' => 'danger',
                         'void' => 'gray',
