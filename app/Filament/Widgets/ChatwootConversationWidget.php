@@ -18,6 +18,7 @@ use Filament\Infolists\Infolist;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Computed;
 
 class ChatwootConversationWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
@@ -31,7 +32,8 @@ class ChatwootConversationWidget extends Widget implements HasActions, HasForms,
 
     public static bool $isLazy = true;
 
-    public function getConversationPayload()
+    #[Computed]
+    public function getConversationData()
     {
         $conversationDisplayId = $this->filters['chatwootConversationDisplayId'] ?? null;
         $accountId = $this->filters['chatwootAccountId'] ?? null;
@@ -79,7 +81,7 @@ class ChatwootConversationWidget extends Widget implements HasActions, HasForms,
         Log::info('Generating infolist for Chatwoot conversation widget');
 
         return $infolist
-            ->state($this->getConversationPayload())
+            ->state($this->getConversationData)
             ->schema([
                 Section::make('serviceContextSection.conversation')
                     ->heading('Obsługiwana rozmowa Chatwoot')

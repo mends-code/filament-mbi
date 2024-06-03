@@ -19,6 +19,7 @@ use Filament\Infolists\Infolist;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Computed;
 
 class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
@@ -34,6 +35,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
 
     public $invoiceId;
 
+    #[Computed]
     public function getLatestInvoiceData()
     {
         $contactId = $this->filters['chatwootContactId'] ?? null;

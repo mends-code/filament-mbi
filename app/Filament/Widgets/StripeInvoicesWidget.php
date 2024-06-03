@@ -21,6 +21,7 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Livewire\Attributes\Computed;
 
 class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, HasTable
 {
@@ -39,11 +40,18 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
         return $query->cursorPaginate(($this->getTableRecordsPerPage() === 'all') ? $query->count() : $this->getTableRecordsPerPage());
     }
 
+    #[Computed]
+    public function getTableQuery()
+    {
+        return StripeInvoice::query()
+        ->forContact($this->filters['chatwootContactId']);
+    }
+
     public function table(Table $table): Table
     {
 
         return $table
-            ->query(StripeInvoice::query()->forContact($this->filters['chatwootContactId'] ?? null))
+            ->query($this->getTableQuery)
             ->paginated()
             ->extremePaginationLinks()
             ->paginationPageOptions([5])

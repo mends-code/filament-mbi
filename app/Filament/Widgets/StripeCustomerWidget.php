@@ -16,6 +16,7 @@ use Filament\Infolists\Infolist;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Computed;
 
 class StripeCustomerWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
@@ -29,6 +30,7 @@ class StripeCustomerWidget extends Widget implements HasActions, HasForms, HasIn
 
     public static bool $isLazy = true;
 
+    #[Computed]
     public function getCustomerData()
     {
         $customer = StripeCustomer::latestForContact($this->filters['chatwootContactId'] ?? null)->first();
