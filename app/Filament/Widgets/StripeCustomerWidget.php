@@ -30,7 +30,7 @@ class StripeCustomerWidget extends Widget implements HasActions, HasForms, HasIn
 
     public static bool $isLazy = true;
 
-    #[Computed(persist: true)]
+    #[Computed]
     public function getCustomerData()
     {
         $customer = StripeCustomer::latestForContact($this->filters['chatwootContactId'] ?? null)->first();

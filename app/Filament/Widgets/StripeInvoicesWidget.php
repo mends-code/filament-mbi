@@ -40,7 +40,7 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
         return $query->cursorPaginate(($this->getTableRecordsPerPage() === 'all') ? $query->count() : $this->getTableRecordsPerPage());
     }
 
-    #[Computed(persist: true)]
+    #[Computed]
     public function getTableQuery()
     {
         return StripeInvoice::query()

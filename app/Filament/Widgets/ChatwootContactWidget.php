@@ -32,7 +32,7 @@ class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasI
 
     public array $chatwootContactPayload = [];
 
-    #[Computed(persist: true)]
+    #[Computed]
     public function getChatwootContactData()
     {
         $contactId = $this->filters['chatwootContactId'] ?? null;

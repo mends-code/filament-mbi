@@ -32,7 +32,7 @@ class ChatwootConversationWidget extends Widget implements HasActions, HasForms,
 
     public static bool $isLazy = true;
 
-    #[Computed(persist: true)]
+    #[Computed]
     public function getConversationData()
     {
         $conversationDisplayId = $this->filters['chatwootConversationDisplayId'] ?? null;

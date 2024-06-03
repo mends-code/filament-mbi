@@ -35,7 +35,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
 
     public $invoiceId;
 
-    #[Computed(persist: true)]
+    #[Computed]
     public function getLatestInvoiceData()
     {
         $contactId = $this->filters['chatwootContactId'] ?? null;
