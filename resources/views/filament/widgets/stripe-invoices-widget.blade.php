@@ -1,4 +1,4 @@
-<x-filament-widgets::widget>
+<x-filament-widgets::widget wire:poll>
     @if (isset($this->table))
         {{ $this->table }}
     @endif
