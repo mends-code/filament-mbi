@@ -2,8 +2,8 @@
 
 namespace App\Filament\Pages;
 
+use App\HandlesInvoiceCreation;
 use App\HasSessionFilters;
-use App\Jobs\CreateStripeInvoiceJob;
 use App\Models\StripeCustomer;
 use App\Models\StripePrice;
 use App\Models\StripeProduct;
@@ -19,7 +19,7 @@ use Livewire\Attributes\On;
 
 class Dashboard extends BaseDashboard
 {
-    use HasSessionFilters;
+    use HandlesInvoiceCreation, HasSessionFilters;
 
     protected static ?string $navigationLabel = 'Panel';
 
@@ -130,7 +130,7 @@ class Dashboard extends BaseDashboard
                                 ]),
                         ]),
                 ])
-                ->action(fn (array $data) => $this->handleCreateInvoice($data)),
+                ->action(fn (array $data) => $this->createInvoice($this->filters['chatwootContactId'] ?? null, $this->filters['chatwootCurrentAgentId'] ?? null, [$data])),
             Action::make('makeAppointment')->outlined()->label('Umów wizytę')->icon('heroicon-o-calendar')->tooltip('wkrótce'),
         ];
     }
@@ -191,32 +191,5 @@ class Dashboard extends BaseDashboard
         $allPrices = $this->getGlobalPriceOptions;
 
         return $allPrices[$productId][$currency] ?? [];
-    }
-
-    public function handleCreateInvoice(array $data)
-    {
-        $contactId = $this->filters['chatwootContactId'] ?? null;
-        $currentAgentId = $this->filters['chatwootCurrentAgentId'] ?? null;
-
-        if ($contactId) {
-            $customer = StripeCustomer::latestForContact($contactId)->first();
-            $items = [
-                [
-                    'priceId' => $data['priceId'],
-                    'quantity' => $data['quantity'],
-                ],
-            ];
-
-            Log::info('Dispatching CreateStripeInvoiceJob', [
-                'contactId' => $contactId,
-                'items' => $items,
-                'customerId' => $customer->id ?? null,
-                'agentId' => $currentAgentId,
-            ]);
-
-            CreateStripeInvoiceJob::dispatch($contactId, $items, $customer->id ?? null, $currentAgentId);
-        } else {
-            Log::warning('No contact ID found in filters.');
-        }
     }
 }
