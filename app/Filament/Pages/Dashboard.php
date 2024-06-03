@@ -62,45 +62,71 @@ class Dashboard extends BaseDashboard
                 ->icon('heroicon-s-document-plus')
                 ->form([
                     Grid::make([
-                        'default' => 4,
+                        'default' => 6,
                     ])
                         ->schema([
-                            Select::make('currency')
-                                ->label('Wybierz walutę')
-                                ->native(false)
-                                ->options($this->getGlobalCurrencyOptions)
-                                ->required()
-                                ->reactive()
-                                ->afterStateUpdated(fn (callable $set) => $set('productId', null)),
                             Select::make('productId')
-                                ->label('Wybierz usługę')
+                                ->label('Usługa')
+                                ->placeholder('Wybierz')
+                                ->searchPrompt('Wyszukaj')
+                                ->loadingMessage('Wczytywanie')
+                                ->selectablePlaceholder(false)
                                 ->options(fn () => $this->getGlobalProductOptions)
                                 ->required()
                                 ->searchable()
                                 ->preload()
                                 ->reactive()
-                                ->hidden(fn (callable $get) => ! $get('currency'))
                                 ->native(false)
-                                ->afterStateUpdated(fn (callable $set) => $set('priceId', null)),
+                                ->afterStateUpdated(fn (callable $set) => $set('currency', null))
+                                ->columnSpan([
+                                    'default' => 3,
+                                ]),
+                            Select::make('currency')
+                                ->label('Waluta')
+                                ->placeholder('Wybierz')
+                                ->searchPrompt('Wyszukaj')
+                                ->loadingMessage('Wczytywanie')
+                                ->selectablePlaceholder(false)
+                                ->native(false)
+                                ->options($this->getGlobalCurrencyOptions)
+                                ->required()
+                                ->searchable()
+                                ->preload()
+                                ->reactive()
+                                ->hidden(fn (callable $get) => ! $get('productId'))
+                                ->afterStateUpdated(fn (callable $set) => $set('priceId', null))
+                                ->columnSpan([
+                                    'default' => 1,
+                                ]),
                             Select::make('priceId')
                                 ->native(false)
+                                ->placeholder('Wybierz')
+                                ->searchPrompt('Wyszukaj')
+                                ->loadingMessage('Wczytywanie')
+                                ->selectablePlaceholder(false)
                                 ->reactive()
+                                ->searchable()
                                 ->preload()
-                                ->hidden(fn (callable $get) => ! $get('productId'))
+                                ->hidden(fn (callable $get) => ! $get('currency'))
                                 ->label('Cena')
                                 ->options(fn (callable $get) => $this->getGlobalPriceOptionsForProduct($get('currency'), $get('productId')))
-                                ->required(),
+                                ->required()
+                                ->columnSpan([
+                                    'default' => 1,
+                                ]),
                             TextInput::make('quantity')
                                 ->label('Ilość')
                                 ->reactive()
                                 ->hidden(fn (callable $get) => ! $get('priceId'))
                                 ->numeric()
                                 ->default(1)
-                                ->required(),
+                                ->required()
+                                ->columnSpan([
+                                    'default' => 1,
+                                ]),
                         ]),
                 ])
                 ->action(fn (array $data) => $this->handleCreateInvoice($data)),
-
             Action::make('makeAppointment')->color('gray')->label('Umów wizytę')->icon('heroicon-o-calendar')->tooltip('wkrótce'),
             Action::make('sendEmail')->color('gray')->label('Wyślij email')->icon('heroicon-o-envelope')->tooltip('wkrótce'),
             Action::make('sendSMS')->color('gray')->label('Wyślij sms')->icon('heroicon-o-chat-bubble-bottom-center-text')->tooltip('wkrótce'),
@@ -121,6 +147,7 @@ class Dashboard extends BaseDashboard
     protected function getGlobalProductOptions()
     {
         return StripeProduct::active()->pluck('name', 'id')->toArray();
+        // use different approach - just get products from global price options and then use their list to query products
     }
 
     #[Computed(persist: true, cache: true)]
@@ -134,15 +161,15 @@ class Dashboard extends BaseDashboard
             $productId = $price->product_id;
             $currency = $price->currency;
 
-            if (!isset($options[$productId])) {
+            if (! isset($options[$productId])) {
                 $options[$productId] = [];
             }
 
-            if (!isset($options[$productId][$currency])) {
+            if (! isset($options[$productId][$currency])) {
                 $options[$productId][$currency] = [];
             }
 
-            $options[$productId][$currency][$price->id] = ($price->unit_amount / 100) . ' ' . strtoupper($price->currency);
+            $options[$productId][$currency][$price->id] = ($price->unit_amount / 100);
         }
 
         return $options;
