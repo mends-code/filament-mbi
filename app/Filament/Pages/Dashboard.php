@@ -62,16 +62,24 @@ class Dashboard extends BaseDashboard
                 ->icon('heroicon-s-document-plus')
                 ->form([
                     Grid::make([
-                        'default' => 3,
+                        'default' => 4,
                     ])
                         ->schema([
+                            Select::make('currency')
+                                ->label('Wybierz walutę')
+                                ->native(false)
+                                ->options($this->getGlobalCurrencyOptions)
+                                ->required()
+                                ->reactive()
+                                ->afterStateUpdated(fn (callable $set) => $set('productId', null)),
                             Select::make('productId')
                                 ->label('Wybierz usługę')
-                                ->options(fn () => $this->getGlobalProductOptions())
+                                ->options(fn () => $this->getGlobalProductOptions)
                                 ->required()
                                 ->searchable()
                                 ->preload()
                                 ->reactive()
+                                ->hidden(fn (callable $get) => ! $get('currency'))
                                 ->native(false)
                                 ->afterStateUpdated(fn (callable $set) => $set('priceId', null)),
                             Select::make('priceId')
@@ -80,7 +88,7 @@ class Dashboard extends BaseDashboard
                                 ->preload()
                                 ->hidden(fn (callable $get) => ! $get('productId'))
                                 ->label('Cena')
-                                ->options(fn (callable $get) => $this->getGlobalPriceOptionsForProduct($get('productId')))
+                                ->options(fn (callable $get) => $this->getGlobalPriceOptionsForProduct($get('currency'), $get('productId')))
                                 ->required(),
                             TextInput::make('quantity')
                                 ->label('Ilość')
@@ -100,6 +108,16 @@ class Dashboard extends BaseDashboard
     }
 
     #[Computed(persist: true, cache: true)]
+    protected function getGlobalCurrencyOptions()
+    {
+        return StripePrice::select('currency')
+            ->distinct()
+            ->pluck('currency')
+            ->mapWithKeys(fn ($currency) => [$currency => strtoupper($currency)])
+            ->toArray();
+    }
+
+    #[Computed(persist: true, cache: true)]
     protected function getGlobalProductOptions()
     {
         return StripeProduct::active()->pluck('name', 'id')->toArray();
@@ -108,23 +126,33 @@ class Dashboard extends BaseDashboard
     #[Computed(persist: true, cache: true)]
     protected function getGlobalPriceOptions()
     {
-        return StripePrice::active()
-            ->oneTime()
-            ->get()
-            ->groupBy('product_id')
-            ->map(function ($prices) {
-                return $prices->mapWithKeys(function ($price) {
-                    return [$price->id => ($price->unit_amount / 100).' '.strtoupper($price->currency)];
-                })->toArray();
-            })
-            ->toArray();
+        $prices = StripePrice::active()->oneTime()->get();
+
+        $options = [];
+
+        foreach ($prices as $price) {
+            $productId = $price->product_id;
+            $currency = $price->currency;
+
+            if (!isset($options[$productId])) {
+                $options[$productId] = [];
+            }
+
+            if (!isset($options[$productId][$currency])) {
+                $options[$productId][$currency] = [];
+            }
+
+            $options[$productId][$currency][$price->id] = ($price->unit_amount / 100) . ' ' . strtoupper($price->currency);
+        }
+
+        return $options;
     }
 
-    protected function getGlobalPriceOptionsForProduct($productId)
+    protected function getGlobalPriceOptionsForProduct($currency, $productId)
     {
-        $allPrices = $this->getGlobalPriceOptions();
+        $allPrices = $this->getGlobalPriceOptions;
 
-        return $allPrices[$productId] ?? [];
+        return $allPrices[$productId][$currency] ?? [];
     }
 
     public function handleCreateInvoice(array $data)
