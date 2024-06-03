@@ -96,9 +96,10 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
             ->defaultSort('created', 'desc')
             ->actions([
                 Action::make('cloneInvoice')
-                    ->label('Sklonuj fakturę')
+                    ->label('Sklonuj')
+                    ->modalHeading('Sklonuj fakturę')
                     ->modalDescription('Wybierz walutę, konkretną usługę oraz jej cenę. W przypadku płatności za kilka takich samych usług możesz ustawić żądaną ilość.')
-                    ->icon('heroicon-o-document-plus')
+                    ->icon('heroicon-o-clipboard-document')
                     ->form(fn ($record) => $this->getInvoiceFormSchema(
                         productId: $record->data['lines']['data'][0]['price']['product'],
                         currency: $record->data['lines']['data'][0]['price']['currency'],
