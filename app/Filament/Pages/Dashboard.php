@@ -27,7 +27,7 @@ class Dashboard extends BaseDashboard
 
     protected ?string $heading = 'Panel Asystenta';
 
-    protected ?string $subheading = 'Panel do obsługi bieżącego klienta, wystawiania faktur, umawiania wizyt';
+    protected ?string $subheading = 'Obsługa klienta, wystawianie faktur, umawianie wizyt';
 
     protected static ?string $navigationIcon = 'heroicon-o-hand-raised';
 
@@ -108,7 +108,6 @@ class Dashboard extends BaseDashboard
                                 ->searchPrompt('Wyszukaj')
                                 ->loadingMessage('Wczytywanie')
                                 ->selectablePlaceholder(false)
-                                ->default() // in this case get first from get global price options for product, get only id and ise this val here
                                 ->reactive()
                                 ->searchable()
                                 ->preload()
