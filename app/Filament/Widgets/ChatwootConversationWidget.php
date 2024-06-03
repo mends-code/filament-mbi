@@ -89,7 +89,8 @@ class ChatwootConversationWidget extends Widget implements HasActions, HasForms,
                         Action::make('sendPrivateMessage')
                             ->label('Dodaj notatkę')
                             ->color('warning')
-                            ->link()
+                            ->outlined()
+                            ->button()
                             ->icon('heroicon-o-information-circle')
                             ->tooltip('wkrótce'),
                     ])

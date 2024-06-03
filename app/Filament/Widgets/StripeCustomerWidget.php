@@ -56,7 +56,8 @@ class StripeCustomerWidget extends Widget implements HasActions, HasForms, HasIn
                     ->headerActions([
                         Action::make('switchActiveStripeCustomer')
                             ->label('Zmień klienta')
-                            ->link()
+                            ->outlined()
+                            ->button()
                             ->tooltip('wkrótce')
                             ->icon('heroicon-o-credit-card'),
                     ])
@@ -73,6 +74,12 @@ class StripeCustomerWidget extends Widget implements HasActions, HasForms, HasIn
                             ->since()
                             ->badge()
                             ->color('gray'),
+                        TextEntry::make('data.currency')
+                            ->label('Domyślna waluta')
+                            ->placeholder('brak danych')
+                            ->inlineLabel()
+                            ->badge()
+                            ->color('info'),
                         TextEntry::make('data.name')
                             ->label('Imię i nazwisko')
                             ->placeholder('brak danych')

@@ -25,6 +25,10 @@ class Dashboard extends BaseDashboard
 
     protected static ?string $title = 'Panel';
 
+    protected ?string $heading = 'Panel Asystenta';
+
+    protected ?string $subheading = 'Panel do obsługi bieżącego klienta, wystawiania faktur, umawiania wizyt';
+
     protected static ?string $navigationIcon = 'heroicon-o-hand-raised';
 
     public function mount()
@@ -77,7 +81,7 @@ class Dashboard extends BaseDashboard
                                 ->preload()
                                 ->reactive()
                                 ->native(false)
-                                ->afterStateUpdated(fn (callable $set) => $set('currency', null))
+                                ->afterStateUpdated(fn (callable $set) => $set('currency', $this->getCustomerCurrency()))
                                 ->columnSpan([
                                     'default' => 3,
                                 ]),
@@ -104,6 +108,7 @@ class Dashboard extends BaseDashboard
                                 ->searchPrompt('Wyszukaj')
                                 ->loadingMessage('Wczytywanie')
                                 ->selectablePlaceholder(false)
+                                ->default() // in this case get first from get global price options for product, get only id and ise this val here
                                 ->reactive()
                                 ->searchable()
                                 ->preload()
@@ -127,9 +132,7 @@ class Dashboard extends BaseDashboard
                         ]),
                 ])
                 ->action(fn (array $data) => $this->handleCreateInvoice($data)),
-            Action::make('makeAppointment')->color('gray')->label('Umów wizytę')->icon('heroicon-o-calendar')->tooltip('wkrótce'),
-            Action::make('sendEmail')->color('gray')->label('Wyślij email')->icon('heroicon-o-envelope')->tooltip('wkrótce'),
-            Action::make('sendSMS')->color('gray')->label('Wyślij sms')->icon('heroicon-o-chat-bubble-bottom-center-text')->tooltip('wkrótce'),
+            Action::make('makeAppointment')->outlined()->label('Umów wizytę')->icon('heroicon-o-calendar')->tooltip('wkrótce'),
         ];
     }
 
@@ -173,6 +176,15 @@ class Dashboard extends BaseDashboard
         }
 
         return $options;
+    }
+
+    protected function getCustomerCurrency()
+    {
+        $contactId = $this->filters['chatwootContactId'] ?? null;
+
+        $customer = StripeCustomer::latestForContact($contactId)->first();
+
+        return $customer->data['currency'];
     }
 
     protected function getGlobalPriceOptionsForProduct($currency, $productId)

@@ -104,12 +104,10 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                         Action::make('sendStripeInvoiceLink')
                             ->disabled(! $this->invoiceId)
                             ->label('Wyślij link')
-                            ->link()
+                            ->outlined()
+                            ->button()
                             ->icon('heroicon-o-link')
                             ->tooltip('w trakcie testów')
-                            ->form([
-
-                            ])
                             ->action('sendStripeInvoiceLink'),
                     ])
                     ->schema([
@@ -118,21 +116,21 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                             ->inlineLabel()
                             ->placeholder('N/A')
                             ->badge(),
-                        TextEntry::make('data.created')
+                        TextEntry::make('created')
                             ->label('Utworzono')
                             ->placeholder('brak danych')
                             ->inlineLabel()
                             ->since()
                             ->badge()
                             ->color('gray'),
-                        TextEntry::make('data.total')
+                        TextEntry::make('total')
                             ->label('Suma')
                             ->placeholder('brak danych')
                             ->money(fn () => $invoice['data']['currency'], divideBy: 100)
                             ->badge()
                             ->inlineLabel()
                             ->color(fn () => $invoice['data']['paid'] ? 'success' : 'danger'),
-                        TextEntry::make('data.status')
+                        TextEntry::make('status')
                             ->label('Status')
                             ->placeholder('brak danych')
                             ->color(fn (string $state): string => match ($state) {
