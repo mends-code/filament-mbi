@@ -1,4 +1,4 @@
-<x-filament-widgets::widget wire:poll>
+<x-filament-widgets::widget>
     @if (isset($this->infolist))
         {{ $this->infolist }}
     @endif

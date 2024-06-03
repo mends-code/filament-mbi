@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\HandlesInvoiceCreation;
 use App\Models\StripeInvoice;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -12,6 +13,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
 use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -25,7 +27,7 @@ use Livewire\Attributes\Computed;
 
 class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, HasTable
 {
-    use InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, InteractsWithTable;
+    use HandlesInvoiceCreation, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters ,InteractsWithTable;
 
     protected static string $view = 'filament.widgets.stripe-invoices-widget';
 
@@ -40,11 +42,17 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
         return $query->cursorPaginate(($this->getTableRecordsPerPage() === 'all') ? $query->count() : $this->getTableRecordsPerPage());
     }
 
+    public function boot()
+    {
+        $this->contactId = $this->filters['chatwootContactId'];
+        $this->currentAgentId = $this->filters['chatwootCurrentAgentId'];
+    }
+
     #[Computed]
     public function getTableQuery()
     {
         return StripeInvoice::query()
-        ->forContact($this->filters['chatwootContactId']);
+            ->forContact($this->filters['chatwootContactId']);
     }
 
     public function table(Table $table): Table
@@ -87,6 +95,17 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
             ])
             ->defaultSort('created', 'desc')
             ->actions([
+                Action::make('cloneInvoice')
+                    ->label('Sklonuj fakturę')
+                    ->modalDescription('Wybierz walutę, konkretną usługę oraz jej cenę. W przypadku płatności za kilka takich samych usług możesz ustawić żądaną ilość.')
+                    ->icon('heroicon-o-document-plus')
+                    ->form(fn ($record) => $this->getInvoiceFormSchema(
+                        productId: $record->data['lines']['data'][0]['price']['product'],
+                        currency: $record->data['lines']['data'][0]['price']['currency'],
+                        priceId: $record->data['lines']['data'][0]['price']['id'],
+                        quantity: $record->data['lines']['data'][0]['quantity'],
+                    ))
+                    ->action(fn ($data) => $this->createInvoice([$data])),
                 ViewAction::make('hostedInvoiceUrlView')
                     ->label('Pokaż link')
                     ->icon('heroicon-o-link')
@@ -161,6 +180,6 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
                             ])
                             ->columns(1),
                     ]),
-            ], position: ActionsPosition::BeforeColumns);
+            ], position: ActionsPosition::AfterColumns);
     }
 }
