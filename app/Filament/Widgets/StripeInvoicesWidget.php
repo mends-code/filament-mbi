@@ -42,12 +42,6 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
         return $query->cursorPaginate(($this->getTableRecordsPerPage() === 'all') ? $query->count() : $this->getTableRecordsPerPage());
     }
 
-    public function boot()
-    {
-        $this->contactId = $this->filters['chatwootContactId'];
-        $this->currentAgentId = $this->filters['chatwootCurrentAgentId'];
-    }
-
     #[Computed]
     public function getTableQuery()
     {
@@ -57,6 +51,8 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
 
     public function table(Table $table): Table
     {
+        $contactId = $this->filters['chatwootContactId'];
+        $currentAgentId = $this->filters['chatwootCurrentAgentId'];
 
         return $table
             ->query($this->getTableQuery)
@@ -106,7 +102,7 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
                         priceId: $record->data['lines']['data'][0]['price']['id'],
                         quantity: $record->data['lines']['data'][0]['quantity'],
                     ))
-                    ->action(fn ($data) => $this->createInvoice([$data])),
+                    ->action(fn ($data) => $this->createInvoice($contactId, $currentAgentId, [$data])),
                 ViewAction::make('hostedInvoiceUrlView')
                     ->label('Pokaż link')
                     ->icon('heroicon-o-link')

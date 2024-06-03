@@ -14,14 +14,9 @@ use Livewire\Attributes\Computed;
 
 trait HandlesInvoiceCreation
 {
-    public ?int $contactId = null;
-    public ?int $currentAgentId = null;
 
-    public function createInvoice(array $items)
+    public function createInvoice(int $contactId, int $currentAgentId, array $items)
     {
-        $contactId = $this->contactId;
-        $currentAgentId = $this->currentAgentId;
-
         if ($contactId) {
             $customer = StripeCustomer::latestForContact($contactId)->first();
 
@@ -38,7 +33,7 @@ trait HandlesInvoiceCreation
         }
     }
 
-    public function getInvoiceFormSchema($productId = null, $currency = null, $priceId = null, $quantity = null): array
+    public function getInvoiceFormSchema($productId = null, $currency = null, $priceId = null, $quantity = 1): array
     {
         return [
             Grid::make(['default' => 6])

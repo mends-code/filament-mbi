@@ -29,12 +29,6 @@ class Dashboard extends BaseDashboard
         $this->js('window.addEventListener("message", event => $wire.dispatch("set-dashboard-filters", { context: event.data })); console.log("Filters set")');
     }
 
-    public function boot()
-    {
-        $this->contactId = $this->filters['chatwootContactId'];
-        $this->currentAgentId = $this->filters['chatwootCurrentAgentId'];
-    }
-
     #[On('set-dashboard-filters')]
     public function setDashboardFilters($context)
     {
@@ -57,13 +51,16 @@ class Dashboard extends BaseDashboard
 
     protected function getHeaderActions(): array
     {
+        $contactId = $this->filters['chatwootContactId'];
+        $currentAgentId = $this->filters['chatwootCurrentAgentId'];
+        
         return [
             Action::make('createInvoice')
                 ->label('Wystaw fakturę')
                 ->modalDescription('Wybierz walutę, konkretną usługę oraz jej cenę. W przypadku płatności za kilka takich samych usług możesz ustawić żądaną ilość.')
                 ->icon('heroicon-s-document-plus')
                 ->form($this->getInvoiceFormSchema())
-                ->action(fn (array $data) => $this->createInvoice([$data])),
+                ->action(fn (array $data) => $this->createInvoice($contactId, $currentAgentId, [$data])),
             Action::make('makeAppointment')->outlined()->label('Umów wizytę')->icon('heroicon-o-calendar')->tooltip('wkrótce'),
         ];
     }
