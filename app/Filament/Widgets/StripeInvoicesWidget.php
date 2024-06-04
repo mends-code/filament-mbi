@@ -51,8 +51,8 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
 
     public function table(Table $table): Table
     {
-        $contactId = $this->filters['chatwootContactId'];
-        $currentAgentId = $this->filters['chatwootCurrentAgentId'];
+        $contactId = $this->filters['chatwootContactId'] ?? null;
+        $currentAgentId = $this->filters['chatwootCurrentAgentId'] ?? null;
 
         return $table
             ->query($this->getTableQuery)
@@ -92,8 +92,8 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
             ->defaultSort('created', 'desc')
             ->actions([
                 Action::make('cloneInvoice')
-                    ->label('Sklonuj')
-                    ->modalHeading('Sklonuj fakturę')
+                    ->label('Skopiuj')
+                    ->modalHeading('Skopiuj fakturę')
                     ->modalDescription('Wybierz walutę, konkretną usługę oraz jej cenę. W przypadku płatności za kilka takich samych usług możesz ustawić żądaną ilość.')
                     ->icon('heroicon-o-clipboard-document')
                     ->form(fn ($record) => $this->getInvoiceFormSchema(

@@ -4,6 +4,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\HandlesInvoiceCreation;
 use App\Jobs\SendStripeInvoiceLinkJob;
 use App\Models\StripeInvoice;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -11,6 +12,7 @@ use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Infolists\Components\Actions\Action;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
@@ -23,7 +25,7 @@ use Livewire\Attributes\Computed;
 
 class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
-    use InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters;
+    use HandlesInvoiceCreation, InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters;
 
     protected static string $view = 'filament.widgets.stripe-latest-invoice-data-widget';
 
@@ -34,6 +36,8 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
     public static bool $isLazy = true;
 
     public $invoiceId;
+
+    public array $invoice = [];
 
     #[Computed]
     public function getLatestInvoiceData()
@@ -91,24 +95,44 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
 
     public function infolist(Infolist $infolist): Infolist
     {
-        $invoice = $this->getLatestInvoiceData();
+        $this->invoice = $this->getLatestInvoiceData();
 
-        Log::info('Building infolist', ['invoice' => $invoice]);
+        $contactId = $this->filters['chatwootContactId'] ?? null;
+        $currentAgentId = $this->filters['chatwootCurrentAgentId'] ?? null;
+
+        Log::info('Building infolist', ['invoice' => $this->invoice['id']]);
 
         return $infolist
-            ->state($invoice)
+            ->state($this->invoice)
             ->schema([
                 Section::make('invoiceDetails')
                     ->heading('Ostatnia faktura Stripe')
                     ->headerActions([
+                        Action::make('cloneInvoice')
+                            ->label('Skopiuj')
+                            ->modalHeading('Skopiuj fakturę')
+                            ->modalDescription('Wybierz walutę, konkretną usługę oraz jej cenę. W przypadku płatności za kilka takich samych usług możesz ustawić żądaną ilość.')
+                            ->icon('heroicon-o-clipboard-document')
+                            ->form(fn () => $this->getInvoiceFormSchema(
+                                productId: $this->invoice['data']['lines']['data'][0]['price']['product'],
+                                currency: $this->invoice['data']['lines']['data'][0]['price']['currency'],
+                                priceId: $this->invoice['data']['lines']['data'][0]['price']['id'],
+                                quantity: $this->invoice['data']['lines']['data'][0]['quantity'],
+                            ))
+                            ->tooltip('w trakcie testów')
+                            ->action(fn ($data) => $this->createInvoice($contactId, $currentAgentId, [$data]))
+                            ->button()
+                            ->outlined(),
                         Action::make('sendStripeInvoiceLink')
+                            ->color('warning')
                             ->disabled(! $this->invoiceId)
                             ->label('Wyślij link')
                             ->outlined()
                             ->button()
                             ->icon('heroicon-o-link')
                             ->tooltip('w trakcie testów')
-                            ->action('sendStripeInvoiceLink'),
+                            ->requiresConfirmation()
+                            ->action(fn () => $this->sendStripeInvoiceLink()),
                     ])
                     ->schema([
                         TextEntry::make('id')
@@ -123,13 +147,21 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                             ->since()
                             ->badge()
                             ->color('gray'),
+                        RepeatableEntry::make('data.lines.data')
+                            ->hiddenLabel()
+                            ->schema([
+                                TextEntry::make('description')
+                                    ->label('Usługa')
+                                    ->inlineLabel(),
+                            ])
+                            ->contained(false),
                         TextEntry::make('total')
                             ->label('Suma')
                             ->placeholder('brak danych')
-                            ->money(fn () => $invoice['data']['currency'], divideBy: 100)
+                            ->money(fn () => $this->invoice['data']['currency'], divideBy: 100)
                             ->badge()
                             ->inlineLabel()
-                            ->color(fn () => $invoice['data']['paid'] ? 'success' : 'danger'),
+                            ->color(fn () => $this->invoice['data']['paid'] ? 'success' : 'danger'),
                         TextEntry::make('status')
                             ->label('Status')
                             ->placeholder('brak danych')
