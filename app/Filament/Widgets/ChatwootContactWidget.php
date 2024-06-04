@@ -63,6 +63,7 @@ class ChatwootContactWidget extends Widget implements HasActions, HasForms, HasI
                     ->headerActions([
                         Action::make('sendContactUpdateForm')
                             ->label('Wyślij formularz')
+                            ->color('warning')
                             ->outlined()
                             ->button()
                             ->icon('heroicon-o-user-plus')
