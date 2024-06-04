@@ -51,9 +51,9 @@ class Dashboard extends BaseDashboard
 
     protected function getHeaderActions(): array
     {
-        $contactId = $this->filters['chatwootContactId'];
-        $currentAgentId = $this->filters['chatwootCurrentAgentId'];
-        
+        $contactId = $this->filters['chatwootContactId'] ?? null;
+        $currentAgentId = $this->filters['chatwootCurrentAgentId'] ?? null;
+
         return [
             Action::make('createInvoice')
                 ->label('Wystaw fakturę')
