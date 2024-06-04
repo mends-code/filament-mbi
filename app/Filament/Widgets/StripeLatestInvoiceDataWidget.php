@@ -100,8 +100,6 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
         $contactId = $this->filters['chatwootContactId'] ?? null;
         $currentAgentId = $this->filters['chatwootCurrentAgentId'] ?? null;
 
-        Log::info('Building infolist', ['invoice' => $this->invoice['id']]);
-
         return $infolist
             ->state($this->invoice)
             ->schema([
