@@ -114,6 +114,7 @@ class StripeService
             'currency' => strtoupper($currencies[0]),
             'metadata' => [
                 'chatwoot_agent_id' => $chatwootAgentId,
+                'chatwoot_contact_id' => $chatwootContactId,
             ],
         ]);
         Log::info('Invoice created', ['invoiceId' => $invoice->id]);

@@ -91,6 +91,7 @@ trait HandlesInvoiceCreation
                         ->hidden(fn (callable $get) => ! $get('priceId'))
                         ->numeric()
                         ->required()
+                        ->regex('/^[1-9]\d*$/i')
                         ->columnSpan(['default' => 1]),
                 ]),
         ];

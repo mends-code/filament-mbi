@@ -102,7 +102,9 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
                         priceId: $record->data['lines']['data'][0]['price']['id'],
                         quantity: $record->data['lines']['data'][0]['quantity'],
                     ))
-                    ->action(fn ($data) => $this->createInvoice($contactId, $currentAgentId, [$data])),
+                    ->action(fn ($data) => $this->createInvoice($contactId, $currentAgentId, [$data]))
+                    ->button()
+                    ->outlined(),
                 ViewAction::make('hostedInvoiceUrlView')
                     ->label('Pokaż link')
                     ->icon('heroicon-o-link')
@@ -114,7 +116,9 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
                     ->closeModalByClickingAway()
                     ->modalCancelAction(false)
                     ->modalHeading('Link do faktury')
-                    ->modalCloseButton(),
+                    ->modalCloseButton()
+                    ->button()
+                    ->outlined(),
                 ViewAction::make('recordView')
                     ->label('Zobacz fakturę')
                     ->icon('heroicon-o-eye')
@@ -176,7 +180,9 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
                                     ]),
                             ])
                             ->columns(1),
-                    ]),
+                    ])
+                    ->button()
+                    ->outlined(),
             ], position: ActionsPosition::AfterColumns);
     }
 }
