@@ -12,6 +12,8 @@ use Filament\Tables\Table;
 
 class ChatwootConversationResource extends Resource
 {
+    protected static bool $isDiscovered = false;
+
     protected static ?string $navigationGroup = 'Chatwoot';
 
     protected static ?string $model = ChatwootConversation::class;

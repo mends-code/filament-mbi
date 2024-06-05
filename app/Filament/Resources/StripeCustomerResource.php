@@ -11,6 +11,8 @@ use Filament\Tables\Table;
 
 class StripeCustomerResource extends Resource
 {
+    protected static bool $isDiscovered = false;
+
     protected static ?string $model = StripeCustomer::class;
 
     protected static ?string $navigationGroup = 'Stripe';

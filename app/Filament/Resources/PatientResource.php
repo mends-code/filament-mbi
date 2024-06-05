@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class PatientResource extends Resource
 {
+    protected static bool $isDiscovered = false;
+
     public static function getGlobalSearchResultTitle(Model $record): string
     {
         return sprintf('%s %s | %s', $record->first_name, $record->last_name, $record->birthdate);

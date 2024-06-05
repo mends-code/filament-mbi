@@ -4,15 +4,14 @@
 
 namespace App\Filament\Widgets;
 
-use App\HandlesInvoiceCreation;
 use App\Jobs\SendStripeInvoiceLinkJob;
 use App\Models\StripeInvoice;
+use App\Traits\HandlesInvoiceCreation;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Infolists\Components\Actions\Action;
-use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
@@ -20,6 +19,7 @@ use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Infolists\Infolist;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 
@@ -56,7 +56,6 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
 
         if ($invoice) {
             Log::info('Latest invoice found', ['invoiceId' => $invoice->id]);
-            $this->invoiceId = $invoice->id; // Set invoice ID for later use
         } else {
             Log::warning('No invoice found for contact', ['contactId' => $contactId]);
         }
@@ -76,9 +75,9 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
             'conversationId' => $conversationId,
         ]);
 
-        if (! $this->invoiceId || ! $accountId || ! $contactId || ! $conversationId) {
+        if (! $this->invoice || ! $accountId || ! $contactId || ! $conversationId) {
             Log::error('Missing required filters for sending invoice link', [
-                'invoiceId' => $this->invoiceId,
+                'invoiceId' => $this->invoice['id'],
                 'accountId' => $accountId,
                 'contactId' => $contactId,
                 'conversationId' => $conversationId,
@@ -88,7 +87,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
         }
 
         // Dispatch the job
-        SendStripeInvoiceLinkJob::dispatch($this->invoiceId, $accountId, $contactId, $conversationId);
+        SendStripeInvoiceLinkJob::dispatch($this->invoice['id'], $accountId, $contactId, $conversationId);
 
         Log::info('Job dispatched for sending invoice link');
     }
@@ -117,18 +116,18 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                                 priceId: $this->invoice['data']['lines']['data'][0]['price']['id'],
                                 quantity: $this->invoice['data']['lines']['data'][0]['quantity'],
                             ))
-                            ->tooltip('w trakcie testów')
                             ->action(fn ($data) => $this->createInvoice($contactId, $currentAgentId, [$data]))
                             ->button()
-                            ->outlined(),
+                            ->outlined()
+                            ->disabled(! $this->invoice)
+                            ->color('primary'),
                         Action::make('sendStripeInvoiceLink')
                             ->color('warning')
-                            ->disabled(! $this->invoiceId)
+                            ->disabled(! $this->invoice)
                             ->label('Wyślij link')
                             ->outlined()
                             ->button()
                             ->icon('heroicon-o-link')
-                            ->tooltip('w trakcie testów')
                             ->requiresConfirmation()
                             ->action(fn () => $this->sendStripeInvoiceLink()),
                     ])
@@ -145,14 +144,11 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                             ->since()
                             ->badge()
                             ->color('gray'),
-                        RepeatableEntry::make('data.lines.data')
-                            ->hiddenLabel()
-                            ->schema([
-                                TextEntry::make('description')
-                                    ->label('Usługa')
-                                    ->inlineLabel(),
-                            ])
-                            ->contained(false),
+                        TextEntry::make('description')
+                            ->placeholder('brak danych')
+                            ->state(fn () => $this->invoice ? Arr::pluck($this->invoice['data']['lines']['data'], 'description') : null)
+                            ->label('Usługi')
+                            ->inlineLabel(),
                         TextEntry::make('total')
                             ->label('Suma')
                             ->placeholder('brak danych')

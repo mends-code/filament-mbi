@@ -93,5 +93,4 @@ class StripeInvoice extends BaseModelStripe
     {
         return $query->where('paid', false);
     }
-
 }

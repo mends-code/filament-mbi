@@ -18,6 +18,8 @@ use Rinvex\Country\CountryLoader;
 
 class ChatwootContactResource extends Resource
 {
+    protected static bool $isDiscovered = false;
+
     public static function getGlobalSearchResultTitle(Model $record): string
     {
         return sprintf('%s | %s | %s', $record->name, $record->email, $record->phone_number);

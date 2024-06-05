@@ -2,8 +2,8 @@
 
 namespace App\Filament\Pages;
 
-use App\HandlesInvoiceCreation;
-use App\HasSessionFilters;
+use App\Traits\HandlesInvoiceCreation;
+use App\Traits\HasSessionFilters;
 use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Illuminate\Support\Arr;

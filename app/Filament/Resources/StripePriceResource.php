@@ -11,6 +11,8 @@ use Filament\Tables\Table;
 
 class StripePriceResource extends Resource
 {
+    protected static bool $isDiscovered = false;
+
     protected static ?string $model = StripePrice::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

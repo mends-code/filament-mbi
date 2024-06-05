@@ -15,6 +15,8 @@ use Filament\Tables\Table;
 
 class StripeInvoiceResource extends Resource
 {
+    protected static bool $isDiscovered = false;
+
     protected static ?string $model = StripeInvoice::class;
 
     protected static ?string $navigationGroup = 'Stripe';

@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Traits;
 
 use App\Jobs\CreateStripeInvoiceJob;
 use App\Models\StripeCustomer;
@@ -14,7 +14,6 @@ use Livewire\Attributes\Computed;
 
 trait HandlesInvoiceCreation
 {
-
     public function createInvoice(int $contactId, int $currentAgentId, array $items)
     {
         if ($contactId) {
@@ -124,11 +123,11 @@ trait HandlesInvoiceCreation
             $productId = $price->product_id;
             $currency = $price->currency;
 
-            if (!isset($options[$productId])) {
+            if (! isset($options[$productId])) {
                 $options[$productId] = [];
             }
 
-            if (!isset($options[$productId][$currency])) {
+            if (! isset($options[$productId][$currency])) {
                 $options[$productId][$currency] = [];
             }
 

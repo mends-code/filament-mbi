@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ChatwootAccountResource extends Resource
 {
+    protected static bool $isDiscovered = false;
+
     protected static ?string $navigationGroup = 'Chatwoot';
 
     protected static ?string $model = ChatwootAccount::class;
