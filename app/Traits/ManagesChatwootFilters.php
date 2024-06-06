@@ -5,7 +5,7 @@ namespace App\Traits;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
-trait ChatwootFiltersTrait
+trait ManagesChatwootFilters
 {
     use HasSessionFilters;
 

@@ -3,20 +3,23 @@
 namespace App\Filament\Pages;
 
 use App\Traits\HandlesInvoiceCreation;
-use App\Traits\HasSessionFilters;
-use App\Traits\ChatwootFiltersTrait;
+use App\Traits\ManagesChatwootFilters;
 use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Livewire\Attributes\On;
 
 class Dashboard extends BaseDashboard
 {
-    use HandlesInvoiceCreation, ChatwootFiltersTrait;
+    use HandlesInvoiceCreation, ManagesChatwootFilters;
 
     protected static ?string $navigationLabel = 'Panel';
+
     protected static ?string $title = 'Panel';
+
     protected ?string $heading = 'Panel Asystenta';
+
     protected ?string $subheading = 'Obsługa klienta, wystawianie faktur, umawianie wizyt';
+
     protected static ?string $navigationIcon = 'heroicon-o-hand-raised';
 
     public function mount()
