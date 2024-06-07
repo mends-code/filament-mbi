@@ -22,17 +22,23 @@ class CreateStripeInvoiceJob implements ShouldQueue
 
     protected $chatwootAgentId;
 
+    protected $chatwootConversationId;
+
+    protected $chatwootAccountId;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($contactId, array $items, $customerId = null, $chatwootAgentId = null)
+    public function __construct($contactId, array $items, $customerId, $chatwootAgentId, $chatwootConversationId, $chatwootAccountId)
     {
         $this->contactId = $contactId;
         $this->items = $items;
         $this->customerId = $customerId;
         $this->chatwootAgentId = $chatwootAgentId;
+        $this->chatwootConversationId = $chatwootConversationId;
+        $this->chatwootAccountId = $chatwootAccountId;
     }
 
     /**
@@ -47,10 +53,19 @@ class CreateStripeInvoiceJob implements ShouldQueue
             'items' => $this->items,
             'customerId' => $this->customerId,
             'chatwootAgentId' => $this->chatwootAgentId,
+            'chatwootConversationId' => $this->chatwootConversationId,
+            'chatwootAccountId' => $this->chatwootAccountId,
         ]);
 
         try {
-            $invoice = $stripeService->createInvoice($this->contactId, $this->items, $this->customerId, $this->chatwootAgentId);
+            $invoice = $stripeService->createInvoice(
+                $this->contactId,
+                $this->items,
+                $this->customerId,
+                $this->chatwootAgentId,
+                $this->chatwootConversationId,
+                $this->chatwootAccountId
+            );
 
             Log::info('Invoice created successfully', ['invoiceId' => $invoice->id]);
         } catch (\Exception $e) {

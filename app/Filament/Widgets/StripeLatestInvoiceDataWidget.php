@@ -1,12 +1,11 @@
 <?php
 
-// app/Filament/Widgets/StripeLatestInvoiceDataWidget.php
-
 namespace App\Filament\Widgets;
 
 use App\Jobs\SendStripeInvoiceLinkJob;
 use App\Models\StripeInvoice;
 use App\Traits\HandlesInvoiceCreation;
+use App\Traits\ManagesChatwootMetadata;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -25,7 +24,7 @@ use Livewire\Attributes\Computed;
 
 class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
-    use HandlesInvoiceCreation, InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters;
+    use HandlesInvoiceCreation, InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, ManagesChatwootMetadata;
 
     protected static string $view = 'filament.widgets.stripe-latest-invoice-data-widget';
 
@@ -67,7 +66,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
     {
         $accountId = $this->filters['chatwootAccountId'] ?? null;
         $contactId = $this->filters['chatwootContactId'] ?? null;
-        $conversationId = $this->filters['chatwootConversationDisplayId'] ?? null;
+        $conversationId = $this->filters['chatwootConversationId'] ?? null;
 
         Log::info('Preparing to send Stripe invoice link', [
             'accountId' => $accountId,
@@ -77,7 +76,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
 
         if (! $this->invoice || ! $accountId || ! $contactId || ! $conversationId) {
             Log::error('Missing required filters for sending invoice link', [
-                'invoiceId' => $this->invoice['id'],
+                'invoiceId' => $this->invoice['id'] ?? null,
                 'accountId' => $accountId,
                 'contactId' => $contactId,
                 'conversationId' => $conversationId,
@@ -96,8 +95,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
     {
         $this->invoice = $this->getLatestInvoiceData();
 
-        $contactId = $this->filters['chatwootContactId'] ?? null;
-        $currentAgentId = $this->filters['chatwootCurrentAgentId'] ?? null;
+        $this->setChatwootMetadataFromFilters($this->filters);
 
         return $infolist
             ->state($this->invoice)
@@ -116,7 +114,9 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                                 priceId: $this->invoice['data']['lines']['data'][0]['price']['id'],
                                 quantity: $this->invoice['data']['lines']['data'][0]['quantity'],
                             ))
-                            ->action(fn ($data) => $this->createInvoice($contactId, $currentAgentId, [$data]))
+                            ->action(function ($data) {
+                                $this->createInvoice($this->chatwootContactId, [$data]);
+                            })
                             ->button()
                             ->outlined()
                             ->disabled(! $this->invoice)

@@ -14,7 +14,13 @@ use Livewire\Attributes\Computed;
 
 trait HandlesInvoiceCreation
 {
-    public function createInvoice(int $contactId, int $currentAgentId, array $items)
+    public $chatwootConversationId;
+
+    public $chatwootAccountId;
+
+    public $chatwootAgentId;
+
+    public function createInvoice(int $contactId, array $items)
     {
         if ($contactId) {
             $customer = StripeCustomer::latestForContact($contactId)->first();
@@ -23,10 +29,19 @@ trait HandlesInvoiceCreation
                 'contactId' => $contactId,
                 'items' => $items,
                 'customerId' => $customer->id ?? null,
-                'agentId' => $currentAgentId,
+                'agentId' => $this->chatwootAgentId,
+                'conversationId' => $this->chatwootConversationId,
+                'accountId' => $this->chatwootAccountId,
             ]);
 
-            CreateStripeInvoiceJob::dispatch($contactId, $items, $customer->id ?? null, $currentAgentId);
+            CreateStripeInvoiceJob::dispatch(
+                $contactId,
+                $items,
+                $customer->id ?? null,
+                $this->chatwootAgentId,
+                $this->chatwootConversationId,
+                $this->chatwootAccountId
+            );
         } else {
             Log::warning('No contact ID found.');
         }
