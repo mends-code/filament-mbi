@@ -4,6 +4,8 @@ namespace App\Filament\Widgets;
 
 use App\Models\StripeInvoice;
 use App\Traits\HandlesInvoiceCreation;
+use App\Traits\ManagesDashboardFilters;
+use App\Traits\ManagesChatwootMetadata;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -24,7 +26,7 @@ use Livewire\Attributes\Computed;
 
 class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, HasTable
 {
-    use HandlesInvoiceCreation, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, InteractsWithTable;
+    use HandlesInvoiceCreation, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, InteractsWithTable, ManagesChatwootMetadata;
 
     protected static string $view = 'filament.widgets.stripe-invoices-widget';
 
@@ -43,15 +45,12 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
     public function getTableQuery()
     {
         return StripeInvoice::query()
-            ->forContact($this->filters['chatwootContactId']);
+            ->forContact($this->chatwootContactId);
     }
 
     public function table(Table $table): Table
     {
-        $contactId = $this->filters['chatwootContactId'] ?? null;
-        $agentId = $this->filters['chatwootAgentId'] ?? null;
-        $conversationId = $this->filters['chatwootConversationId'] ?? null;
-        $accountId = $this->filters['chatwootAccountId'] ?? null;
+        $this->setChatwootMetadataFromFilters($this->filters);
 
         return $table
             ->query($this->getTableQuery())
@@ -101,11 +100,8 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
                         priceId: $record->data['lines']['data'][0]['price']['id'],
                         quantity: $record->data['lines']['data'][0]['quantity'],
                     ))
-                    ->action(function ($data) use ($contactId, $agentId, $conversationId, $accountId) {
-                        $this->chatwootConversationId = $conversationId;
-                        $this->chatwootAccountId = $accountId;
-                        $this->chatwootAgentId = $agentId;
-                        $this->createInvoice($contactId, [$data]);
+                    ->action(function ($data) {
+                        $this->createInvoice($this->chatwootContactId, [$data]);
                     })
                     ->button()
                     ->outlined(),

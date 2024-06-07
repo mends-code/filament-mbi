@@ -3,6 +3,8 @@
 namespace App\Filament\Widgets;
 
 use App\Models\StripeCustomer;
+use App\Traits\ManagesChatwootMetadata;
+use App\Traits\ManagesStripeMetadata;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -20,7 +22,7 @@ use Livewire\Attributes\Computed;
 
 class StripeCustomerWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
-    use InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters;
+    use InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, ManagesChatwootMetadata, ManagesStripeMetadata;
 
     protected static string $view = 'filament.widgets.stripe-customer-data-widget';
 
@@ -33,10 +35,13 @@ class StripeCustomerWidget extends Widget implements HasActions, HasForms, HasIn
     #[Computed]
     public function getCustomerData()
     {
-        $customer = StripeCustomer::latestForContact($this->filters['chatwootContactId'] ?? null)->first();
+        $this->setChatwootMetadataFromFilters($this->filters);
+        $this->setStripeMetadataFromFilters($this->filters);
+
+        $customer = StripeCustomer::find($this->stripeCustomerId);
 
         if ($customer) {
-            Log::info('Stripe customer found', ['customer' => $customer->toArray()]);
+            Log::info('Stripe customer found', ['customer' => $customer->id]);
         } else {
             Log::warning('Stripe customer not found');
         }

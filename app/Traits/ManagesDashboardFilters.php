@@ -2,12 +2,13 @@
 
 namespace App\Traits;
 
+use App\Models\StripeCustomer;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
-trait ManagesChatwootFilters
+trait ManagesDashboardFilters
 {
-    use HasSessionFilters;
+    use HasSessionFilters, ManagesChatwootMetadata;
 
     public function setChatwootFilters($context)
     {
@@ -19,6 +20,9 @@ trait ManagesChatwootFilters
         Arr::set($this->filters, 'chatwootAccountId', $contextData->conversation->account_id ?? null);
         Arr::set($this->filters, 'chatwootAgentId', $contextData->currentAgent->id ?? null);
 
+        $this->setChatwootMetadataFromFilters($this->filters);
+        $this->setStripeCustomerId($contextData->contact->id ?? null);
+
         Log::info('Chatwoot filters set', [
             'contactId' => $this->filters['chatwootContactId'],
             'conversationId' => $this->filters['chatwootConversationId'],
@@ -26,6 +30,23 @@ trait ManagesChatwootFilters
             'accountId' => $this->filters['chatwootAccountId'],
             'currentAgentId' => $this->filters['chatwootAgentId'],
         ]);
+    }
+
+    protected function setStripeCustomerId($chatwootContactId)
+    {
+        if ($chatwootContactId) {
+            $stripeCustomer = $this->getLatestStripeCustomerForContact($chatwootContactId);
+            Arr::set($this->filters, 'stripeCustomerId', $stripeCustomer->id ?? null);
+
+            Log::info('Stripe customer set', [
+                'stripeCustomerId' => $this->filters['stripeCustomerId'],
+            ]);
+        }
+    }
+
+    protected function getLatestStripeCustomerForContact($chatwootContactId)
+    {
+        return StripeCustomer::latestForContact($chatwootContactId)->first();
     }
 
     public function addChatwootFiltersListener()

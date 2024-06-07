@@ -3,14 +3,15 @@
 namespace App\Filament\Pages;
 
 use App\Traits\HandlesInvoiceCreation;
-use App\Traits\ManagesChatwootFilters;
+use App\Traits\ManagesChatwootMetadata;
+use App\Traits\ManagesDashboardFilters;
 use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Livewire\Attributes\On;
 
 class Dashboard extends BaseDashboard
 {
-    use HandlesInvoiceCreation, ManagesChatwootFilters;
+    use HandlesInvoiceCreation, ManagesChatwootMetadata, ManagesDashboardFilters;
 
     protected static ?string $navigationLabel = 'Panel';
 
@@ -35,10 +36,7 @@ class Dashboard extends BaseDashboard
 
     protected function getHeaderActions(): array
     {
-        $contactId = $this->filters['chatwootContactId'] ?? null;
-        $currentAgentId = $this->filters['chatwootCurrentAgentId'] ?? null;
-        $chatwootConversationId = $this->filters['chatwootConversationId'] ?? null;
-        $chatwootAccountId = $this->filters['chatwootAccountId'] ?? null;
+        $this->setChatwootMetadataFromFilters($this->filters);
 
         return [
             Action::make('createInvoice')
@@ -46,11 +44,8 @@ class Dashboard extends BaseDashboard
                 ->modalDescription('Wybierz walutę, konkretną usługę oraz jej cenę. W przypadku płatności za kilka takich samych usług możesz ustawić żądaną ilość.')
                 ->icon('heroicon-s-document-plus')
                 ->form($this->getInvoiceFormSchema())
-                ->action(function (array $data) use ($contactId, $currentAgentId, $chatwootConversationId, $chatwootAccountId) {
-                    $this->chatwootConversationId = $chatwootConversationId;
-                    $this->chatwootAccountId = $chatwootAccountId;
-                    $this->chatwootAgentId = $currentAgentId;
-                    $this->createInvoice($contactId, [$data]);
+                ->action(function (array $data) {
+                    $this->createInvoice($this->chatwootContactId, [$data]);
                 }),
             Action::make('makeAppointment')
                 ->outlined()
