@@ -35,19 +35,19 @@ class ChatwootConversationWidget extends Widget implements HasActions, HasForms,
     #[Computed]
     public function getConversationData()
     {
-        $conversationDisplayId = $this->filters['chatwootConversationDisplayId'] ?? null;
+        $conversationId = $this->filters['chatwootConversationId'] ?? null;
         $accountId = $this->filters['chatwootAccountId'] ?? null;
         $inboxId = $this->filters['chatwootInboxId'] ?? null;
 
         Log::info('Fetching conversation data', [
-            'conversationDisplayId' => $conversationDisplayId,
+            'conversationId' => $conversationId,
             'accountId' => $accountId,
             'inboxId' => $inboxId,
         ]);
 
         $account = ChatwootAccount::find($accountId);
         $conversation = ChatwootConversation::where('account_id', $accountId)
-            ->where('display_id', $conversationDisplayId)
+            ->where('display_id', $conversationId)
             ->first();
         $inbox = ChatwootInbox::find($inboxId);
 
@@ -60,7 +60,7 @@ class ChatwootConversationWidget extends Widget implements HasActions, HasForms,
         if ($conversation) {
             Log::info('Conversation found', ['conversation' => $conversation->toArray()]);
         } else {
-            Log::warning('Conversation not found', ['conversationDisplayId' => $conversationDisplayId]);
+            Log::warning('Conversation not found', ['conversationId' => $conversationId]);
         }
 
         if ($inbox) {
