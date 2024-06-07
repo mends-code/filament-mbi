@@ -37,6 +37,8 @@ class Dashboard extends BaseDashboard
     {
         $contactId = $this->filters['chatwootContactId'] ?? null;
         $currentAgentId = $this->filters['chatwootCurrentAgentId'] ?? null;
+        $chatwootConversationId = $this->filters['chatwootConversationId'] ?? null;
+        $chatwootAccountId = $this->filters['chatwootAccountId'] ?? null;
 
         return [
             Action::make('createInvoice')
@@ -44,8 +46,17 @@ class Dashboard extends BaseDashboard
                 ->modalDescription('Wybierz walutę, konkretną usługę oraz jej cenę. W przypadku płatności za kilka takich samych usług możesz ustawić żądaną ilość.')
                 ->icon('heroicon-s-document-plus')
                 ->form($this->getInvoiceFormSchema())
-                ->action(fn (array $data) => $this->createInvoice($contactId, $currentAgentId, [$data])),
-            Action::make('makeAppointment')->outlined()->label('Umów wizytę')->icon('heroicon-o-calendar')->tooltip('wkrótce'),
+                ->action(function (array $data) use ($contactId, $currentAgentId, $chatwootConversationId, $chatwootAccountId) {
+                    $this->chatwootConversationId = $chatwootConversationId;
+                    $this->chatwootAccountId = $chatwootAccountId;
+                    $this->chatwootAgentId = $currentAgentId;
+                    $this->createInvoice($contactId, [$data]);
+                }),
+            Action::make('makeAppointment')
+                ->outlined()
+                ->label('Umów wizytę')
+                ->icon('heroicon-o-calendar')
+                ->tooltip('wkrótce'),
         ];
     }
 }

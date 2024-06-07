@@ -45,7 +45,7 @@ class StripeService
         return $email;
     }
 
-    public function createCustomer(ChatwootContact $contact)
+    public function createCustomer(ChatwootContact $contact, $chatwootConversationId, $chatwootAccountId, $chatwootAgentId)
     {
         Log::info("Creating customer for contact ID: {$contact->id}");
         $email = $this->getEmail($contact->email, $contact->id);
@@ -54,7 +54,12 @@ class StripeService
             'name' => $contact->name,
             'email' => $email,
             'phone' => $contact->phone_number,
-            'metadata' => ['chatwoot_contact_id' => $contact->id],
+            'metadata' => [
+                'chatwoot_contact_id' => $contact->id,
+                'chatwoot_conversation_id' => $chatwootConversationId,
+                'chatwoot_account_id' => $chatwootAccountId,
+                'chatwoot_agent_id' => $chatwootAgentId,
+            ],
         ]);
 
         Log::info('Customer created', ['customerId' => $customer->id]);
@@ -62,7 +67,7 @@ class StripeService
         return $customer;
     }
 
-    public function updateCustomer($stripeCustomerId, array $customerData)
+    public function updateCustomer($stripeCustomerId, array $customerData, $chatwootConversationId, $chatwootAccountId, $chatwootAgentId)
     {
         Log::info("Updating customer ID: {$stripeCustomerId}");
         $email = $this->getEmail($customerData['email'], $customerData['chatwoot_contact_id']);
@@ -71,7 +76,12 @@ class StripeService
         $customer->name = $customerData['name'];
         $customer->email = $email;
         $customer->phone = $customerData['phone'];
-        $customer->metadata = ['chatwoot_contact_id' => $customerData['chatwoot_contact_id']];
+        $customer->metadata = [
+            'chatwoot_contact_id' => $customerData['chatwoot_contact_id'],
+            'chatwoot_conversation_id' => $chatwootConversationId,
+            'chatwoot_account_id' => $chatwootAccountId,
+            'chatwoot_agent_id' => $chatwootAgentId,
+        ];
         $customer->update($customer->id);
 
         Log::info('Customer updated', ['customerId' => $stripeCustomerId]);
@@ -79,7 +89,7 @@ class StripeService
         return $customer;
     }
 
-    public function createInvoice($chatwootContactId, array $items, $stripeCustomerId = null, $chatwootAgentId = null, $collectionMethod = 'send_invoice', $daysUntilDue = 0)
+    public function createInvoice($chatwootContactId, array $items, $stripeCustomerId, $chatwootAgentId, $chatwootConversationId, $chatwootAccountId, $collectionMethod = 'send_invoice', $daysUntilDue = 0)
     {
         Log::info("Creating invoice for contact ID: {$chatwootContactId}");
 
@@ -93,7 +103,7 @@ class StripeService
             $stripeCustomer = StripeCustomer::latestForContact($chatwootContactId)->first();
             if (! $stripeCustomer) {
                 Log::info('No existing customer, creating new one', ['contactId' => $contact->id]);
-                $stripeCustomer = $this->createCustomer($contact);
+                $stripeCustomer = $this->createCustomer($contact, $chatwootConversationId, $chatwootAccountId, $chatwootAgentId);
             }
         }
 
@@ -113,8 +123,10 @@ class StripeService
             'days_until_due' => $daysUntilDue,
             'currency' => strtoupper($currencies[0]),
             'metadata' => [
-                'chatwoot_agent_id' => $chatwootAgentId,
                 'chatwoot_contact_id' => $chatwootContactId,
+                'chatwoot_conversation_id' => $chatwootConversationId,
+                'chatwoot_account_id' => $chatwootAccountId,
+                'chatwoot_agent_id' => $chatwootAgentId,
             ],
         ]);
         Log::info('Invoice created', ['invoiceId' => $invoice->id]);

@@ -1,7 +1,5 @@
 <?php
 
-// app/Filament/Widgets/StripeLatestInvoiceDataWidget.php
-
 namespace App\Filament\Widgets;
 
 use App\Jobs\SendStripeInvoiceLinkJob;
@@ -67,7 +65,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
     {
         $accountId = $this->filters['chatwootAccountId'] ?? null;
         $contactId = $this->filters['chatwootContactId'] ?? null;
-        $conversationId = $this->filters['chatwootConversationDisplayId'] ?? null;
+        $conversationId = $this->filters['chatwootConversationId'] ?? null;
 
         Log::info('Preparing to send Stripe invoice link', [
             'accountId' => $accountId,
@@ -77,7 +75,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
 
         if (! $this->invoice || ! $accountId || ! $contactId || ! $conversationId) {
             Log::error('Missing required filters for sending invoice link', [
-                'invoiceId' => $this->invoice['id'],
+                'invoiceId' => $this->invoice['id'] ?? null,
                 'accountId' => $accountId,
                 'contactId' => $contactId,
                 'conversationId' => $conversationId,
@@ -97,7 +95,9 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
         $this->invoice = $this->getLatestInvoiceData();
 
         $contactId = $this->filters['chatwootContactId'] ?? null;
-        $currentAgentId = $this->filters['chatwootCurrentAgentId'] ?? null;
+        $agentId = $this->filters['chatwootAgentId'] ?? null;
+        $conversationId = $this->filters['chatwootConversationId'] ?? null;
+        $accountId = $this->filters['chatwootAccountId'] ?? null;
 
         return $infolist
             ->state($this->invoice)
@@ -116,7 +116,12 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                                 priceId: $this->invoice['data']['lines']['data'][0]['price']['id'],
                                 quantity: $this->invoice['data']['lines']['data'][0]['quantity'],
                             ))
-                            ->action(fn ($data) => $this->createInvoice($contactId, $currentAgentId, [$data]))
+                            ->action(function ($data) use ($contactId, $agentId, $conversationId, $accountId) {
+                                $this->chatwootConversationId = $conversationId;
+                                $this->chatwootAccountId = $accountId;
+                                $this->chatwootAgentId = $agentId;
+                                $this->createInvoice($contactId, [$data]);
+                            })
                             ->button()
                             ->outlined()
                             ->disabled(! $this->invoice)
