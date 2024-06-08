@@ -45,7 +45,7 @@ class Dashboard extends BaseDashboard
                 ->icon('heroicon-s-document-plus')
                 ->form($this->getInvoiceFormSchema())
                 ->action(function (array $data) {
-                    $this->createInvoice($this->chatwootContactId, [$data]);
+                    $this->createInvoice([$data]);
                 }),
             Action::make('makeAppointment')
                 ->outlined()
