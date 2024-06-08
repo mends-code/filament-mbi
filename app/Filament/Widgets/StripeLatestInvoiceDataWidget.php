@@ -5,7 +5,8 @@ namespace App\Filament\Widgets;
 use App\Jobs\SendStripeInvoiceLinkJob;
 use App\Models\StripeInvoice;
 use App\Traits\HandlesInvoiceCreation;
-use App\Traits\ManagesChatwootMetadata;
+use App\Traits\HandlesInvoiceStatus;
+use App\Traits\ManagesChatwootMetadata; // Add this line
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -24,7 +25,7 @@ use Livewire\Attributes\Computed;
 
 class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
-    use HandlesInvoiceCreation, InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, ManagesChatwootMetadata;
+    use HandlesInvoiceCreation, HandlesInvoiceStatus, InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, ManagesChatwootMetadata; // Updated line
 
     protected static string $view = 'filament.widgets.stripe-latest-invoice-data-widget';
 
@@ -115,7 +116,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                                 quantity: $this->invoice['data']['lines']['data'][0]['quantity'],
                             ))
                             ->action(function ($data) {
-                                $this->createInvoice($this->chatwootContactId, [$data]);
+                                $this->createInvoice([$data]);
                             })
                             ->button()
                             ->outlined()
@@ -159,14 +160,8 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                         TextEntry::make('status')
                             ->label('Status')
                             ->placeholder('brak danych')
-                            ->color(fn (string $state): string => match ($state) {
-                                'draft' => 'gray',
-                                'open' => 'warning',
-                                'paid' => 'success',
-                                'uncollectible' => 'danger',
-                                'void' => 'gray',
-                                'deleted' => 'gray'
-                            })
+                            ->color(fn () => $this->getInvoiceStatusColor($this->invoice['status']) ?? null) // Updated to use trait method for color
+                            ->state(fn () => $this->getInvoiceStatusLabel($this->invoice['status']) ?? null) // Updated to use trait method for label translation
                             ->inlineLabel()
                             ->badge(),
                     ]),

@@ -4,8 +4,8 @@ namespace App\Filament\Widgets;
 
 use App\Models\StripeInvoice;
 use App\Traits\HandlesInvoiceCreation;
-use App\Traits\ManagesDashboardFilters;
-use App\Traits\ManagesChatwootMetadata;
+use App\Traits\HandlesInvoiceStatus;
+use App\Traits\ManagesChatwootMetadata; // Add this line
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -26,7 +26,7 @@ use Livewire\Attributes\Computed;
 
 class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, HasTable
 {
-    use HandlesInvoiceCreation, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, InteractsWithTable, ManagesChatwootMetadata;
+    use HandlesInvoiceCreation, HandlesInvoiceStatus, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, InteractsWithTable, ManagesChatwootMetadata; // Updated line
 
     protected static string $view = 'filament.widgets.stripe-invoices-widget';
 
@@ -77,14 +77,8 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
                     ->since(),
                 Tables\Columns\TextColumn::make('data.status')
                     ->label('Status')
-                    ->color(fn (string $state): string => match ($state) {
-                        'draft' => 'gray',
-                        'open' => 'warning',
-                        'paid' => 'success',
-                        'uncollectible' => 'danger',
-                        'void' => 'gray',
-                        'deleted' => 'gray'
-                    })
+                    ->color(fn ($state) => $this->getInvoiceStatusColor($state) ?? null)
+                    ->formatStateUsing(fn ($state) => $this->getInvoiceStatusLabel($state) ?? null)
                     ->badge(),
             ])
             ->defaultSort('created', 'desc')
@@ -101,7 +95,7 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
                         quantity: $record->data['lines']['data'][0]['quantity'],
                     ))
                     ->action(function ($data) {
-                        $this->createInvoice($this->chatwootContactId, [$data]);
+                        $this->createInvoice([$data]);
                     })
                     ->button()
                     ->outlined(),

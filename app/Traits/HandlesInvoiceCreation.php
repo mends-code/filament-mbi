@@ -9,42 +9,21 @@ use App\Models\StripeProduct;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 
 trait HandlesInvoiceCreation
 {
-    public $chatwootConversationId;
+    use HasChatwootProperties;
 
-    public $chatwootAccountId;
-
-    public $chatwootAgentId;
-
-    public function createInvoice(int $contactId, array $items)
+    public function createInvoice(array $items)
     {
-        if ($contactId) {
-            $customer = StripeCustomer::latestForContact($contactId)->first();
-
-            Log::info('Dispatching CreateStripeInvoiceJob', [
-                'contactId' => $contactId,
-                'items' => $items,
-                'customerId' => $customer->id ?? null,
-                'agentId' => $this->chatwootAgentId,
-                'conversationId' => $this->chatwootConversationId,
-                'accountId' => $this->chatwootAccountId,
-            ]);
-
-            CreateStripeInvoiceJob::dispatch(
-                $contactId,
-                $items,
-                $customer->id ?? null,
-                $this->chatwootAgentId,
-                $this->chatwootConversationId,
-                $this->chatwootAccountId
-            );
-        } else {
-            Log::warning('No contact ID found.');
-        }
+        CreateStripeInvoiceJob::dispatch(
+            $items,
+            $this->chatwootContactId,
+            $this->chatwootAgentId,
+            $this->chatwootConversationId,
+            $this->chatwootAccountId
+        );
     }
 
     public function getInvoiceFormSchema($productId = null, $currency = null, $priceId = null, $quantity = 1): array
@@ -158,7 +137,7 @@ trait HandlesInvoiceCreation
 
         $customer = StripeCustomer::latestForContact($contactId)->first();
 
-        return $customer->data['currency'];
+        return $customer->data['currency'] ?? null;
     }
 
     protected function getGlobalPriceOptionsForProduct($currency, $productId)

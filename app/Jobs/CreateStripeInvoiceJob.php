@@ -14,11 +14,9 @@ class CreateStripeInvoiceJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $contactId;
-
     protected $items;
 
-    protected $customerId;
+    protected $chatwootContactId;
 
     protected $chatwootAgentId;
 
@@ -31,11 +29,10 @@ class CreateStripeInvoiceJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($contactId, array $items, $customerId, $chatwootAgentId, $chatwootConversationId, $chatwootAccountId)
+    public function __construct(array $items, $chatwootContactId, $chatwootAgentId, $chatwootConversationId, $chatwootAccountId)
     {
-        $this->contactId = $contactId;
         $this->items = $items;
-        $this->customerId = $customerId;
+        $this->chatwootContactId = $chatwootContactId;
         $this->chatwootAgentId = $chatwootAgentId;
         $this->chatwootConversationId = $chatwootConversationId;
         $this->chatwootAccountId = $chatwootAccountId;
@@ -49,9 +46,8 @@ class CreateStripeInvoiceJob implements ShouldQueue
     public function handle(StripeService $stripeService)
     {
         Log::info('Creating invoice', [
-            'contactId' => $this->contactId,
             'items' => $this->items,
-            'customerId' => $this->customerId,
+            'chatwootContactId' => $this->chatwootContactId,
             'chatwootAgentId' => $this->chatwootAgentId,
             'chatwootConversationId' => $this->chatwootConversationId,
             'chatwootAccountId' => $this->chatwootAccountId,
@@ -59,9 +55,8 @@ class CreateStripeInvoiceJob implements ShouldQueue
 
         try {
             $invoice = $stripeService->createInvoice(
-                $this->contactId,
                 $this->items,
-                $this->customerId,
+                $this->chatwootContactId,
                 $this->chatwootAgentId,
                 $this->chatwootConversationId,
                 $this->chatwootAccountId
