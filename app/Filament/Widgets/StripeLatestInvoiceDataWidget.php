@@ -52,7 +52,9 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
             return [];
         }
 
-        $invoice = StripeInvoice::latestForContact($contactId)->first();
+        $invoice = StripeInvoice::latestForContact($contactId)
+            ->active()
+            ->first();
 
         if ($invoice) {
             Log::info('Latest invoice found', ['invoiceId' => $invoice->id]);
@@ -124,7 +126,7 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                             ->color('primary'),
                         Action::make('sendStripeInvoiceLink')
                             ->color('warning')
-                            ->disabled(! $this->invoice)
+                            ->disabled((! $this->invoice) || (empty($this->invoice['data']['hosted_invoice_url'])))
                             ->label('Wyślij link')
                             ->outlined()
                             ->button()

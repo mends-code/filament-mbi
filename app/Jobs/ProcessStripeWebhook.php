@@ -51,8 +51,8 @@ class ProcessStripeWebhook implements ShouldQueue
     /**
      * Create or update a Stripe event.
      *
-     * @param string $eventId
-     * @param array $payload
+     * @param  string  $eventId
+     * @param  array  $payload
      * @return void
      */
     protected function createOrUpdateStripeEvent($eventId, $payload)

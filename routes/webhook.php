@@ -1,4 +1,5 @@
 <?php
+
 // routes/webhook.php
 
 use App\Http\Controllers\StripeWebhookController;

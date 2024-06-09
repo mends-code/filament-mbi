@@ -7,8 +7,8 @@ namespace App\Jobs;
 use App\Models\StripeCustomer;
 use App\Models\StripeEvent;
 use App\Models\StripeInvoice;
-use App\Models\StripeProduct;
 use App\Models\StripePrice;
+use App\Models\StripeProduct;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -79,16 +79,16 @@ class UpdateStripeObject implements ShouldQueue
                 break;
 
             default:
-                Log::warning('Unhandled Stripe object type: ' . $objectType);
+                Log::warning('Unhandled Stripe object type: '.$objectType);
         }
     }
 
     /**
      * Update or create a Stripe object.
      *
-     * @param string $model
-     * @param string $objectId
-     * @param array $objectData
+     * @param  string  $model
+     * @param  string  $objectId
+     * @param  array  $objectData
      * @return void
      */
     protected function updateOrCreate($model, $objectId, $objectData)
