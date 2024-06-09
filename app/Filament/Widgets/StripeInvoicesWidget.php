@@ -77,8 +77,8 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
                     ->since(),
                 Tables\Columns\TextColumn::make('data.status')
                     ->label('Status')
-                    ->color(fn ($state) => $this->getInvoiceStatusColor($state) ?? null)
-                    ->formatStateUsing(fn ($state) => $this->getInvoiceStatusLabel($state) ?? null)
+                    ->color(fn ($state) => $this->getInvoiceStatusColor($state ?? null))
+                    ->formatStateUsing(fn ($state) => $this->getInvoiceStatusLabel($state ?? null))
                     ->badge(),
             ])
             ->defaultSort('created', 'desc')
