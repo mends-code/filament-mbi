@@ -48,14 +48,6 @@ class StripeCustomer extends Model
         'chatwoot_contact_id',
     ];
 
-    protected static function booted()
-    {
-        // Add anonymous global scope to exclude records without chatwoot_contact_id
-        static::addGlobalScope('hasChatwootContact', function (Builder $builder) {
-            $builder->whereNotNull('chatwoot_contact_id');
-        });
-    }
-
     /**
      * Get the related Chatwoot contact.
      */

@@ -8,7 +8,6 @@ trait HandlesInvoiceStatus
      * Get the color for the given invoice status.
      *
      * @param  string|null  $status
-     * @return string
      */
     public function getInvoiceStatusColor($status): ?string
     {
@@ -20,6 +19,7 @@ trait HandlesInvoiceStatus
             'void' => 'gray',
             'deleted' => 'gray',
             default => 'gray',
+            null => 'gray',
         };
     }
 
@@ -27,7 +27,6 @@ trait HandlesInvoiceStatus
      * Get the label for the given invoice status.
      *
      * @param  string|null  $status
-     * @return string
      */
     public function getInvoiceStatusLabel($status): ?string
     {
@@ -39,6 +38,7 @@ trait HandlesInvoiceStatus
             'void' => 'Unieważniona',
             'deleted' => 'Usunięta',
             default => 'Nieznany',
+            null => null,
         };
     }
 }
