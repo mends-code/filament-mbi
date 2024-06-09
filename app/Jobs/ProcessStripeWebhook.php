@@ -41,20 +41,25 @@ class ProcessStripeWebhook implements ShouldQueue
         // Get the event ID and payload
         $eventId = $this->payload['id'];
 
-        // Check if the event ID already exists
-        $event = StripeEvent::where('id', $eventId)->first();
-
-        if ($event) {
-            // Update the existing event's data column
-            $event->update(['data' => $this->payload]);
-        } else {
-            // Create a new event record
-            StripeEvent::create([
-                'data' => $this->payload,
-            ]);
-        }
+        // Use the createOrUpdate method to handle the event
+        $this->createOrUpdateStripeEvent($eventId, $this->payload);
 
         // Dispatch a job to update the specific Stripe object
         UpdateStripeObject::dispatch($this->payload);
+    }
+
+    /**
+     * Create or update a Stripe event.
+     *
+     * @param string $eventId
+     * @param array $payload
+     * @return void
+     */
+    protected function createOrUpdateStripeEvent($eventId, $payload)
+    {
+        $event = StripeEvent::updateOrCreate(
+            ['id' => $eventId],
+            ['data' => $payload]
+        );
     }
 }
