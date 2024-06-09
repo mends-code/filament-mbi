@@ -5,6 +5,7 @@
 namespace App\Jobs;
 
 use App\Models\StripeCustomer;
+use App\Models\StripeEvent;
 use App\Models\StripeInvoice;
 use App\Models\StripeProduct;
 use App\Models\StripePrice;
@@ -45,6 +46,20 @@ class UpdateStripeObject implements ShouldQueue
         $object = $this->payload['data']['object'];
         $objectId = $object['id'];
         $objectType = $object['object'];
+
+        // Retrieve the latest StripeEvent for the given object_id
+        $latestEvent = StripeEvent::where('object_id', $objectId)
+            ->orderBy('created', 'desc')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($latestEvent) {
+            // Switch payload with data from the latest event
+            $object = $latestEvent->data['data']['object'];
+            Log::info("Using data from latest event for object ID: {$objectId}");
+        } else {
+            Log::warning("No StripeEvent found for object ID: {$objectId}");
+        }
 
         switch ($objectType) {
             case 'customer':
