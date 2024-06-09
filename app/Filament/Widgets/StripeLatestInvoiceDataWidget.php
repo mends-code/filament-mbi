@@ -160,8 +160,8 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                         TextEntry::make('status')
                             ->label('Status')
                             ->placeholder('brak danych')
-                            ->color(fn () => $this->getInvoiceStatusColor($this->invoice['status']) ?? null) // Updated to use trait method for color
-                            ->state(fn () => $this->getInvoiceStatusLabel($this->invoice['status']) ?? null) // Updated to use trait method for label translation
+                            ->color(fn () => $this->getInvoiceStatusColor($this->invoice['status'] ?? null)) // Updated to use trait method for color
+                            ->state(fn () => $this->getInvoiceStatusLabel($this->invoice['status'] ?? null)) // Updated to use trait method for label translation
                             ->inlineLabel()
                             ->badge(),
                     ]),

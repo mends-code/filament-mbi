@@ -31,10 +31,6 @@ class StripeProduct extends BaseModelStripe
         'livemode' => 'boolean',
     ];
 
-    protected $fillable = [
-        'id', 'data',
-    ];
-
     public function prices()
     {
         return $this->hasMany(StripePrice::class, 'product_id', 'id');
