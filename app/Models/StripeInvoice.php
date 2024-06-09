@@ -44,17 +44,6 @@ class StripeInvoice extends BaseModelStripe
         'livemode' => 'boolean',
     ];
 
-    protected $fillable = [
-        'id', 'data', 'customer_id',
-    ];
-
-    protected static function booted(): void
-    {
-        static::addGlobalScope('excludeDeletedDraftVoid', function (Builder $builder) {
-            $builder->whereNotIn('status', ['deleted', 'draft', 'void']);
-        });
-    }
-
     public function customer()
     {
         return $this->belongsTo(StripeCustomer::class, 'customer_id', 'id');

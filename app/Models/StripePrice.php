@@ -38,10 +38,6 @@ class StripePrice extends BaseModelStripe
         'livemode' => 'boolean',
     ];
 
-    protected $fillable = [
-        'id', 'data', 'product_id',
-    ];
-
     public function product()
     {
         return $this->belongsTo(StripeProduct::class, 'product_id', 'id');
