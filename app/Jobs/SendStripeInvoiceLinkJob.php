@@ -1,11 +1,11 @@
 <?php
 
-// app/Jobs/SendStripeInvoiceLinkJob.php
-
 namespace App\Jobs;
 
 use App\Models\StripeInvoice;
+use App\Models\User;
 use App\Services\ChatwootService;
+use Filament\Notifications\Notification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,19 +18,18 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $invoiceId;
-
     protected $accountId;
-
     protected $contactId;
-
     protected $conversationId;
+    protected $user;
 
-    public function __construct($invoiceId, $accountId, $contactId, $conversationId)
+    public function __construct($invoiceId, $accountId, $contactId, $conversationId, User $user)
     {
         $this->invoiceId = $invoiceId;
         $this->accountId = $accountId;
         $this->contactId = $contactId;
         $this->conversationId = $conversationId;
+        $this->user = $user;
     }
 
     public function handle(ChatwootService $chatwootService)
@@ -46,7 +45,6 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
 
         if (! $invoice) {
             Log::error('No invoice found for ID', ['invoiceId' => $this->invoiceId]);
-
             return;
         }
 
@@ -61,10 +59,13 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
         foreach ($responses as $response) {
             if (isset($response['error'])) {
                 Log::error('Error sending message to Chatwoot', ['response' => $response]);
-
                 return;
             }
         }
+
+        Notification::make()
+            ->title('Saved successfully')
+            ->broadcast($this->user);
 
         Log::info('Messages sent successfully');
     }

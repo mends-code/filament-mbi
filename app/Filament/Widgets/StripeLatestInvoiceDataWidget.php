@@ -88,8 +88,8 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
             return;
         }
 
-        // Dispatch the job
-        SendStripeInvoiceLinkJob::dispatch($this->invoice['id'], $accountId, $contactId, $conversationId);
+        $user = auth()->user();
+        SendStripeInvoiceLinkJob::dispatch($this->invoice['id'], $accountId, $contactId, $conversationId, $user);
 
         Log::info('Job dispatched for sending invoice link');
     }
