@@ -2,33 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-
-/**
- * @property array $data
- * @property int $created
- * @property string|null $customer_id
- * @property string $id
- * @property string|null $currency
- * @property string|null $status
- * @property bool $paid
- * @property int $total
- * @property bool $livemode
- * @property-read \App\Models\ChatwootContact|null $chatwootContact
- * @property-read \App\Models\StripeCustomer|null $customer
- *
- * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice forContact($contactId)
- * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice latestForContact($contactId)
- * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice query()
- * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice whereCreated($value)
- * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice whereCustomerId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice whereData($value)
- * @method static \Illuminate\Database\Eloquent\Builder|StripeInvoice whereId($value)
- *
- * @mixin \Eloquent
- */
 class StripeInvoice extends BaseModelStripe
 {
     protected $table = 'mbi_stripe.invoices';
@@ -81,5 +54,15 @@ class StripeInvoice extends BaseModelStripe
     public function scopeUnpaid($query)
     {
         return $query->where('paid', false);
+    }
+
+    public function scopeActive($query, $statuses = ['draft', 'void', 'deleted'])
+    {
+        return $query->whereNotIn('status', $statuses);
+    }
+
+    public function scopeDiscarded($query, $statuses = ['void', 'deleted'])
+    {
+        return $query->whereIn('status', $statuses);
     }
 }

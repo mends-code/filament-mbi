@@ -45,6 +45,7 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
     public function getTableQuery()
     {
         return StripeInvoice::query()
+            ->active()
             ->forContact($this->chatwootContactId);
     }
 

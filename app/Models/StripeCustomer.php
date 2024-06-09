@@ -3,33 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-/**
- * Class StripeCustomer
- * 
- * @property array $data
- * @property int $created
- * @property int|null $chatwoot_contact_id
- * @property string $id
- * @property-read ChatwootContact|null $chatwootContact
- * @property-read Collection|StripeInvoice[] $invoices
- * @property-read int|null $invoices_count
- *
- * @method static Builder|StripeCustomer latestForContact($chatwootContactId)
- * @method static Builder|StripeCustomer newModelQuery()
- * @method static Builder|StripeCustomer newQuery()
- * @method static Builder|StripeCustomer query()
- * @method static Builder|StripeCustomer whereChatwootContactId($value)
- * @method static Builder|StripeCustomer whereCreated($value)
- * @method static Builder|StripeCustomer whereData($value)
- * @method static Builder|StripeCustomer whereId($value)
- *
- * @mixin \Eloquent
- */
 class StripeCustomer extends Model
 {
     use HasFactory;
@@ -67,8 +43,8 @@ class StripeCustomer extends Model
     /**
      * Scope a query to only include the latest Stripe customer for a given Chatwoot contact.
      *
-     * @param Builder $query
-     * @param int $chatwootContactId
+     * @param  Builder  $query
+     * @param  int  $chatwootContactId
      * @return Builder
      */
     public function scopeLatestForContact($query, $chatwootContactId)

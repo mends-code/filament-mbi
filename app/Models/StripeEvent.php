@@ -14,5 +14,4 @@ class StripeEvent extends BaseModelStripe
         'object_id' => 'string',
         'livemode' => 'boolean',
     ];
-
 }
