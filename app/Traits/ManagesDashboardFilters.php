@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Models\StripeCustomer;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
