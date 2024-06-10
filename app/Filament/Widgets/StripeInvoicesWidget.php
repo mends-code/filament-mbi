@@ -18,6 +18,7 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
+use Filament\Widgets\Concerns\CanPoll;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 use Illuminate\Contracts\Pagination\CursorPaginator;
@@ -26,7 +27,7 @@ use Livewire\Attributes\Computed;
 
 class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, HasTable
 {
-    use HandlesInvoiceCreation, HandlesInvoiceStatus, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, InteractsWithTable, ManagesChatwootMetadata; // Updated line
+    use HandlesInvoiceCreation, HandlesInvoiceStatus, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, InteractsWithTable, ManagesChatwootMetadata, CanPoll; // Updated line
 
     protected static string $view = 'filament.widgets.stripe-invoices-widget';
 

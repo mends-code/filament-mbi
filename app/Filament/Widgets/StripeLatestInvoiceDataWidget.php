@@ -17,6 +17,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
 use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Infolists\Infolist;
+use Filament\Widgets\Concerns\CanPoll;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Arr;
@@ -25,7 +26,7 @@ use Livewire\Attributes\Computed;
 
 class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
-    use HandlesInvoiceCreation, HandlesInvoiceStatus, InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, ManagesChatwootMetadata; // Updated line
+    use CanPoll, HandlesInvoiceCreation, HandlesInvoiceStatus, InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, ManagesChatwootMetadata; // Updated line
 
     protected static string $view = 'filament.widgets.stripe-latest-invoice-data-widget';
 

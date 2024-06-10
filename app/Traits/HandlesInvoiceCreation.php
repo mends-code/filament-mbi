@@ -9,6 +9,7 @@ use App\Models\StripeProduct;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Livewire\Attributes\Computed;
 
 trait HandlesInvoiceCreation
@@ -17,13 +18,25 @@ trait HandlesInvoiceCreation
 
     public function createInvoice(array $items)
     {
-        CreateStripeInvoiceJob::dispatch(
-            $items,
-            $this->chatwootContactId,
-            $this->chatwootAgentId,
-            $this->chatwootConversationId,
-            $this->chatwootAccountId
-        );
+        try {
+            CreateStripeInvoiceJob::dispatch(
+                $items,
+                $this->chatwootContactId,
+                $this->chatwootAgentId,
+                $this->chatwootConversationId,
+                $this->chatwootAccountId
+            );
+
+            Notification::make()
+                ->body('Faktura została pomyślnie utworzona.')
+                ->color('success')
+                ->send();
+        } catch (\Exception $e) {
+            Notification::make()
+                ->body('Wystąpił błąd podczas tworzenia faktury: '.$e->getMessage())
+                ->color('danger')
+                ->send();
+        }
     }
 
     public function getInvoiceFormSchema($productId = null, $currency = null, $priceId = null, $quantity = 1): array
