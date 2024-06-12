@@ -42,4 +42,22 @@ class ShortenedLink extends Model
             $model->id = Str::random(config('services.shortener.id_length'));
         });
     }
+
+    /**
+     * Relationship to LinkEntry
+     */
+    public function linkEntries()
+    {
+        return $this->hasMany(LinkEntry::class, 'shortened_link_id', 'id');
+    }
+
+    /**
+     * Get the decoded target URL
+     *
+     * @return string
+     */
+    public function getDecodedTargetUrlAttribute()
+    {
+        return base64_decode($this->base64_target_url);
+    }
 }
