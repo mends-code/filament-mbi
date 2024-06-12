@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use App\Traits\HandlesInvoiceCreation;
+use App\Traits\HandlesStripeInvoice;
 use App\Traits\ManagesChatwootMetadata;
 use App\Traits\ManagesDashboardFilters;
 use Filament\Actions\Action;
@@ -11,7 +11,7 @@ use Livewire\Attributes\On;
 
 class Dashboard extends BaseDashboard
 {
-    use HandlesInvoiceCreation, ManagesChatwootMetadata, ManagesDashboardFilters;
+    use HandlesStripeInvoice, ManagesChatwootMetadata, ManagesDashboardFilters;
 
     protected static ?string $navigationLabel = 'Panel';
 

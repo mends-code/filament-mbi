@@ -34,6 +34,12 @@ class StripeInvoice extends BaseModelStripe
         );
     }
 
+
+    public function shortenedLinks()
+    {
+        return $this->hasMany(ShortenedLink::class, 'base64_target_url', 'base64_hosted_invoice_url');
+    }
+
     public function scopeForContact($query, $contactId)
     {
         return $query->whereHas('chatwootContact', function ($query) use ($contactId) {

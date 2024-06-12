@@ -21,7 +21,7 @@ use Livewire\Attributes\Computed;
 
 class StripeCustomerWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
-    use InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, CanPoll;
+    use CanPoll, InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters;
 
     protected static string $view = 'filament.widgets.stripe-customer-data-widget';
 
