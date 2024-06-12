@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Log;
 class CloudflareKVService
 {
     protected $accountId;
+
     protected $namespaceId;
+
     protected $apiToken;
 
     public function __construct()
@@ -37,7 +39,7 @@ class CloudflareKVService
 
         // Step 1: Create entry in the model with encoded target URL and metadata
         $shortenedLink = ShortenedLink::create([
-            'base64_encoded_target_url' => $encodedTargetUrl,
+            'base64_target_url' => $encodedTargetUrl,
             'metadata' => $metadata, // Store metadata as an array
         ]);
 

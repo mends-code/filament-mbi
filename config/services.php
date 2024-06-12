@@ -38,7 +38,7 @@ return [
     ],
 
     'shortener' => [
-        'domain' => env('SHORTENER_DOMAIN', 'https://link.mends.eu'),
+        'domain' => env('SHORTENER_DOMAIN', 'link.mends.eu'),
         'id_length' => env('SHORTENER_ID_LENGTH', 8),
         
         'cloudflare' => [

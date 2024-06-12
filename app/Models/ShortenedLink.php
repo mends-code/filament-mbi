@@ -21,15 +21,15 @@ class ShortenedLink extends Model
 
     // Allow mass assignment for these fields
     protected $fillable = [
-        'base64_encoded_target_url',
+        'base64_target_url',
         'finalized_at',
-        'metadata'
+        'metadata',
     ];
 
     // Cast attributes to appropriate types
     protected $casts = [
         'finalized_at' => 'timestamp',
-        'metadata' => 'array'
+        'metadata' => 'array',
     ];
 
     // Boot method to hook into the model's lifecycle

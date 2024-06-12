@@ -101,7 +101,7 @@ trait HandlesStripeInvoice
             return;
         }
 
-        SendStripeInvoiceLinkJob::dispatch($this->invoice->id, $this->chatwootAccountId, $this->chatwootContactId, $this->chatwootConversationId);
+        SendStripeInvoiceLinkJob::dispatch($this->invoice->id, $this->chatwootAccountId, $this->chatwootContactId, $this->chatwootConversationId, $this->chatwootAgentId);
 
         Log::info('Job dispatched for sending invoice link');
     }

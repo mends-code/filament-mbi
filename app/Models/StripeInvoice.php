@@ -34,9 +34,10 @@ class StripeInvoice extends BaseModelStripe
         );
     }
 
-    public function shortenedLink()
+
+    public function shortenedLinks()
     {
-        return $this->hasOne(ShortenedLink::class, 'target_url', 'hosted_invoice_url');
+        return $this->hasMany(ShortenedLink::class, 'base64_target_url', 'base64_hosted_invoice_url');
     }
 
     public function scopeForContact($query, $contactId)
