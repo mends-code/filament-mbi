@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::table('mbi_link_shortener.link_entries', function (Blueprint $table) {
             // Dropping the id column
-            $table->dropColumn(['id', 'shortened_link_id']);
+            $table->dropColumn('shortened_link_id');
         });
 
         Schema::table('mbi_link_shortener.link_entries', function (Blueprint $table) {
@@ -48,11 +48,6 @@ return new class extends Migration
             $table->text('shortened_link_id')->storedAs(
                 "substring((data->'event'->'request'->>'url') from 'https?://[^/]+/([^?]*)')"
             )->nullable();
-        });
-
-        // Add back the id column
-        Schema::table('mbi_link_shortener.link_entries', function (Blueprint $table) {
-            $table->increments('id');
         });
     }
 };
