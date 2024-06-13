@@ -1,29 +1,132 @@
 <?php
 
+// app/Traits/HandlesStripeInvoice.php
+
 namespace App\Traits;
 
 use App\Jobs\CreateStripeInvoiceJob;
+use App\Jobs\SendStripeInvoiceLinkJob;
 use App\Models\StripeCustomer;
+use App\Models\StripeInvoice;
 use App\Models\StripePrice;
 use App\Models\StripeProduct;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 
-trait HandlesInvoiceCreation
+trait HandlesStripeInvoice
 {
-    use HasChatwootProperties;
+    use ManagesChatwootMetadata;
+
+    public StripeInvoice $invoice;
+
+    public function initializeHandlesStripeInvoice()
+    {
+        $this->setChatwootMetadataFromFilters();
+    }
+
+    public function getInvoiceStatusColor($status): ?string
+    {
+        return match ($status) {
+            'draft' => 'gray',
+            'open' => 'warning',
+            'paid' => 'success',
+            'uncollectible' => 'danger',
+            'void' => 'gray',
+            'deleted' => 'gray',
+            default => 'gray',
+            null => 'gray',
+        };
+    }
+
+    public function getInvoiceStatusLabel($status): ?string
+    {
+        return match ($status) {
+            'draft' => 'Szkic',
+            'open' => 'W trakcie',
+            'paid' => 'Zapłacona',
+            'uncollectible' => 'Nieściągalna',
+            'void' => 'Unieważniona',
+            'deleted' => 'Usunięta',
+            default => 'Nieznany',
+            null => null,
+        };
+    }
+
+    public function fetchLatestInvoiceData()
+    {
+        $contactId = $this->chatwootContactId ?? null;
+
+        Log::info('Fetching latest invoice data', ['contactId' => $contactId]);
+
+        if (! $contactId) {
+            Log::warning('Contact ID is not provided.');
+            $this->invoice = new StripeInvoice();
+
+            return [];
+        }
+
+        $invoice = StripeInvoice::latestForContact($contactId)->active()->first();
+
+        if ($invoice) {
+            Log::info('Latest invoice found', ['invoiceId' => $invoice->id]);
+            $this->invoice = $invoice;
+        } else {
+            Log::warning('No invoice found for contact', ['contactId' => $contactId]);
+            $this->invoice = new StripeInvoice();
+        }
+    }
+
+    public function setInvoiceById($invoiceId)
+    {
+        $invoice = StripeInvoice::find($invoiceId);
+
+        if ($invoice) {
+            Log::info('Invoice set manually', ['invoiceId' => $invoice->id]);
+            $this->invoice = $invoice;
+        } else {
+            Log::warning('No invoice found with ID', ['invoiceId' => $invoiceId]);
+            $this->invoice = new StripeInvoice();
+        }
+    }
+
+    public function sendStripeInvoiceLink()
+    {
+        $this->fetchLatestInvoiceData();
+
+        if (! $this->invoice->exists || ! $this->chatwootAccountId || ! $this->chatwootContactId || ! $this->chatwootConversationId) {
+            return;
+        }
+
+        SendStripeInvoiceLinkJob::dispatch($this->invoice->id, $this->chatwootAccountId, $this->chatwootContactId, $this->chatwootConversationId, $this->chatwootAgentId);
+
+        Log::info('Job dispatched for sending invoice link');
+    }
 
     public function createInvoice(array $items)
     {
-        CreateStripeInvoiceJob::dispatch(
-            $items,
-            $this->chatwootContactId,
-            $this->chatwootAgentId,
-            $this->chatwootConversationId,
-            $this->chatwootAccountId
-        );
+        try {
+            CreateStripeInvoiceJob::dispatch(
+                $items,
+                $this->chatwootContactId,
+                $this->chatwootAgentId,
+                $this->chatwootConversationId,
+                $this->chatwootAccountId
+            );
+
+            Notification::make()
+                ->body('Faktura została pomyślnie utworzona.')
+                ->color('success')
+                ->send();
+        } catch (\Exception $e) {
+            Notification::make()
+                ->body('Wystąpił błąd podczas tworzenia faktury: '.$e->getMessage())
+                ->color('danger')
+                ->send();
+        }
     }
 
     public function getInvoiceFormSchema($productId = null, $currency = null, $priceId = null, $quantity = 1): array

@@ -2,11 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Jobs\SendStripeInvoiceLinkJob;
-use App\Models\StripeInvoice;
-use App\Traits\HandlesInvoiceCreation;
-use App\Traits\HandlesInvoiceStatus;
-use App\Traits\ManagesChatwootMetadata; // Add this line
+use App\Traits\HandlesStripeInvoice;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -17,15 +13,14 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
 use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Infolists\Infolist;
+use Filament\Widgets\Concerns\CanPoll;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
-use Livewire\Attributes\Computed;
 
 class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasForms, HasInfolists
 {
-    use HandlesInvoiceCreation, HandlesInvoiceStatus, InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, ManagesChatwootMetadata; // Updated line
+    use CanPoll, HandlesStripeInvoice, InteractsWithActions, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters;
 
     protected static string $view = 'filament.widgets.stripe-latest-invoice-data-widget';
 
@@ -35,73 +30,15 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
 
     public static bool $isLazy = true;
 
-    public $invoiceId;
-
-    public array $invoice = [];
-
-    #[Computed]
-    public function getLatestInvoiceData()
-    {
-        $contactId = $this->filters['chatwootContactId'] ?? null;
-
-        Log::info('Fetching latest invoice data', ['contactId' => $contactId]);
-
-        if (! $contactId) {
-            Log::warning('Contact ID is not provided.');
-
-            return [];
-        }
-
-        $invoice = StripeInvoice::latestForContact($contactId)
-            ->active()
-            ->first();
-
-        if ($invoice) {
-            Log::info('Latest invoice found', ['invoiceId' => $invoice->id]);
-        } else {
-            Log::warning('No invoice found for contact', ['contactId' => $contactId]);
-        }
-
-        return $invoice ? $invoice->toArray() : [];
-    }
-
-    public function sendStripeInvoiceLink()
-    {
-        $accountId = $this->filters['chatwootAccountId'] ?? null;
-        $contactId = $this->filters['chatwootContactId'] ?? null;
-        $conversationId = $this->filters['chatwootConversationId'] ?? null;
-
-        Log::info('Preparing to send Stripe invoice link', [
-            'accountId' => $accountId,
-            'contactId' => $contactId,
-            'conversationId' => $conversationId,
-        ]);
-
-        if (! $this->invoice || ! $accountId || ! $contactId || ! $conversationId) {
-            Log::error('Missing required filters for sending invoice link', [
-                'invoiceId' => $this->invoice['id'] ?? null,
-                'accountId' => $accountId,
-                'contactId' => $contactId,
-                'conversationId' => $conversationId,
-            ]);
-
-            return;
-        }
-
-        // Dispatch the job
-        SendStripeInvoiceLinkJob::dispatch($this->invoice['id'], $accountId, $contactId, $conversationId);
-
-        Log::info('Job dispatched for sending invoice link');
-    }
-
     public function infolist(Infolist $infolist): Infolist
     {
-        $this->invoice = $this->getLatestInvoiceData();
 
-        $this->setChatwootMetadataFromFilters($this->filters);
+        $this->fetchLatestInvoiceData();
+
+        $invoice = $this->invoice->toArray();
 
         return $infolist
-            ->state($this->invoice)
+            ->state($invoice)
             ->schema([
                 Section::make('invoiceDetails')
                     ->heading('Ostatnia faktura Stripe')
@@ -112,21 +49,21 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                             ->modalDescription('Wybierz walutę, konkretną usługę oraz jej cenę. W przypadku płatności za kilka takich samych usług możesz ustawić żądaną ilość.')
                             ->icon('heroicon-o-clipboard-document')
                             ->form(fn () => $this->getInvoiceFormSchema(
-                                productId: $this->invoice['data']['lines']['data'][0]['price']['product'],
-                                currency: $this->invoice['data']['lines']['data'][0]['price']['currency'],
-                                priceId: $this->invoice['data']['lines']['data'][0]['price']['id'],
-                                quantity: $this->invoice['data']['lines']['data'][0]['quantity'],
+                                productId: $invoice['data']['lines']['data'][0]['price']['product'],
+                                currency: $invoice['data']['lines']['data'][0]['price']['currency'],
+                                priceId: $invoice['data']['lines']['data'][0]['price']['id'],
+                                quantity: $invoice['data']['lines']['data'][0]['quantity'],
                             ))
                             ->action(function ($data) {
                                 $this->createInvoice([$data]);
                             })
                             ->button()
                             ->outlined()
-                            ->disabled(! $this->invoice)
+                            ->disabled(! $invoice)
                             ->color('primary'),
                         Action::make('sendStripeInvoiceLink')
                             ->color('warning')
-                            ->disabled((! $this->invoice) || (empty($this->invoice['data']['hosted_invoice_url'])))
+                            ->disabled((! $invoice) || (empty($invoice['data']['hosted_invoice_url'])))
                             ->label('Wyślij link')
                             ->outlined()
                             ->button()
@@ -149,21 +86,21 @@ class StripeLatestInvoiceDataWidget extends Widget implements HasActions, HasFor
                             ->color('gray'),
                         TextEntry::make('description')
                             ->placeholder('brak danych')
-                            ->state(fn () => $this->invoice ? Arr::pluck($this->invoice['data']['lines']['data'], 'description') : null)
+                            ->state(fn () => $invoice ? Arr::pluck($invoice['data']['lines']['data'], 'description') : null)
                             ->label('Usługi')
                             ->inlineLabel(),
                         TextEntry::make('total')
                             ->label('Suma')
                             ->placeholder('brak danych')
-                            ->money(fn () => $this->invoice['data']['currency'], divideBy: 100)
+                            ->money(fn () => $invoice['data']['currency'], divideBy: 100)
                             ->badge()
                             ->inlineLabel()
-                            ->color(fn () => $this->invoice['data']['paid'] ? 'success' : 'danger'),
+                            ->color(fn () => $invoice['data']['paid'] ? 'success' : 'danger'),
                         TextEntry::make('status')
                             ->label('Status')
                             ->placeholder('brak danych')
-                            ->color(fn () => $this->getInvoiceStatusColor($this->invoice['status'] ?? null)) // Updated to use trait method for color
-                            ->state(fn () => $this->getInvoiceStatusLabel($this->invoice['status'] ?? null)) // Updated to use trait method for label translation
+                            ->color(fn () => $this->getInvoiceStatusColor($invoice['status'] ?? null)) // Updated to use trait method for color
+                            ->state(fn () => $this->getInvoiceStatusLabel($invoice['status'] ?? null)) // Updated to use trait method for label translation
                             ->inlineLabel()
                             ->badge(),
                     ]),

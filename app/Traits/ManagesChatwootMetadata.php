@@ -4,10 +4,18 @@ namespace App\Traits;
 
 trait ManagesChatwootMetadata
 {
-    use HasChatwootProperties;
+    public $chatwootContactId;
 
-    public function setChatwootMetadataFromFilters(array $filters)
+    public $chatwootAgentId;
+
+    public $chatwootConversationId;
+
+    public $chatwootAccountId;
+
+    public function setChatwootMetadataFromFilters()
     {
+        $filters = $this->filters;
+
         $this->chatwootContactId = $filters['chatwootContactId'] ?? null;
         $this->chatwootAgentId = $filters['chatwootAgentId'] ?? null;
         $this->chatwootConversationId = $filters['chatwootConversationId'] ?? null;

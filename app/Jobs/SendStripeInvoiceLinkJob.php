@@ -1,11 +1,10 @@
 <?php
 
-// app/Jobs/SendStripeInvoiceLinkJob.php
-
 namespace App\Jobs;
 
 use App\Models\StripeInvoice;
 use App\Services\ChatwootService;
+use App\Services\CloudflareKVService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -17,51 +16,58 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $invoiceId;
+    protected $chatwootInvoiceId;
+    protected $chatwootAccountId;
+    protected $chatwootContactId;
+    protected $chatwootConversationId;
+    protected $chatwootAgentId;
 
-    protected $accountId;
-
-    protected $contactId;
-
-    protected $conversationId;
-
-    public function __construct($invoiceId, $accountId, $contactId, $conversationId)
+    public function __construct($chatwootInvoiceId, $chatwootAccountId, $chatwootContactId, $chatwootConversationId, $chatwootAgentId)
     {
-        $this->invoiceId = $invoiceId;
-        $this->accountId = $accountId;
-        $this->contactId = $contactId;
-        $this->conversationId = $conversationId;
+        $this->chatwootInvoiceId = $chatwootInvoiceId;
+        $this->chatwootAccountId = $chatwootAccountId;
+        $this->chatwootContactId = $chatwootContactId;
+        $this->chatwootConversationId = $chatwootConversationId;
+        $this->chatwootAgentId = $chatwootAgentId;
     }
 
-    public function handle(ChatwootService $chatwootService)
+    public function handle(ChatwootService $chatwootService, CloudflareKVService $cloudflareKVService)
     {
-        Log::info('Job started', [
-            'invoiceId' => $this->invoiceId,
-            'accountId' => $this->accountId,
-            'contactId' => $this->contactId,
-            'conversationId' => $this->conversationId,
-        ]);
+        $invoice = StripeInvoice::find($this->chatwootInvoiceId);
 
-        $invoice = StripeInvoice::find($this->invoiceId);
-
-        if (! $invoice) {
-            Log::error('No invoice found for ID', ['invoiceId' => $this->invoiceId]);
-
+        if (!$invoice) {
+            Log::error('No invoice found for ID', ['invoiceId' => $this->chatwootInvoiceId]);
             return;
         }
 
-        $messages = [
+        // Generate the shortened link using CloudflareKVService
+        $shortenedLink = $cloudflareKVService->createShortenedLink(
             $invoice->data['hosted_invoice_url'],
+            $this->chatwootContactId,
+            $this->chatwootAgentId,
+            $this->chatwootConversationId,
+            $this->chatwootAccountId
+        );
+
+        if (!$shortenedLink) {
+            Log::error('Failed to create shortened link for invoice', ['invoiceId' => $this->chatwootInvoiceId]);
+            return;
+        }
+
+        // Construct the shortened URL using the path (ID of the link) and domain with https
+        $shortenedUrl = 'https://' . config('services.shortener.domain') . '/' . $shortenedLink->id;
+
+        $messages = [
+            $shortenedUrl,
         ];
 
         Log::info('Sending messages to Chatwoot', ['messages' => $messages]);
 
-        $responses = $chatwootService->sendMessages($this->accountId, $this->conversationId, $messages);
+        $responses = $chatwootService->sendMessages($this->chatwootAccountId, $this->chatwootConversationId, $messages);
 
         foreach ($responses as $response) {
             if (isset($response['error'])) {
                 Log::error('Error sending message to Chatwoot', ['response' => $response]);
-
                 return;
             }
         }

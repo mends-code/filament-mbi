@@ -3,9 +3,8 @@
 namespace App\Filament\Widgets;
 
 use App\Models\StripeInvoice;
-use App\Traits\HandlesInvoiceCreation;
-use App\Traits\HandlesInvoiceStatus;
-use App\Traits\ManagesChatwootMetadata; // Add this line
+use App\Traits\HandlesStripeInvoice;
+// Add this line
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -18,6 +17,7 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
+use Filament\Widgets\Concerns\CanPoll;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\Widget;
 use Illuminate\Contracts\Pagination\CursorPaginator;
@@ -26,7 +26,7 @@ use Livewire\Attributes\Computed;
 
 class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, HasTable
 {
-    use HandlesInvoiceCreation, HandlesInvoiceStatus, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, InteractsWithTable, ManagesChatwootMetadata; // Updated line
+    use CanPoll, HandlesStripeInvoice, InteractsWithForms, InteractsWithInfolists, InteractsWithPageFilters, InteractsWithTable;
 
     protected static string $view = 'filament.widgets.stripe-invoices-widget';
 
@@ -51,7 +51,6 @@ class StripeInvoicesWidget extends Widget implements HasForms, HasInfolists, Has
 
     public function table(Table $table): Table
     {
-        $this->setChatwootMetadataFromFilters($this->filters);
 
         return $table
             ->query($this->getTableQuery())
