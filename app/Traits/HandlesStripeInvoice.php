@@ -6,10 +6,10 @@ namespace App\Traits;
 
 use App\Jobs\CreateStripeInvoiceJob;
 use App\Jobs\SendStripeInvoiceLinkJob;
-use App\Models\StripeCustomer;
-use App\Models\StripeInvoice;
-use App\Models\StripePrice;
-use App\Models\StripeProduct;
+use App\Models\Stripe\Customer;
+use App\Models\Stripe\Invoice;
+use App\Models\Stripe\Price;
+use App\Models\Stripe\Product;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -21,7 +21,7 @@ trait HandlesStripeInvoice
 {
     use ManagesChatwootMetadata;
 
-    public StripeInvoice $invoice;
+    public Invoice $invoice;
 
     public function initializeHandlesStripeInvoice()
     {
@@ -64,32 +64,32 @@ trait HandlesStripeInvoice
 
         if (! $contactId) {
             Log::warning('Contact ID is not provided.');
-            $this->invoice = new StripeInvoice();
+            $this->invoice = new Invoice();
 
             return [];
         }
 
-        $invoice = StripeInvoice::latestForContact($contactId)->active()->first();
+        $invoice = Invoice::latestForContact($contactId)->active()->first();
 
         if ($invoice) {
             Log::info('Latest invoice found', ['invoiceId' => $invoice->id]);
             $this->invoice = $invoice;
         } else {
             Log::warning('No invoice found for contact', ['contactId' => $contactId]);
-            $this->invoice = new StripeInvoice();
+            $this->invoice = new Invoice();
         }
     }
 
     public function setInvoiceById($invoiceId)
     {
-        $invoice = StripeInvoice::find($invoiceId);
+        $invoice = Invoice::find($invoiceId);
 
         if ($invoice) {
             Log::info('Invoice set manually', ['invoiceId' => $invoice->id]);
             $this->invoice = $invoice;
         } else {
             Log::warning('No invoice found with ID', ['invoiceId' => $invoiceId]);
-            $this->invoice = new StripeInvoice();
+            $this->invoice = new Invoice();
         }
     }
 
@@ -196,7 +196,7 @@ trait HandlesStripeInvoice
     #[Computed(persist: true, cache: true)]
     protected function getGlobalCurrencyOptions()
     {
-        return StripePrice::select('currency')
+        return Price::select('currency')
             ->distinct()
             ->pluck('currency')
             ->mapWithKeys(fn ($currency) => [$currency => strtoupper($currency)])
@@ -206,13 +206,13 @@ trait HandlesStripeInvoice
     #[Computed(persist: true, cache: true)]
     protected function getGlobalProductOptions()
     {
-        return StripeProduct::active()->pluck('name', 'id')->toArray();
+        return Product::active()->pluck('name', 'id')->toArray();
     }
 
     #[Computed(persist: true, cache: true)]
     protected function getGlobalPriceOptions()
     {
-        $prices = StripePrice::active()->oneTime()->get();
+        $prices = Price::active()->oneTime()->get();
 
         $options = [];
 
@@ -238,7 +238,7 @@ trait HandlesStripeInvoice
     {
         $contactId = $this->contactId ?? null;
 
-        $customer = StripeCustomer::latestForContact($contactId)->first();
+        $customer = Customer::latestForContact($contactId)->first();
 
         return $customer->data['currency'] ?? null;
     }

@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Models\StripeInvoice;
+use App\Models\Stripe\Invoice;
 use App\Services\ChatwootService;
-use App\Services\CloudflareKVService;
+use App\Services\CloudflareService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -17,9 +17,13 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $chatwootInvoiceId;
+
     protected $chatwootAccountId;
+
     protected $chatwootContactId;
+
     protected $chatwootConversationId;
+
     protected $chatwootAgentId;
 
     public function __construct($chatwootInvoiceId, $chatwootAccountId, $chatwootContactId, $chatwootConversationId, $chatwootAgentId)
@@ -31,12 +35,13 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
         $this->chatwootAgentId = $chatwootAgentId;
     }
 
-    public function handle(ChatwootService $chatwootService, CloudflareKVService $cloudflareKVService)
+    public function handle(ChatwootService $chatwootService, CloudflareService $cloudflareKVService)
     {
-        $invoice = StripeInvoice::find($this->chatwootInvoiceId);
+        $invoice = Invoice::find($this->chatwootInvoiceId);
 
-        if (!$invoice) {
+        if (! $invoice) {
             Log::error('No invoice found for ID', ['invoiceId' => $this->chatwootInvoiceId]);
+
             return;
         }
 
@@ -49,13 +54,14 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
             $this->chatwootAccountId
         );
 
-        if (!$shortenedLink) {
+        if (! $shortenedLink) {
             Log::error('Failed to create shortened link for invoice', ['invoiceId' => $this->chatwootInvoiceId]);
+
             return;
         }
 
         // Construct the shortened URL using the path (ID of the link) and domain with https
-        $shortenedUrl = 'https://' . config('services.shortener.domain') . '/' . $shortenedLink->id;
+        $shortenedUrl = 'https://'.config('services.shortener.domain').'/'.$shortenedLink->id;
 
         $messages = [
             $shortenedUrl,
@@ -68,6 +74,7 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
         foreach ($responses as $response) {
             if (isset($response['error'])) {
                 Log::error('Error sending message to Chatwoot', ['response' => $response]);
+
                 return;
             }
         }

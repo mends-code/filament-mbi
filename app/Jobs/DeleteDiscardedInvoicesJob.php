@@ -4,7 +4,7 @@
 
 namespace App\Jobs;
 
-use App\Models\StripeInvoice;
+use App\Models\Stripe\Invoice;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -23,11 +23,11 @@ class DeleteDiscardedInvoicesJob implements ShouldQueue
      */
     public function handle()
     {
-        $discardedInvoices = StripeInvoice::discarded()->get();
+        $discardedInvoices = Invoice::discarded()->get();
 
         $count = $discardedInvoices->count();
         if ($count > 0) {
-            StripeInvoice::discarded()->delete();
+            Invoice::discarded()->delete();
             Log::info("Deleted {$count} discarded invoices.");
         } else {
             Log::info('No discarded invoices found.');
