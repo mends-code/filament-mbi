@@ -25,11 +25,7 @@ class CustomerWidget extends Widget implements HasActions, HasForms, HasInfolist
 
     protected static string $view = 'filament.widgets.stripe.customer-widget';
 
-    protected static ?int $sort = 3;
-
     protected int|string|array $columnSpan = 1;
-
-    public static bool $isLazy = true;
 
     #[Computed]
     public function getCustomerData()

@@ -29,11 +29,7 @@ class InvoicesWidget extends Widget implements HasForms, HasInfolists, HasTable
 
     protected static string $view = 'filament.widgets.stripe.invoices-widget';
 
-    protected static ?int $sort = 5;
-
     protected int|string|array $columnSpan = 'full';
-
-    public static bool $isLazy = true;
 
     protected function paginateTableQuery(Builder $query): CursorPaginator
     {

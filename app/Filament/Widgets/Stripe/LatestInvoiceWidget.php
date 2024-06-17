@@ -24,11 +24,7 @@ class LatestInvoiceWidget extends Widget implements HasActions, HasForms, HasInf
 
     protected static string $view = 'filament.widgets.stripe.latest-invoice-widget';
 
-    protected static ?int $sort = 4;
-
     protected int|string|array $columnSpan = 1;
-
-    public static bool $isLazy = true;
 
     public function infolist(Infolist $infolist): Infolist
     {

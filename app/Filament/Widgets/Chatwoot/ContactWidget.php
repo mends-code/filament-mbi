@@ -25,11 +25,7 @@ class ContactWidget extends Widget implements HasActions, HasForms, HasInfolists
 
     protected static string $view = 'filament.widgets.chatwoot.contact-widget';
 
-    protected static ?int $sort = 1;
-
     protected int|string|array $columnSpan = 1;
-
-    public static bool $isLazy = true;
 
     public array $chatwootContactPayload = [];
 

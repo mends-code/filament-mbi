@@ -27,11 +27,7 @@ class ConversationWidget extends Widget implements HasActions, HasForms, HasInfo
 
     protected static string $view = 'filament.widgets.chatwoot.conversation-widget';
 
-    protected static ?int $sort = 2;
-
     protected int|string|array $columnSpan = 1;
-
-    public static bool $isLazy = true;
 
     #[Computed]
     public function getConversationData()
