@@ -39,7 +39,7 @@ class ShortenedLink extends Model
 
         // Automatically generate a unique ID when creating a new model instance
         static::creating(function ($model) {
-            $model->id = Str::random(config('services.shortener.id_length'));
+            $model->id = Str::random(config('services.cloudflare.link_shortener.id_length'));
         });
     }
 

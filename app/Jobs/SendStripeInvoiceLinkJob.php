@@ -61,7 +61,7 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
         }
 
         // Construct the shortened URL using the path (ID of the link) and domain with https
-        $shortenedUrl = 'https://'.config('services.shortener.domain').'/'.$shortenedLink->id;
+        $shortenedUrl = 'https://'.config('services.cloudflare.link_shortener.domain').'/'.$shortenedLink->id;
 
         $messages = [
             $shortenedUrl,

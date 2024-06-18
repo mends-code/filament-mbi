@@ -36,15 +36,27 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
 
     ],
+    'stripe' => [
+        'secret' => env('STRIPE_SECRET'),
+        'customer' => [
+            'default' => [
+                'email' => env('STRIPE_CUSTOMER_DEFAULT_EMAIL', 'change-me@example.local'),
+            ],
+        ],
+    ],
+    'chatwoot' => [
+        'endpoint' => env('CHATWOOT_ENDPOINT', 'https://app.chatwoot.com'),
+        'platform_app_api_key' => env('CHATWOOT_PLATFORM_APP_API_KEY', ''),
+        'user_api_key' => env('CHATWOOT_USER_API_KEY', ''),
+    ],
 
-    'shortener' => [
-        'domain' => env('SHORTENER_DOMAIN', 'link.mends.eu'),
-        'id_length' => env('SHORTENER_ID_LENGTH', 8),
-        
-        'cloudflare' => [
-            'account_id' => env('SHORTENER_CLOUDFLARE_ACCOUNT_ID'),
-            'namespace_id' => env('SHORTENER_CLOUDFLARE_NAMESPACE_ID'),
-            'api_token' => env('SHORTENER_CLOUDFLARE_API_TOKEN'),
+    'cloudflare' => [
+        'account_id' => env('CLOUDFLARE_ACCOUNT_ID'),
+        'namespace_id' => env('CLOUDFLARE_NAMESPACE_ID'),
+        'api_token' => env('CLOUDFLARE_API_TOKEN'),
+        'link_shortener' => [
+            'domain' => env('CLOUDFLARE_LINK_SHORTENER_DOMAIN', 'link.mends.eu'),
+            'id_length' => env('CLOUDFLARE_LINK_SHORTENER_ID_LENGTH', 8),
         ],
     ],
 

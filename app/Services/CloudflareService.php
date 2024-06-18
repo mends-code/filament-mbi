@@ -16,9 +16,9 @@ class CloudflareService
 
     public function __construct()
     {
-        $this->accountId = config('services.shortener.cloudflare.account_id');
-        $this->namespaceId = config('services.shortener.cloudflare.namespace_id');
-        $this->apiToken = config('services.shortener.cloudflare.api_token');
+        $this->accountId = config('services.cloudflare.account_id');
+        $this->namespaceId = config('services.cloudflare.namespace_id');
+        $this->apiToken = config('services.cloudflare.api_token');
     }
 
     public function createShortenedLink($targetUrl, $chatwootContactId = null, $chatwootAgentId = null, $chatwootConversationId = null, $chatwootAccountId = null)

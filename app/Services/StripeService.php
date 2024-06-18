@@ -18,7 +18,7 @@ class StripeService
     public function __construct()
     {
         try {
-            Stripe::setApiKey(config('stripe.secret'));
+            Stripe::setApiKey(config('services.stripe.secret'));
             Log::info('Stripe API key configured.');
         } catch (Exception $e) {
             Log::error('Failed to configure Stripe API key.', ['error' => $e->getMessage()]);
@@ -43,7 +43,7 @@ class StripeService
         try {
             if (empty($email) || ! $this->isValidEmail($email)) {
                 Log::warning('Invalid email, using default.', ['email' => $email, 'contactId' => $contactId]);
-                $defaultEmail = config('stripe.customer.default.email');
+                $defaultEmail = config('services.stripe.customer.default.email');
                 $emailParts = explode('@', $defaultEmail);
                 if (count($emailParts) === 2) {
                     $emailParts[0] .= '+'.$contactId;

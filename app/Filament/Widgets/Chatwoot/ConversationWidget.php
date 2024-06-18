@@ -2,8 +2,8 @@
 
 namespace App\Filament\Widgets\Chatwoot;
 
-use App\Models\Chatwoot\Conversation;
 use App\Models\Chatwoot\Account;
+use App\Models\Chatwoot\Conversation;
 use App\Models\Chatwoot\Inbox;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
