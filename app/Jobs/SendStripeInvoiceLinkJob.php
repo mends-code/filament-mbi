@@ -17,22 +17,20 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $chatwootInvoiceId;
-
     protected $chatwootAccountId;
-
     protected $chatwootContactId;
-
     protected $chatwootConversationId;
-
     protected $chatwootAgentId;
+    protected $userId;
 
-    public function __construct($chatwootInvoiceId, $chatwootAccountId, $chatwootContactId, $chatwootConversationId, $chatwootAgentId)
+    public function __construct($chatwootInvoiceId, $chatwootAccountId, $chatwootContactId, $chatwootConversationId, $chatwootAgentId, $userId)
     {
         $this->chatwootInvoiceId = $chatwootInvoiceId;
         $this->chatwootAccountId = $chatwootAccountId;
         $this->chatwootContactId = $chatwootContactId;
         $this->chatwootConversationId = $chatwootConversationId;
         $this->chatwootAgentId = $chatwootAgentId;
+        $this->userId = $userId;
     }
 
     public function handle(ChatwootService $chatwootService, CloudflareService $cloudflareKVService)
@@ -41,7 +39,6 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
 
         if (! $invoice) {
             Log::error('No invoice found for ID', ['invoiceId' => $this->chatwootInvoiceId]);
-
             return;
         }
 
@@ -56,7 +53,6 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
 
         if (! $shortenedLink) {
             Log::error('Failed to create shortened link for invoice', ['invoiceId' => $this->chatwootInvoiceId]);
-
             return;
         }
 
@@ -69,12 +65,12 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
 
         Log::info('Sending messages to Chatwoot', ['messages' => $messages]);
 
-        $responses = $chatwootService->sendMessages($this->chatwootAccountId, $this->chatwootConversationId, $messages);
+        // Pass the user ID to the service
+        $responses = $chatwootService->sendMessages($this->chatwootAccountId, $this->chatwootConversationId, $messages, $this->userId);
 
         foreach ($responses as $response) {
             if (isset($response['error'])) {
                 Log::error('Error sending message to Chatwoot', ['response' => $response]);
-
                 return;
             }
         }

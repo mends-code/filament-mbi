@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Chatwoot\User as ChatwootUser;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -22,6 +22,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
+        'chatwoot_user_id',
     ];
 
     /**
@@ -53,5 +54,13 @@ class User extends Authenticatable implements FilamentUser
         $userDomain = substr($this->email, strpos($this->email, '@') + 1); // Extract the domain from the email
 
         return in_array($userDomain, $allowedDomains); // Check if the user's domain is in the list of allowed domains
+    }
+
+    /**
+     * Get the associated Chatwoot user.
+     */
+    public function chatwootUser()
+    {
+        return $this->belongsTo(ChatwootUser::class, 'chatwoot_user_id');
     }
 }
