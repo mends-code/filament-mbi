@@ -4,6 +4,8 @@ namespace App\Models\Chatwoot;
 
 use Carbon\Carbon;
 
+use App\Models\Stripe\Invoice;
+
 class Conversation extends BaseModel
 {
     protected $table = 'mbi_chatwoot.conversations';
@@ -30,6 +32,11 @@ class Conversation extends BaseModel
     public function inbox()
     {
         return $this->belongsTo(Inbox::class, 'inbox_id');
+    }
+
+    public function stripeInvoices()
+    {
+        return $this->hasMany(Invoice::class, 'chatwoot_conversation_id', 'id');
     }
 
     public function getLastActivityAtAttribute($value)

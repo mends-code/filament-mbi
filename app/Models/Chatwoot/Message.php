@@ -2,13 +2,15 @@
 
 namespace App\Models\Chatwoot;
 
+use App\Traits\HasTimestampScopes;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 class Message extends BaseModel
 {
+    use HasTimestampScopes;
+
     protected $table = 'mbi_chatwoot.messages';
 
     protected $casts = [
@@ -62,6 +64,14 @@ class Message extends BaseModel
         return $query->where('sender_type', 'Contact')->where('sender_id', $senderId);
     }
 
+    public function scopeSenderUserOrContact(Builder $query, int $userId): Builder
+    {
+        return $query->where(function ($q) use ($userId) {
+            $q->where('sender_type', 'User')->where('sender_id', $userId)
+                ->orWhere('sender_type', 'Contact');
+        });
+    }
+
     public function scopeSenderAgentBot(Builder $query, int $senderId): Builder
     {
         return $query->where('sender_type', 'AgentBot')->where('sender_id', $senderId);
@@ -100,13 +110,5 @@ class Message extends BaseModel
     public function scopePublic(Builder $query): Builder
     {
         return $query->where('private', false);
-    }
-
-    public function scopeForYearAndMonth(Builder $query, int $year, int $month): Builder
-    {
-        $start = Carbon::create($year, $month, 1)->startOfMonth();
-        $end = Carbon::create($year, $month, 1)->endOfMonth();
-
-        return $query->whereBetween('created_at', [$start, $end]);
     }
 }

@@ -3,21 +3,28 @@
 namespace App\Models\Stripe;
 
 use App\Models\Chatwoot\Contact;
+use App\Models\Chatwoot\Conversation;
+use App\Models\Chatwoot\User;
 use App\Models\ShortenedLink;
+use App\Traits\HasTimestampScopes;
 
 class Invoice extends BaseModel
 {
+    use HasTimestampScopes;
+
     protected $table = 'mbi_stripe.invoices';
 
     protected $casts = [
         'id' => 'string',
         'data' => 'json',
-        'created' => 'timestamp',
+        'created' => 'datetime',
         'currency' => 'string',
         'status' => 'string',
         'paid' => 'boolean',
         'total' => 'integer',
         'livemode' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function customer()
@@ -35,6 +42,16 @@ class Invoice extends BaseModel
             'customer_id', // Local key on Invoice table
             'chatwoot_contact_id' // Local key on Customer table
         );
+    }
+
+    public function chatwootAgent()
+    {
+        return $this->belongsTo(User::class, 'chatwoot_agent_id', 'id');
+    }
+
+    public function chatwootConversation()
+    {
+        return $this->belongsTo(Conversation::class, 'chatwoot_conversation_id', 'id');
     }
 
     public function shortenedLinks()
