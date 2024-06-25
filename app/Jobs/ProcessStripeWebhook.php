@@ -4,7 +4,7 @@
 
 namespace App\Jobs;
 
-use App\Models\StripeEvent;
+use App\Models\Stripe\Event;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -57,7 +57,7 @@ class ProcessStripeWebhook implements ShouldQueue
      */
     protected function createOrUpdateStripeEvent($eventId, $payload)
     {
-        $event = StripeEvent::updateOrCreate(
+        $event = Event::updateOrCreate(
             ['id' => $eventId],
             ['data' => $payload]
         );

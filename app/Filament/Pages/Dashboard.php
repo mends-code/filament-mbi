@@ -2,16 +2,21 @@
 
 namespace App\Filament\Pages;
 
-use App\Traits\HandlesStripeInvoice;
-use App\Traits\ManagesChatwootMetadata;
+use App\Filament\Widgets\Chatwoot\ContactWidget;
+use App\Filament\Widgets\Chatwoot\ConversationWidget;
+use App\Filament\Widgets\Stripe\CustomerWidget;
+use App\Filament\Widgets\Stripe\InvoicesWidget;
+use App\Filament\Widgets\Stripe\LatestInvoiceWidget;
+use App\Traits\Chatwoot\HandlesChatwootMetadata;
 use App\Traits\ManagesDashboardFilters;
+use App\Traits\Stripe\HandlesStripeInvoice;
 use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Livewire\Attributes\On;
 
 class Dashboard extends BaseDashboard
 {
-    use HandlesStripeInvoice, ManagesChatwootMetadata, ManagesDashboardFilters;
+    use HandlesStripeInvoice, HandlesChatwootMetadata, ManagesDashboardFilters;
 
     protected static ?string $navigationLabel = 'Panel';
 
@@ -22,6 +27,17 @@ class Dashboard extends BaseDashboard
     protected ?string $subheading = 'Obsługa klienta, wystawianie faktur, umawianie wizyt';
 
     protected static ?string $navigationIcon = 'heroicon-o-hand-raised';
+
+    public function getWidgets(): array
+    {
+        return [
+            ContactWidget::class,
+            ConversationWidget::class,
+            CustomerWidget::class,
+            LatestInvoiceWidget::class,
+            InvoicesWidget::class,
+        ];
+    }
 
     public function mount()
     {

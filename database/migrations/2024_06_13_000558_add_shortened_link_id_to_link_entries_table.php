@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('shortened_link_id')->storedAs(
                 "substring((data->'event'->'request'->>'url') from 'https?://[^/]+/([^?]*)')"
             )
-            ->nullable();
+                ->nullable();
         });
     }
 
