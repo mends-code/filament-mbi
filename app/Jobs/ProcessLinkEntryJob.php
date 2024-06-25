@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\LinkEntry;
-use App\Models\ShortenedLink;
+use App\Models\Cloudflare\LinkEntry;
+use App\Models\Cloudflare\ShortenedLink;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -3,7 +3,7 @@
 namespace App\Filament\Widgets\Stripe;
 
 use App\Models\Stripe\Invoice;
-use App\Traits\HandlesStripeInvoice;
+use App\Traits\Stripe\HandlesStripeInvoice;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;

@@ -7,16 +7,16 @@ use App\Filament\Widgets\Chatwoot\ConversationWidget;
 use App\Filament\Widgets\Stripe\CustomerWidget;
 use App\Filament\Widgets\Stripe\InvoicesWidget;
 use App\Filament\Widgets\Stripe\LatestInvoiceWidget;
-use App\Traits\HandlesStripeInvoice;
-use App\Traits\ManagesChatwootMetadata;
+use App\Traits\Chatwoot\HandlesChatwootMetadata;
 use App\Traits\ManagesDashboardFilters;
+use App\Traits\Stripe\HandlesStripeInvoice;
 use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Livewire\Attributes\On;
 
 class Dashboard extends BaseDashboard
 {
-    use HandlesStripeInvoice, ManagesChatwootMetadata, ManagesDashboardFilters;
+    use HandlesStripeInvoice, HandlesChatwootMetadata, ManagesDashboardFilters;
 
     protected static ?string $navigationLabel = 'Panel';
 

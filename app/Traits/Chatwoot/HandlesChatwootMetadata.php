@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Traits;
+namespace App\Traits\Chatwoot;
 
-trait ManagesChatwootMetadata
+trait HandlesChatwootMetadata
 {
     public $chatwootContactId;
 

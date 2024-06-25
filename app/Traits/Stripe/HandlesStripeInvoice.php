@@ -2,7 +2,7 @@
 
 // app/Traits/HandlesStripeInvoice.php
 
-namespace App\Traits;
+namespace App\Traits\Stripe;
 
 use App\Jobs\CreateStripeInvoiceJob;
 use App\Jobs\SendStripeInvoiceLinkJob;
@@ -10,6 +10,7 @@ use App\Models\Stripe\Customer;
 use App\Models\Stripe\Invoice;
 use App\Models\Stripe\Price;
 use App\Models\Stripe\Product;
+use App\Traits\Chatwoot\HandlesChatwootMetadata;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -19,7 +20,7 @@ use Livewire\Attributes\Computed;
 
 trait HandlesStripeInvoice
 {
-    use ManagesChatwootMetadata;
+    use HandlesChatwootMetadata;
 
     public Invoice $invoice;
 

@@ -46,6 +46,8 @@ return [
     ],
     'chatwoot' => [
         'endpoint' => env('CHATWOOT_ENDPOINT', 'https://app.chatwoot.com'),
+        'reset_assignee_timeout' => env('CHATWOOT_RESET_ASSIGNEE_TIMEOUT', 30),
+        'reset_assignee_enabled' => env('CHATWOOT_RESET_ASSIGNEE_ENABLED', false),
     ],
 
     'cloudflare' => [

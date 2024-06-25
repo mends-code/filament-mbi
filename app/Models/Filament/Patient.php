@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Filament;
+
+use App\Models\ChatwootContact;
 
 class Patient extends BaseModel
 {

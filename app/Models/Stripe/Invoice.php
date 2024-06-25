@@ -5,7 +5,7 @@ namespace App\Models\Stripe;
 use App\Models\Chatwoot\Contact;
 use App\Models\Chatwoot\Conversation;
 use App\Models\Chatwoot\User;
-use App\Models\ShortenedLink;
+use App\Models\Cloudflare\ShortenedLink;
 use App\Traits\HasTimestampScopes;
 
 class Invoice extends BaseModel

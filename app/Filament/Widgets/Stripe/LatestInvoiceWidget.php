@@ -2,7 +2,7 @@
 
 namespace App\Filament\Widgets\Stripe;
 
-use App\Traits\HandlesStripeInvoice;
+use App\Traits\Stripe\HandlesStripeInvoice;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\ShortenedLink;
+use App\Models\Cloudflare\ShortenedLink;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 

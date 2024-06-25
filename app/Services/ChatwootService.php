@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Chatwoot\AccessToken;
-use App\Models\User;
+use App\Models\Filament\User;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
