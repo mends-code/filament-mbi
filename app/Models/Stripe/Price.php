@@ -2,6 +2,44 @@
 
 namespace App\Models\Stripe;
 
+/**
+ * 
+ *
+ * @property array $data
+ * @property int $created
+ * @property string|null $product_id
+ * @property bool|null $active
+ * @property string|null $currency
+ * @property string|null $type
+ * @property bool|null $livemode
+ * @property int|null $unit_amount
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $id
+ * @property-read \App\Models\Stripe\Product|null $product
+ * @method static \Illuminate\Database\Eloquent\Builder|Price active()
+ * @method static \Illuminate\Database\Eloquent\Builder|Price currency($currency)
+ * @method static \Illuminate\Database\Eloquent\Builder|Price defaultForProduct($product_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Price forProduct($product_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Price liveMode()
+ * @method static \Illuminate\Database\Eloquent\Builder|Price newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Price newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Price oneTime()
+ * @method static \Illuminate\Database\Eloquent\Builder|Price query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Price recurring()
+ * @method static \Illuminate\Database\Eloquent\Builder|Price whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Price whereCreated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Price whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Price whereCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Price whereData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Price whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Price whereLivemode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Price whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Price whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Price whereUnitAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Price whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Price extends BaseModel
 {
     protected $table = 'mbi_stripe.prices';

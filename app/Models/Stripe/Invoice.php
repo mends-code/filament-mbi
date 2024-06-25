@@ -8,6 +8,59 @@ use App\Models\Chatwoot\User;
 use App\Models\Cloudflare\ShortenedLink;
 use App\Traits\HasTimestampScopes;
 
+/**
+ * 
+ *
+ * @property array $data
+ * @property \Illuminate\Support\Carbon $created
+ * @property string|null $customer_id
+ * @property bool|null $livemode
+ * @property string|null $currency
+ * @property string|null $status
+ * @property bool|null $paid
+ * @property int|null $total
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $id
+ * @property string|null $base64_hosted_invoice_url
+ * @property int|null $chatwoot_account_id
+ * @property int|null $chatwoot_conversation_id
+ * @property int|null $chatwoot_contact_id
+ * @property int|null $chatwoot_agent_id
+ * @property-read User|null $chatwootAgent
+ * @property-read Contact|null $chatwootContact
+ * @property-read Conversation|null $chatwootConversation
+ * @property-read \App\Models\Stripe\Customer|null $customer
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ShortenedLink> $shortenedLinks
+ * @property-read int|null $shortened_links_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice active($statuses = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice discarded($statuses = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice forContact($contactId)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice forYearAndMonth(int $year, int $month)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice latestForContact($contactId)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice paid()
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice unpaid()
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereBase64HostedInvoiceUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereChatwootAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereChatwootAgentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereChatwootContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereChatwootConversationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereCreated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereCustomerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereLivemode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice wherePaid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Invoice extends BaseModel
 {
     use HasTimestampScopes;
