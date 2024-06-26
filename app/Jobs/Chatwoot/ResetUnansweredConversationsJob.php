@@ -8,29 +8,33 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Config;
+use Carbon\Carbon;
 
 class ResetUnansweredConversationsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    protected $timeoutMinutes;
+
     public function __construct()
     {
-        //
+        $this->timeoutMinutes = config('services.chatwoot.reset_assignee_timeout');
     }
 
     public function handle()
     {
-        $timeoutMinutes = Config::get('services.chatwoot.reset_assignee_timeout');
+        if ($this->timeoutMinutes <= 0) {
+            return;
+        }
 
-        $conversations = Conversation::open()
-            ->unanswered($timeoutMinutes)
-            ->get();
+        $threshold = Carbon::now('Europe/Warsaw')->subMinutes($this->timeoutMinutes)->setTimezone('UTC');
+
+        $conversations = Conversation::open()->assigned()->unanswered()->get()->filter(function ($conversation) use ($threshold) {
+            return $conversation->waiting_since->lessThanOrEqualTo($threshold);
+        });
 
         foreach ($conversations as $conversation) {
-            $conversation->resetAssignee();
-            Log::info('Assignee ID set to null for conversation', ['conversation_id' => $conversation->id]);
+            UnassignConversationJob::dispatch($conversation);
         }
     }
 }

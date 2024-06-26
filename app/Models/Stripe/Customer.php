@@ -7,32 +7,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * 
- *
- * @property array $data
- * @property int $created
- * @property int|null $chatwoot_contact_id
- * @property bool|null $livemode
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property string $id
- * @property-read Contact|null $chatwootContact
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Stripe\Invoice> $invoices
- * @property-read int|null $invoices_count
- * @method static Builder|Customer latestForContact($chatwootContactId)
- * @method static Builder|Customer newModelQuery()
- * @method static Builder|Customer newQuery()
- * @method static Builder|Customer query()
- * @method static Builder|Customer whereChatwootContactId($value)
- * @method static Builder|Customer whereCreated($value)
- * @method static Builder|Customer whereCreatedAt($value)
- * @method static Builder|Customer whereData($value)
- * @method static Builder|Customer whereId($value)
- * @method static Builder|Customer whereLivemode($value)
- * @method static Builder|Customer whereUpdatedAt($value)
- * @mixin \Eloquent
- */
 class Customer extends Model
 {
     use HasFactory;

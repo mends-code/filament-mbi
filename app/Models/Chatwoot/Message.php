@@ -7,67 +7,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
-/**
- * 
- *
- * @property int $id
- * @property string|null $content
- * @property int $account_id
- * @property int $inbox_id
- * @property int $conversation_id
- * @property int $message_type
- * @property Carbon $created_at
- * @property Carbon $updated_at
- * @property bool $private
- * @property int|null $status
- * @property string|null $source_id
- * @property int $content_type
- * @property array|null $content_attributes
- * @property string|null $sender_type
- * @property int|null $sender_id
- * @property array|null $external_source_ids
- * @property array|null $additional_attributes
- * @property string|null $processed_message_content
- * @property array|null $sentiment
- * @property-read \App\Models\Chatwoot\Account|null $account
- * @property-read \App\Models\Chatwoot\Conversation|null $conversation
- * @property-read \App\Models\Chatwoot\Inbox|null $inbox
- * @method static Builder|Message byAccount(int $accountId)
- * @method static Builder|Message byConversation(int $conversationId)
- * @method static Builder|Message byInbox(int $inboxId)
- * @method static Builder|Message byMessageType(int $messageType)
- * @method static Builder|Message forYearAndMonth(int $year, int $month)
- * @method static Builder|Message latestFirst()
- * @method static Builder|Message newModelQuery()
- * @method static Builder|Message newQuery()
- * @method static Builder|Message private()
- * @method static Builder|Message public()
- * @method static Builder|Message query()
- * @method static Builder|Message senderAgentBot(int $senderId)
- * @method static Builder|Message senderContact(int $senderId)
- * @method static Builder|Message senderUser(int $senderId)
- * @method static Builder|Message senderUserOrContact(int $userId)
- * @method static Builder|Message whereAccountId($value)
- * @method static Builder|Message whereAdditionalAttributes($value)
- * @method static Builder|Message whereContent($value)
- * @method static Builder|Message whereContentAttributes($value)
- * @method static Builder|Message whereContentType($value)
- * @method static Builder|Message whereConversationId($value)
- * @method static Builder|Message whereCreatedAt($value)
- * @method static Builder|Message whereExternalSourceIds($value)
- * @method static Builder|Message whereId($value)
- * @method static Builder|Message whereInboxId($value)
- * @method static Builder|Message whereMessageType($value)
- * @method static Builder|Message wherePrivate($value)
- * @method static Builder|Message whereProcessedMessageContent($value)
- * @method static Builder|Message whereSenderId($value)
- * @method static Builder|Message whereSenderType($value)
- * @method static Builder|Message whereSentiment($value)
- * @method static Builder|Message whereSourceId($value)
- * @method static Builder|Message whereStatus($value)
- * @method static Builder|Message whereUpdatedAt($value)
- * @mixin \Eloquent
- */
 class Message extends BaseModel
 {
     use HasTimestampScopes;

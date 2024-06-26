@@ -24,7 +24,7 @@ trait HandlesStripeInvoice
 
     public Invoice $invoice;
 
-    public function initializeHandlesStripeInvoice()
+    public function initializeHandlesStripeInvoice(): void
     {
         $this->setChatwootMetadataFromFilters();
     }
