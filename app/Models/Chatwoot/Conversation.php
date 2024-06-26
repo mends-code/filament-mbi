@@ -109,5 +109,6 @@ class Conversation extends BaseModel
     public function scopeAssigned(Builder $query): Builder
     {
         return $query->whereNotNull('assignee_id');
+
     }
 }

@@ -25,6 +25,7 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
     protected $chatwootConversationId;
 
     protected $chatwootAgentId;
+    protected $userId;
 
     protected $userId;
 
