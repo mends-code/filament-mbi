@@ -63,15 +63,4 @@ return [
         ],
     ],
 
-    'shortener' => [
-        'domain' => env('SHORTENER_DOMAIN', 'link.mends.eu'),
-        'id_length' => env('SHORTENER_ID_LENGTH', 8),
-        
-        'cloudflare' => [
-            'account_id' => env('SHORTENER_CLOUDFLARE_ACCOUNT_ID'),
-            'namespace_id' => env('SHORTENER_CLOUDFLARE_NAMESPACE_ID'),
-            'api_token' => env('SHORTENER_CLOUDFLARE_API_TOKEN'),
-        ],
-    ],
-
 ];

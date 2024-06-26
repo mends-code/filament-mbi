@@ -2,7 +2,6 @@
 
 // app/Traits/HandlesStripeInvoice.php
 
-<<<<<<<< HEAD:app/Traits/Stripe/HandlesStripeInvoice.php
 namespace App\Traits\Stripe;
 
 use App\Jobs\CreateStripeInvoiceJob;
@@ -12,16 +11,6 @@ use App\Models\Stripe\Invoice;
 use App\Models\Stripe\Price;
 use App\Models\Stripe\Product;
 use App\Traits\Chatwoot\HandlesChatwootMetadata;
-========
-namespace App\Traits;
-
-use App\Jobs\CreateStripeInvoiceJob;
-use App\Jobs\SendStripeInvoiceLinkJob;
-use App\Models\StripeCustomer;
-use App\Models\StripeInvoice;
-use App\Models\StripePrice;
-use App\Models\StripeProduct;
->>>>>>>> main:app/Traits/HandlesStripeInvoice.php
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -31,19 +20,11 @@ use Livewire\Attributes\Computed;
 
 trait HandlesStripeInvoice
 {
-<<<<<<<< HEAD:app/Traits/Stripe/HandlesStripeInvoice.php
     use HandlesChatwootMetadata;
 
     public Invoice $invoice;
 
     public function initializeHandlesStripeInvoice(): void
-========
-    use ManagesChatwootMetadata;
-
-    public StripeInvoice $invoice;
-
-    public function initializeHandlesStripeInvoice()
->>>>>>>> main:app/Traits/HandlesStripeInvoice.php
     {
         $this->setChatwootMetadataFromFilters();
     }
@@ -84,52 +65,32 @@ trait HandlesStripeInvoice
 
         if (! $contactId) {
             Log::warning('Contact ID is not provided.');
-<<<<<<<< HEAD:app/Traits/Stripe/HandlesStripeInvoice.php
             $this->invoice = new Invoice();
-========
-            $this->invoice = new StripeInvoice();
->>>>>>>> main:app/Traits/HandlesStripeInvoice.php
 
             return [];
         }
 
-<<<<<<<< HEAD:app/Traits/Stripe/HandlesStripeInvoice.php
         $invoice = Invoice::latestForContact($contactId)->active()->first();
-========
-        $invoice = StripeInvoice::latestForContact($contactId)->active()->first();
->>>>>>>> main:app/Traits/HandlesStripeInvoice.php
 
         if ($invoice) {
             Log::info('Latest invoice found', ['invoiceId' => $invoice->id]);
             $this->invoice = $invoice;
         } else {
             Log::warning('No invoice found for contact', ['contactId' => $contactId]);
-<<<<<<<< HEAD:app/Traits/Stripe/HandlesStripeInvoice.php
             $this->invoice = new Invoice();
-========
-            $this->invoice = new StripeInvoice();
->>>>>>>> main:app/Traits/HandlesStripeInvoice.php
         }
     }
 
     public function setInvoiceById($invoiceId)
     {
-<<<<<<<< HEAD:app/Traits/Stripe/HandlesStripeInvoice.php
         $invoice = Invoice::find($invoiceId);
-========
-        $invoice = StripeInvoice::find($invoiceId);
->>>>>>>> main:app/Traits/HandlesStripeInvoice.php
 
         if ($invoice) {
             Log::info('Invoice set manually', ['invoiceId' => $invoice->id]);
             $this->invoice = $invoice;
         } else {
             Log::warning('No invoice found with ID', ['invoiceId' => $invoiceId]);
-<<<<<<<< HEAD:app/Traits/Stripe/HandlesStripeInvoice.php
             $this->invoice = new Invoice();
-========
-            $this->invoice = new StripeInvoice();
->>>>>>>> main:app/Traits/HandlesStripeInvoice.php
         }
     }
 
@@ -141,11 +102,7 @@ trait HandlesStripeInvoice
             return;
         }
 
-<<<<<<<< HEAD:app/Traits/Stripe/HandlesStripeInvoice.php
         SendStripeInvoiceLinkJob::dispatch($this->invoice->id, $this->chatwootAccountId, $this->chatwootContactId, $this->chatwootConversationId, $this->chatwootAgentId, auth()->id());
-========
-        SendStripeInvoiceLinkJob::dispatch($this->invoice->id, $this->chatwootAccountId, $this->chatwootContactId, $this->chatwootConversationId, $this->chatwootAgentId);
->>>>>>>> main:app/Traits/HandlesStripeInvoice.php
 
         Log::info('Job dispatched for sending invoice link');
     }
