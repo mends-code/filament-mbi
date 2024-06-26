@@ -101,17 +101,14 @@ class Conversation extends BaseModel
         return $query->where('status', 3);
     }
 
-    public function scopeUnanswered(Builder $query, int $timeoutMinutes): Builder
+    public function scopeUnanswered(Builder $query): Builder
     {
-        $threshold = Carbon::now()->subMinutes($timeoutMinutes);
-        return $query->whereNotNull('waiting_since')
-            ->where('waiting_since', '<=', $threshold)
-            ->orderBy('waiting_since', 'asc');
+        return $query->whereNotNull('waiting_since');
     }
 
-    public function resetAssignee()
+    public function scopeAssigned(Builder $query): Builder
     {
-        $this->assignee_id = null;
-        $this->save();
+        return $query->whereNotNull('assignee_id');
+
     }
 }

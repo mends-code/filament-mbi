@@ -10,5 +10,5 @@ $resetAssigneeInterval = config('services.chatwoot.reset_assignee_interval');
 $resetAssigneeEnabled = config('services.chatwoot.reset_assignee_enabled');
 
 if ($resetAssigneeEnabled) {
-    Schedule::job(new ResetUnansweredConversationsJob)->everyFiveMinutes();
+    Schedule::job(new ResetUnansweredConversationsJob)->everyMinute();
 }
