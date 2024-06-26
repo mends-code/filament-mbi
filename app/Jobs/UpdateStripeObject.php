@@ -4,11 +4,11 @@
 
 namespace App\Jobs;
 
-use App\Models\StripeCustomer;
-use App\Models\StripeEvent;
-use App\Models\StripeInvoice;
-use App\Models\StripePrice;
-use App\Models\StripeProduct;
+use App\Models\Stripe\Customer;
+use App\Models\Stripe\Event;
+use App\Models\Stripe\Invoice;
+use App\Models\Stripe\Price;
+use App\Models\Stripe\Product;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -47,8 +47,8 @@ class UpdateStripeObject implements ShouldQueue
         $objectId = $object['id'];
         $objectType = $object['object'];
 
-        // Retrieve the latest StripeEvent for the given object_id
-        $latestEvent = StripeEvent::where('object_id', $objectId)
+        // Retrieve the latest Event for the given object_id
+        $latestEvent = Event::where('object_id', $objectId)
             ->orderBy('created', 'desc')
             ->orderBy('id', 'desc')
             ->first();
@@ -58,24 +58,24 @@ class UpdateStripeObject implements ShouldQueue
             $object = $latestEvent->data['data']['object'];
             Log::info("Using data from latest event for object ID: {$objectId}");
         } else {
-            Log::warning("No StripeEvent found for object ID: {$objectId}");
+            Log::warning("No Event found for object ID: {$objectId}");
         }
 
         switch ($objectType) {
             case 'customer':
-                $this->updateOrCreate(StripeCustomer::class, $objectId, $object);
+                $this->updateOrCreate(Customer::class, $objectId, $object);
                 break;
 
             case 'invoice':
-                $this->updateOrCreate(StripeInvoice::class, $objectId, $object);
+                $this->updateOrCreate(Invoice::class, $objectId, $object);
                 break;
 
             case 'product':
-                $this->updateOrCreate(StripeProduct::class, $objectId, $object);
+                $this->updateOrCreate(Product::class, $objectId, $object);
                 break;
 
             case 'price':
-                $this->updateOrCreate(StripePrice::class, $objectId, $object);
+                $this->updateOrCreate(Price::class, $objectId, $object);
                 break;
 
             default:

@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\ChatwootContact;
-use App\Models\StripeCustomer;
-use App\Models\StripePrice;
+use App\Models\Chatwoot\Contact;
+use App\Models\Stripe\Customer as StripeCustomer;
+use App\Models\Stripe\Price;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -18,7 +18,7 @@ class StripeService
     public function __construct()
     {
         try {
-            Stripe::setApiKey(config('stripe.secret'));
+            Stripe::setApiKey(config('services.stripe.secret'));
             Log::info('Stripe API key configured.');
         } catch (Exception $e) {
             Log::error('Failed to configure Stripe API key.', ['error' => $e->getMessage()]);
@@ -43,7 +43,7 @@ class StripeService
         try {
             if (empty($email) || ! $this->isValidEmail($email)) {
                 Log::warning('Invalid email, using default.', ['email' => $email, 'contactId' => $contactId]);
-                $defaultEmail = config('stripe.customer.default.email');
+                $defaultEmail = config('services.stripe.customer.default.email');
                 $emailParts = explode('@', $defaultEmail);
                 if (count($emailParts) === 2) {
                     $emailParts[0] .= '+'.$contactId;
@@ -61,7 +61,7 @@ class StripeService
         }
     }
 
-    public function createCustomer(ChatwootContact $contact, $chatwootConversationId, $chatwootAccountId, $chatwootAgentId)
+    public function createCustomer(Contact $contact, $chatwootConversationId, $chatwootAccountId, $chatwootAgentId)
     {
         try {
             Log::info("Creating customer for contact ID: {$contact->id}");
@@ -130,7 +130,7 @@ class StripeService
         try {
             Log::info("Creating invoice for contact ID: {$chatwootContactId}");
 
-            $contact = ChatwootContact::find($chatwootContactId);
+            $contact = Contact::find($chatwootContactId);
 
             if (! $contact) {
                 Log::error('Contact not found', ['contactId' => $chatwootContactId]);
@@ -151,7 +151,7 @@ class StripeService
 
             $currencies = [];
             foreach ($items as $item) {
-                $stripePrice = StripePrice::findOrFail($item['priceId']);
+                $stripePrice = Price::findOrFail($item['priceId']);
                 $currencies[] = $stripePrice->data['currency'];
             }
 

@@ -2,12 +2,13 @@
 
 namespace App\Traits;
 
+use App\Traits\Chatwoot\HandlesChatwootMetadata;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
 trait ManagesDashboardFilters
 {
-    use HasSessionFilters, ManagesChatwootMetadata;
+    use HasSessionFilters, HandlesChatwootMetadata;
 
     public function setChatwootFilters($context)
     {
