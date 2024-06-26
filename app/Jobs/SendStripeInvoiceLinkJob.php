@@ -27,8 +27,6 @@ class SendStripeInvoiceLinkJob implements ShouldQueue
     protected $chatwootAgentId;
     protected $userId;
 
-    protected $userId;
-
     public function __construct($chatwootInvoiceId, $chatwootAccountId, $chatwootContactId, $chatwootConversationId, $chatwootAgentId, $userId)
     {
         $this->chatwootInvoiceId = $chatwootInvoiceId;
