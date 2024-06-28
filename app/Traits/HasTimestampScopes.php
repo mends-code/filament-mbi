@@ -9,11 +9,6 @@ trait HasTimestampScopes
 {
     /**
      * Scope a query to only include records for a given year and month.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  int  $year
-     * @param  int  $month
-     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeForYearAndMonth(Builder $query, int $year, int $month): Builder
     {

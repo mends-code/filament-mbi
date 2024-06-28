@@ -31,6 +31,7 @@ return [
 
     'connections' => [
 
+        /*
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DB_URL'),
@@ -78,7 +79,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-
+*/
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),
@@ -93,10 +94,10 @@ return [
             'search_path' => env('PGSQL_SEARCH_PATH', 'public'),
             'sslmode' => 'prefer',
             'options' => ([
-                PDO::ATTR_PERSISTENT => env('PGSQL_ATTR_PERSISTANT', true),
+                PDO::ATTR_PERSISTENT => env('PGSQL_ATTR_PERSISTENT', true),
             ]),
         ],
-
+        /*
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),
@@ -111,7 +112,7 @@ return [
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
-
+*/
     ],
 
     /*

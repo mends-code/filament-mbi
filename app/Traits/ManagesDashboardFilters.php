@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 trait ManagesDashboardFilters
 {
-    use HasSessionFilters, HandlesChatwootMetadata;
+    use HandlesChatwootMetadata, HasSessionFilters;
 
     public function setChatwootFilters($context)
     {
