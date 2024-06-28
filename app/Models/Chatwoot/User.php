@@ -50,5 +50,4 @@ class User extends BaseModel
     {
         return $this->hasMany(Invoice::class, 'chatwoot_agent_id', 'id');
     }
-
 }

@@ -16,7 +16,7 @@ use Livewire\Attributes\On;
 
 class Dashboard extends BaseDashboard
 {
-    use HandlesStripeInvoice, HandlesChatwootMetadata, ManagesDashboardFilters;
+    use HandlesChatwootMetadata, HandlesStripeInvoice, ManagesDashboardFilters;
 
     protected static ?string $navigationLabel = 'Panel';
 

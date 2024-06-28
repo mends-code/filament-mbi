@@ -5,7 +5,6 @@ namespace App\Models\Chatwoot;
 use App\Traits\HasTimestampScopes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 class Message extends BaseModel
 {

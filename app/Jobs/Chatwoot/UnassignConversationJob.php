@@ -3,12 +3,12 @@
 namespace App\Jobs\Chatwoot;
 
 use App\Models\Chatwoot\Conversation;
+use App\Services\ChatwootService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Services\ChatwootService;
 
 class UnassignConversationJob implements ShouldQueue
 {

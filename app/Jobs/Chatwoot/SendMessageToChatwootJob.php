@@ -15,8 +15,11 @@ class SendMessageToChatwootJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected int $accountId;
+
     protected int $conversationId;
+
     protected array $messages;
+
     protected ?int $userId;
 
     public function __construct(int $accountId, int $conversationId, array $messages, ?int $userId = null)
@@ -36,6 +39,7 @@ class SendMessageToChatwootJob implements ShouldQueue
         foreach ($responses as $response) {
             if (isset($response['error'])) {
                 Log::error('Error sending message to Chatwoot', ['response' => $response]);
+
                 return;
             }
         }
