@@ -9,6 +9,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-pdo": "*",
+        "barryvdh/laravel-debugbar": "^3.13",
         "coconutcraig/laravel-postmark": "^3.2",
         "filament/filament": "^3.2",
         "filament/widgets": "^3.2",
@@ -20,7 +22,6 @@
         "nesbot/carbon": "^3.3",
         "predis/predis": "^2.2",
         "rinvex/countries": "^9.0",
-        "barryvdh/laravel-debugbar": "^3.13",
         "stripe/stripe-php": "^14.6"
     },
     "require-dev": {
