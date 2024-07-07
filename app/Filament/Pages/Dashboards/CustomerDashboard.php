@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Pages;
+namespace App\Filament\Pages\Dashboards;
 
 use App\Filament\Widgets\Chatwoot\ContactWidget;
 use App\Filament\Widgets\Chatwoot\ConversationWidget;
@@ -11,10 +11,10 @@ use App\Traits\Chatwoot\HandlesChatwootMetadata;
 use App\Traits\ManagesDashboardFilters;
 use App\Traits\Stripe\HandlesStripeInvoice;
 use Filament\Actions\Action;
-use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Pages\Dashboard;
 use Livewire\Attributes\On;
 
-class Dashboard extends BaseDashboard
+class CustomerDashboard extends Dashboard
 {
     use HandlesChatwootMetadata, HandlesStripeInvoice, ManagesDashboardFilters;
 
@@ -22,11 +22,13 @@ class Dashboard extends BaseDashboard
 
     protected static ?string $title = 'Panel';
 
-    protected ?string $heading = 'Panel Asystenta';
+    protected ?string $heading = 'Panel Klienta';
 
     protected ?string $subheading = 'Obsługa klienta, wystawianie faktur, umawianie wizyt';
 
     protected static ?string $navigationIcon = 'heroicon-o-hand-raised';
+
+    protected static ?int $navigationSort = 0;
 
     public function getWidgets(): array
     {
@@ -45,7 +47,7 @@ class Dashboard extends BaseDashboard
     }
 
     #[On('set-dashboard-filters')]
-    public function setDashboardFilters($context)
+    public function setDashboardFilters($context): void
     {
         $this->setChatwootFilters($context);
     }

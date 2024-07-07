@@ -5,6 +5,8 @@ namespace App\Traits\Chatwoot;
 use App\Models\Chatwoot\Conversation;
 use App\Models\Chatwoot\Message;
 use App\Models\Stripe\Invoice;
+use Carbon\CarbonInterface;
+use Carbon\CarbonInterval;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -29,6 +31,28 @@ trait HandlesChatwootStatistics
         return $this->baseMessageQuery($year, $month, $chatwootUserId)
             ->get()
             ->sum(fn ($message) => Str::wordCount($message->content ?? ''));
+    }
+
+    public function getMonthlyWorkingTenthOfAMonth(int $year, int $month, int $chatwootUserId): int
+    {
+        $messages = $this->baseMessageQuery($year, $month, $chatwootUserId)
+            ->get(['created_at']);
+
+        $tenthOfMonthActivity = [0, 0, 0];
+
+        foreach ($messages as $message) {
+            $dayOfMonth = $message['created_at']->day;
+
+            if ($dayOfMonth >= 1 && $dayOfMonth <= 10) {
+                $tenthOfMonthActivity[0] = 1;
+            } elseif ($dayOfMonth >= 11 && $dayOfMonth <= 20) {
+                $tenthOfMonthActivity[1] = 1;
+            } else {
+                $tenthOfMonthActivity[2] = 1;
+            }
+        }
+
+        return array_sum($tenthOfMonthActivity);
     }
 
     public function getMonthlyWorkingDays(int $year, int $month, int $chatwootUserId): int
@@ -64,10 +88,7 @@ trait HandlesChatwootStatistics
 
         $timeDiffs = $this->calculateTimeDiffsByConversation($messages, $chatwootUserId);
 
-        return $this->calculateTimeIntervals($timeDiffs, $intervals)->merge([
-            'median' => $timeDiffs->median(),
-            'mean' => $timeDiffs->avg(),
-        ]);
+        return $this->calculateTimeIntervals($timeDiffs, $intervals);
     }
 
     public function getMonthlyConversationsCount(int $year, int $month, int $chatwootUserId): int
@@ -128,7 +149,7 @@ trait HandlesChatwootStatistics
                 }
             }
 
-            $stats->put("window_{$minutes}_min", $totalWindows * $minutes);
+            $stats->put("{$minutes}", $totalWindows * $minutes);
         }
 
         return $stats;
@@ -161,11 +182,11 @@ trait HandlesChatwootStatistics
         $previousInterval = 0;
 
         foreach ($intervals as $interval) {
-            $stats->put("less_than_{$interval}_min", $timeDiffs->filter(fn ($diff) => $diff > $previousInterval && $diff <= $interval)->count());
+            $stats->put('mniej niż '.CarbonInterval::minutes($interval)->forHumans(), $timeDiffs->filter(fn ($diff) => $diff > $previousInterval && $diff <= $interval)->count());
             $previousInterval = $interval;
         }
 
-        $stats->put("more_than_{$intervals[count($intervals) - 1]}_min", $timeDiffs->filter(fn ($diff) => $diff > $intervals[count($intervals) - 1])->count());
+        $stats->put('więcej niż '.CarbonInterval::minutes(end($intervals))->forHumans(), $timeDiffs->filter(fn ($diff) => $diff > end($intervals))->count());
 
         return $stats;
     }

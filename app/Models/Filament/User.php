@@ -6,6 +6,7 @@ use App\Models\Chatwoot\User as ChatwootUser;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -54,7 +55,7 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Get the associated Chatwoot user.
      */
-    public function chatwootUser()
+    public function chatwootUser(): BelongsTo
     {
         return $this->belongsTo(ChatwootUser::class, 'chatwoot_user_id');
     }
