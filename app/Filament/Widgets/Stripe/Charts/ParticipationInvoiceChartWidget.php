@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Filament\Widgets\Stripe;
+namespace App\Filament\Widgets\Stripe\Charts;
 
 use App\Traits\Chatwoot\HandlesChatwootStatistics;
+use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Carbon\Carbon;
 use Illuminate\Support\Arr;
 
 class ParticipationInvoiceChartWidget extends ChartWidget
@@ -17,12 +17,14 @@ class ParticipationInvoiceChartWidget extends ChartWidget
     private function getYearFromFilter(): int
     {
         $date = Carbon::parse($this->filters['yearMonth']);
+
         return $date->year;
     }
 
     private function getMonthFromFilter(): int
     {
         $date = Carbon::parse($this->filters['yearMonth']);
+
         return $date->month;
     }
 
@@ -50,10 +52,10 @@ class ParticipationInvoiceChartWidget extends ChartWidget
             }
         }
 
-        $datasets = array_map(function($status) use ($statuses, $labels) {
+        $datasets = array_map(function ($status) use ($statuses, $labels) {
             return [
                 'label' => ucfirst($status),
-                'data' => array_map(fn($currency) => $statuses[$status][$currency] ?? 0, $labels),
+                'data' => array_map(fn ($currency) => $statuses[$status][$currency] ?? 0, $labels),
                 'stack' => 'stackedBar',
             ];
         }, array_keys($statuses));
@@ -72,11 +74,18 @@ class ParticipationInvoiceChartWidget extends ChartWidget
     protected function getOptions(): array
     {
         return [
+            'indexAxis' => 'y',
             'scales' => [
                 'x' => [
+                    'grid' => [
+                        'display' => true,
+                    ],
                     'stacked' => true,
                 ],
                 'y' => [
+                    'grid' => [
+                        'display' => false,
+                    ],
                     'stacked' => true,
                 ],
             ],

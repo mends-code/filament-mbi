@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Filament\Widgets\Stripe;
+namespace App\Filament\Widgets\Stripe\Charts;
 
 use App\Traits\Chatwoot\HandlesChatwootStatistics;
+use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Carbon\Carbon;
 use Illuminate\Support\Arr;
 
 class IssuedInvoiceChartWidget extends ChartWidget
@@ -57,14 +57,14 @@ class IssuedInvoiceChartWidget extends ChartWidget
         $formattedDatasets = [];
 
         foreach ($statuses as $status => $statusData) {
-            $dataForStatus = array_map(function($currency) use ($statusData) {
+            $dataForStatus = array_map(function ($currency) use ($statusData) {
                 return $statusData[$currency] ?? 0;
             }, $labels);
 
             $formattedDatasets[] = [
                 'label' => ucfirst($status),
                 'data' => $dataForStatus,
-                'stack' => 'stackedBar'
+                'stack' => 'stackedBar',
             ];
         }
 
@@ -82,11 +82,18 @@ class IssuedInvoiceChartWidget extends ChartWidget
     protected function getOptions(): array
     {
         return [
+            'indexAxis' => 'y',
             'scales' => [
                 'x' => [
+                    'grid' => [
+                        'display' => true,
+                    ],
                     'stacked' => true,
                 ],
                 'y' => [
+                    'grid' => [
+                        'display' => false,
+                    ],
                     'stacked' => true,
                 ],
             ],
