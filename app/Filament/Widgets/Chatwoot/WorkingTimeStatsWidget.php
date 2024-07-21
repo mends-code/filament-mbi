@@ -39,7 +39,6 @@ class WorkingTimeStatsWidget extends BaseWidget
     private function getChatwootUserId(): int
     {
         return Arr::get($this->filters, 'chatwootUser');
- main
     }
 
     /**
