@@ -2,19 +2,22 @@
 
 namespace App\Filament\Pages\Dashboards;
 
+use App\Filament\Widgets\Chatwoot\Charts\WorkingMinutesChartWidget;
 use App\Filament\Widgets\Chatwoot\MonthlyMessagesStatsWidget;
 use App\Filament\Widgets\Chatwoot\ResponseTimeChartWidget;
-use App\Filament\Widgets\Chatwoot\WorkHoursChartWidget;
 use App\Filament\Widgets\Chatwoot\WorkingTimeStatsWidget;
+use App\Filament\Widgets\Stripe\Charts\IssuedInvoiceChartWidget;
+use App\Filament\Widgets\Stripe\Charts\ParticipationInvoiceChartWidget;
 use App\Models\Chatwoot\Message;
+use App\Models\Filament\User;
+use Arr;
 use Carbon\Carbon;
-use Carbon\CarbonInterval;
-use Exception;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Pages\Dashboard;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
+use Livewire\Attributes\Computed;
 
 class AgentStatsDashboard extends Dashboard
 {
@@ -34,76 +37,46 @@ class AgentStatsDashboard extends Dashboard
 
     protected static ?int $navigationSort = 10;
 
-    /**
-     * @throws Exception
-     */
-    private function getIntervalOptions(): array
-    {
-        // Array of intervals
-        $intervals = [1, 5, 30];
-
-        // Sort array in ascending order
-        sort($intervals);
-
-        // Generate intervalOptions array
-        $intervalOptions = [];
-        foreach ($intervals as $interval) {
-            $intervalOptions[$interval] = CarbonInterval::minutes($interval)->forHumans();
-        }
-
-        return $intervalOptions;
-    }
-
-    /**
-     * @throws Exception
-     */
     public function filtersForm(Form $form): Form
     {
-
-        $intervalOptions = $this->getIntervalOptions();
-
-        $maxInterval = max(array_keys($intervalOptions));
-
         return $form
             ->schema([
                 Section::make()
                     ->schema([
+                        Select::make('chatwootUser')
+                            ->options($this->getChatwootUserOptions)
+                            ->label('Agent')
+                            ->native(false)
+                            ->selectablePlaceholder(false)
+                            ->default(auth()->user()->chatwootUser->name),
                         Select::make('yearMonth')
-                            ->options(function () {
-                                $months = [];
-
-                                $earliestMessageDate = Message::senderUser(auth()->user()->chatwootUser->id)
-                                    ->oldest('created_at')
-                                    ->first()
-                                    ->created_at;
-
-                                $end = $earliestMessageDate->startOfMonth();
-                                $start = Carbon::now()->startOfMonth();
-
-                                while ($start->greaterThanOrEqualTo($end)) {
-                                    $months[$start->format('Y-m')] = $start->isoFormat('MMMM YYYY');
-                                    $start->subMonth();
-                                }
-
-                                return $months;
-                            })
+                            ->options($this->getYearMonthOptions)
                             ->placeholder('Wybierz miesiąc')
                             ->label('Miesiąc i rok pracy')
                             ->native(false)
                             ->default(Carbon::now()->startOfMonth()->format('Y-m'))
                             ->reactive()
                             ->selectablePlaceholder(false),
-                        Select::make('interval')
-                            ->options($intervalOptions)
-                            ->label('Dokładność pomiaru czasu')
-                            ->placeholder('Wybierz interwał')
-                            ->native(false)
-                            ->reactive()
-                            ->default($maxInterval)
-                            ->selectablePlaceholder(false),
                     ])
                     ->columns(3),
             ]);
+    }
+
+    #[Computed(persist: true)]
+    private function getEarliestMessageDate()
+    {
+        return Message::oldest('created_at')->first()->created_at;
+    }
+
+    public function mount(): void
+    {
+        $this->resetFilters();
+    }
+
+    public function resetFilters(): void
+    {
+        Arr::set($this->filters, 'chatwootUser', auth()->user()->chatwootUser->id);
+        Arr::set($this->filters, 'yearMonth', Carbon::now()->startOfMonth()->format('Y-m'));
     }
 
     public function getWidgets(): array
@@ -112,7 +85,35 @@ class AgentStatsDashboard extends Dashboard
             WorkingTimeStatsWidget::class,
             MonthlyMessagesStatsWidget::class,
             ResponseTimeChartWidget::class,
-            WorkHoursChartWidget::class,
+            WorkingMinutesChartWidget::class,
+            IssuedInvoiceChartWidget::class,
+            ParticipationInvoiceChartWidget::class,
         ];
+    }
+
+    #[Computed(persist: true)]
+    private function getYearMonthOptions(): array
+    {
+        $months = [];
+
+        $earliestMessageDate = $this->getEarliestMessageDate;
+
+        $end = $earliestMessageDate->startOfMonth();
+        $start = Carbon::now()->startOfMonth();
+
+        while ($start->greaterThanOrEqualTo($end)) {
+            $months[$start->format('Y-m')] = $start->isoFormat('MMMM YYYY');
+            $start->subMonth();
+        }
+
+        return $months;
+    }
+
+    #[Computed(persist: true)]
+    private function getChatwootUserOptions(): array
+    {
+        return User::all()
+            ->pluck('chatwootUser.name', 'chatwootUser.id')
+            ->toArray();
     }
 }

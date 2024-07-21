@@ -39,6 +39,16 @@ class LatestInvoiceWidget extends Widget implements HasActions, HasForms, HasInf
                 Section::make('invoiceDetails')
                     ->heading('Ostatnia faktura Stripe')
                     ->headerActions([
+                        Action::make('sendStripeInvoiceLink')
+                            ->color('warning')
+                            ->disabled((! $invoice) || (empty($invoice['data']['hosted_invoice_url'])))
+                            ->hidden((! $invoice) || ($invoice['status'] == 'paid'))
+                            ->label('Wyślij link')
+                            ->outlined()
+                            ->button()
+                            ->icon('heroicon-o-link')
+                            ->requiresConfirmation()
+                            ->action(fn () => $this->sendStripeInvoiceLink()),
                         Action::make('cloneInvoice')
                             ->label('Skopiuj')
                             ->modalHeading('Skopiuj fakturę')
@@ -57,15 +67,6 @@ class LatestInvoiceWidget extends Widget implements HasActions, HasForms, HasInf
                             ->outlined()
                             ->disabled(! $invoice)
                             ->color('primary'),
-                        Action::make('sendStripeInvoiceLink')
-                            ->color('warning')
-                            ->disabled((! $invoice) || (empty($invoice['data']['hosted_invoice_url'])))
-                            ->label('Wyślij link')
-                            ->outlined()
-                            ->button()
-                            ->icon('heroicon-o-link')
-                            ->requiresConfirmation()
-                            ->action(fn () => $this->sendStripeInvoiceLink()),
                     ])
                     ->schema([
                         TextEntry::make('id')

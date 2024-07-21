@@ -31,10 +31,6 @@ class InvoicesWidget extends Widget implements HasForms, HasInfolists, HasTable
 
     protected int|string|array $columnSpan = 'full';
 
-    protected function paginateTableQuery(Builder $query): CursorPaginator
-    {
-        return $query->cursorPaginate(($this->getTableRecordsPerPage() === 'all') ? $query->count() : $this->getTableRecordsPerPage());
-    }
 
     #[Computed]
     public function getTableQuery()
@@ -49,9 +45,7 @@ class InvoicesWidget extends Widget implements HasForms, HasInfolists, HasTable
 
         return $table
             ->query($this->getTableQuery())
-            ->paginated()
-            ->extremePaginationLinks()
-            ->paginationPageOptions([5])
+            ->paginated(false)
             ->heading('Lista faktur Stripe')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
@@ -92,20 +86,6 @@ class InvoicesWidget extends Widget implements HasForms, HasInfolists, HasTable
                     ->action(function ($data) {
                         $this->createInvoice([$data]);
                     })
-                    ->button()
-                    ->outlined(),
-                ViewAction::make('hostedInvoiceUrlView')
-                    ->label('Pokaż link')
-                    ->icon('heroicon-o-link')
-                    ->form([
-                        Textarea::make('data.hosted_invoice_url')
-                            ->label('Link do faktury')
-                            ->hint('kliknij dwukrotnie lub zaznacz tekst; następnie skopiuj go do schowka'),
-                    ])
-                    ->closeModalByClickingAway()
-                    ->modalCancelAction(false)
-                    ->modalHeading('Link do faktury')
-                    ->modalCloseButton()
                     ->button()
                     ->outlined(),
             ], position: ActionsPosition::AfterColumns);

@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Filament\Widgets\Chatwoot;
+namespace App\Filament\Widgets\Chatwoot\Charts;
 
 use App\Traits\Chatwoot\HandlesChatwootStatistics;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Arr;
 
-class ResponseTimeChartWidget extends ChartWidget
+class WorkHoursChartWidget extends ChartWidget
 {
     use HandlesChatwootStatistics, InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Czasy odpowiedzi';
+    protected static ?string $heading = 'Godziny pracy';
 
     private array $intervals = [1, 5, 30];
 
@@ -30,30 +31,42 @@ class ResponseTimeChartWidget extends ChartWidget
         return $date->month;
     }
 
+    private function getIntervalFromFilter(): int
+    {
+        return Arr::get($this->filters, 'interval');
+    }
+
     private function getChatwootUserId(): int
     {
-        return Arr::get($this->filters, 'chatwootUser');
+        return auth()->user()->chatwootUser->id;
     }
 
     protected function getData(): array
     {
-
-        $data = collect($this->getMonthlyResponseTimeStats(
+        $data = collect($this->getMonthlyWorkingMinutes(
             $this->getYearFromFilter(),
             $this->getMonthFromFilter(),
             $this->intervals,
             $this->getChatwootUserId()
         ));
+        $dataInHours = $data->map(function ($item) {
+            return (int) floor($item / 60);
+        });
 
         return [
             'datasets' => [
                 [
-                    'data' => $data->values(),
+                    'data' => $dataInHours->values(),
+                    'backgroundColor' => '#36A2EB',
+                    'borderColor' => '#9BD0F5',
                 ],
             ],
-            'labels' => $data->keys(),
-        ];
+            'labels' => $dataInHours->keys()->map(function ($key) {
+                $number = filter_var($key, FILTER_SANITIZE_NUMBER_INT);
 
+                return str_replace($number, CarbonInterval::minutes($number)->cascade()->forHumans(), $key);
+            }),
+        ];
     }
 
     protected function getType(): string
@@ -64,6 +77,18 @@ class ResponseTimeChartWidget extends ChartWidget
     protected function getOptions(): array
     {
         return [
+            'scales' => [
+                'x' => [
+                    'grid' => [
+                        'display' => false,
+                    ],
+                ],
+                'y' => [
+                    'grid' => [
+                        'display' => true,
+                    ],
+                ],
+            ],
             'plugins' => [
                 'legend' => [
                     'display' => false,
