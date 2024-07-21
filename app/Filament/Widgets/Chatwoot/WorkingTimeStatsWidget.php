@@ -38,7 +38,7 @@ class WorkingTimeStatsWidget extends BaseWidget
 
     private function getChatwootUserId(): int
     {
-        return auth()->user()->chatwootUser->id;
+        return Arr::get($this->filters, 'chatwootUser');
     }
 
     /**
@@ -67,6 +67,17 @@ class WorkingTimeStatsWidget extends BaseWidget
      */
     protected function getStats(): array
     {
+        $workingMinutes = $this->getMonthlyWorkingMinutes(
+            $this->getYearFromFilter(),
+            $this->getMonthFromFilter(),
+            $this->intervals,  // Use $this->intervals instead of (array) $this->getIntervalFromFilter()
+            $this->getChatwootUserId()
+        );
+
+        $percentage = isset($workingMinutes[30]) && $workingMinutes[30] > 0
+            ? ($workingMinutes[5] / $workingMinutes[30]) * 100
+            : 0; // Handle division by zero and cases where 30-minute interval is not set
+
         return [
             Stat::make(
                 'Dekady miesiąca',
@@ -89,16 +100,8 @@ class WorkingTimeStatsWidget extends BaseWidget
             )
                 ->icon('heroicon-o-chart-bar'),
             Stat::make(
-                'Czas pracy',
-                $this->minutesToHoursForHumans(
-                    Arr::get($this->getMonthlyWorkingMinutes(
-                        $this->getYearFromFilter(),
-                        $this->getMonthFromFilter(),
-                        (array) $this->getIntervalFromFilter(),
-                        $this->getChatwootUserId()
-                    ), $this->getIntervalFromFilter()
-                    ),
-                )
+                'Wydajność',
+                number_format($percentage, 2).'%'
             )
                 ->icon('heroicon-o-chart-bar'),
         ];

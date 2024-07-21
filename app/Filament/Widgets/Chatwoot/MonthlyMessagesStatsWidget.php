@@ -36,7 +36,7 @@ class MonthlyMessagesStatsWidget extends BaseWidget
 
     private function getChatwootUserId(): int
     {
-        return auth()->user()->chatwootUser->id;
+        return Arr::get($this->filters, 'chatwootUser');
     }
 
     protected function getStats(): array

@@ -5,6 +5,7 @@ namespace App\Models\Chatwoot;
 use App\Models\Stripe\Customer;
 use App\Models\Stripe\Invoice;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Contact extends BaseModel
 {
@@ -41,7 +42,7 @@ class Contact extends BaseModel
         );
     }
 
-    public function conversations()
+    public function conversations(): HasMany
     {
         return $this->hasMany(Conversation::class, 'contact_id');
     }

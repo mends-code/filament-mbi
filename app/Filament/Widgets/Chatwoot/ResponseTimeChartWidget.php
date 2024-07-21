@@ -4,11 +4,9 @@ namespace App\Filament\Widgets\Chatwoot;
 
 use App\Traits\Chatwoot\HandlesChatwootStatistics;
 use Carbon\Carbon;
-use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Arr;
-use Filament\Support\Colors\Color;
 
 class ResponseTimeChartWidget extends ChartWidget
 {
@@ -32,16 +30,10 @@ class ResponseTimeChartWidget extends ChartWidget
         return $date->month;
     }
 
-    private function getIntervalFromFilter(): int
-    {
-        return Arr::get($this->filters, 'interval');
-    }
-
     private function getChatwootUserId(): int
     {
-        return auth()->user()->chatwootUser->id;
+        return Arr::get($this->filters, 'chatwootUser');
     }
-
 
     protected function getData(): array
     {
@@ -57,8 +49,6 @@ class ResponseTimeChartWidget extends ChartWidget
             'datasets' => [
                 [
                     'data' => $data->values(),
-                    'backgroundColor' => '#36A2EB',
-                    'borderColor' => '#9BD0F5',
                 ],
             ],
             'labels' => $data->keys(),
@@ -77,8 +67,8 @@ class ResponseTimeChartWidget extends ChartWidget
             'plugins' => [
                 'legend' => [
                     'display' => false,
-                ]
-            ]
+                ],
+            ],
         ];
     }
 }

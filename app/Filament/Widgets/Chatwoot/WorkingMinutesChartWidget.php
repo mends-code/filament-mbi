@@ -9,11 +9,11 @@ use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Arr;
 
-class WorkHoursChartWidget extends ChartWidget
+class WorkingMinutesChartWidget extends ChartWidget
 {
     use HandlesChatwootStatistics, InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Godziny pracy';
+    protected static ?string $heading = 'Czas pracy w minutach';
 
     private array $intervals = [1, 5, 30];
 
@@ -38,7 +38,7 @@ class WorkHoursChartWidget extends ChartWidget
 
     private function getChatwootUserId(): int
     {
-        return auth()->user()->chatwootUser->id;
+        return Arr::get($this->filters, 'chatwootUser');
     }
 
     protected function getData(): array
@@ -49,19 +49,14 @@ class WorkHoursChartWidget extends ChartWidget
             $this->intervals,
             $this->getChatwootUserId()
         ));
-        $dataInHours = $data->map(function ($item) {
-            return (int) floor($item / 60);
-        });
 
         return [
             'datasets' => [
                 [
-                    'data' => $dataInHours->values(),
-                    'backgroundColor' => '#36A2EB',
-                    'borderColor' => '#9BD0F5',
+                    'data' => $data->values(),
                 ],
             ],
-            'labels' => $dataInHours->keys()->map(function ($key) {
+            'labels' => $data->keys()->map(function ($key) {
                 $number = filter_var($key, FILTER_SANITIZE_NUMBER_INT);
 
                 return str_replace($number, CarbonInterval::minutes($number)->cascade()->forHumans(), $key);
