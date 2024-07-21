@@ -5,7 +5,6 @@ namespace App\Traits\Chatwoot;
 use App\Models\Chatwoot\Conversation;
 use App\Models\Chatwoot\Message;
 use App\Models\Stripe\Invoice;
-use Carbon\CarbonInterface;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -105,30 +104,26 @@ trait HandlesChatwootStatistics
             ->forYearAndMonth($year, $month)
             ->get();
 
-        return $this->summarizeInvoices($invoices);
+        return $invoices ? $this->summarizeInvoices($invoices) : collect();
     }
 
     public function getMonthlyInvoicesAsConversationParticipant(int $year, int $month, int $chatwootUserId): Collection
     {
-        $conversationIds = Message::where('sender_id', $chatwootUserId)
-            ->where('sender_type', 'User')
+        // Retrieve the conversation IDs
+        $conversationIds = Message::senderUser($chatwootUserId)
             ->forYearAndMonth($year, $month)
             ->distinct()
             ->pluck('conversation_id');
 
-        $conversations = Conversation::whereIn('id', $conversationIds)
-            ->get(['id', 'account_id', 'display_id']);
+        // If there are no conversation IDs, return an empty collection
+        if ($conversationIds->isEmpty()) {
+            return collect();
+        }
 
-        $invoices = Invoice::where(function ($query) use ($conversations) {
-            foreach ($conversations as $conversation) {
-                $query->orWhere(function ($q) use ($conversation) {
-                    $q->where('chatwoot_account_id', $conversation->account_id)
-                        ->where('chatwoot_conversation_id', $conversation->display_id);
-                });
-            }
-        })->get();
+        // Retrieve the invoices based on the conversation IDs
+        $invoices = Invoice::whereIn('chatwoot_conversation_id', $conversationIds)->get();
 
-        return $this->summarizeInvoices($invoices);
+        return $invoices ? $this->summarizeInvoices($invoices) : collect();
     }
 
     // Helper methods
