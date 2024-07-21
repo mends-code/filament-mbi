@@ -2,12 +2,12 @@
 
 namespace App\Filament\Pages\Dashboards;
 
+use App\Filament\Widgets\Chatwoot\Charts\WorkingMinutesChartWidget;
 use App\Filament\Widgets\Chatwoot\MonthlyMessagesStatsWidget;
 use App\Filament\Widgets\Chatwoot\ResponseTimeChartWidget;
-use App\Filament\Widgets\Chatwoot\WorkingMinutesChartWidget;
 use App\Filament\Widgets\Chatwoot\WorkingTimeStatsWidget;
-use App\Filament\Widgets\Stripe\IssuedInvoiceChartWidget;
-use App\Filament\Widgets\Stripe\ParticipationInvoiceChartWidget;
+use App\Filament\Widgets\Stripe\Charts\IssuedInvoiceChartWidget;
+use App\Filament\Widgets\Stripe\Charts\ParticipationInvoiceChartWidget;
 use App\Models\Chatwoot\Message;
 use App\Models\Filament\User;
 use Arr;

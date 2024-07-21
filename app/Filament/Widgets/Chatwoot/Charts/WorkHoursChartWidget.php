@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Widgets\Chatwoot;
+namespace App\Filament\Widgets\Chatwoot\Charts;
 
 use App\Traits\Chatwoot\HandlesChatwootStatistics;
 use Carbon\Carbon;
@@ -77,6 +77,18 @@ class WorkHoursChartWidget extends ChartWidget
     protected function getOptions(): array
     {
         return [
+            'scales' => [
+                'x' => [
+                    'grid' => [
+                        'display' => false,
+                    ],
+                ],
+                'y' => [
+                    'grid' => [
+                        'display' => true,
+                    ],
+                ],
+            ],
             'plugins' => [
                 'legend' => [
                     'display' => false,
