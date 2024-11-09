@@ -14,7 +14,7 @@ trait HandlesChatwootStatistics
     // Base query for messages
     private function baseMessageQuery(int $year, int $month, int $chatwootUserId)
     {
-        return Message::forYearAndMonth($year, $month)
+        return Message::createdAtYearAndMonth($year, $month)
             ->public()
             ->senderUser($chatwootUserId);
     }
@@ -79,7 +79,7 @@ trait HandlesChatwootStatistics
     {
         sort($intervals);
 
-        $messages = Message::forYearAndMonth($year, $month)
+        $messages = Message::createdAtYearAndMonth($year, $month)
             ->public()
             ->senderUserOrContact($chatwootUserId)
             ->orderBy('created_at', 'asc')
@@ -101,17 +101,20 @@ trait HandlesChatwootStatistics
     public function getMonthlyInvoicesAsAgent(int $year, int $month, int $chatwootUserId): Collection
     {
         $invoices = Invoice::where('chatwoot_agent_id', $chatwootUserId)
-            ->forYearAndMonth($year, $month)
+            ->createdAtYearAndMonth($year, $month)
             ->get();
 
         return $invoices ? $this->summarizeInvoices($invoices) : collect();
     }
 
+    /**
+     * Retrieve monthly invoices as a conversation participant.
+     */
     public function getMonthlyInvoicesAsConversationParticipant(int $year, int $month, int $chatwootUserId): Collection
     {
-        // Retrieve the conversation IDs
+        // Retrieve the conversation IDs for the given user, year, and month
         $conversationIds = Message::senderUser($chatwootUserId)
-            ->forYearAndMonth($year, $month)
+            ->createdAtYearAndMonth($year, $month)
             ->distinct()
             ->pluck('conversation_id');
 
@@ -120,10 +123,35 @@ trait HandlesChatwootStatistics
             return collect();
         }
 
-        // Retrieve the invoices based on the conversation IDs
-        $invoices = Invoice::whereIn('chatwoot_conversation_id', $conversationIds)->get();
+        // Retrieve account_id and display_id from the Conversation model
+        $conversations = Conversation::whereIn('id', $conversationIds)
+            ->select(['account_id', 'display_id'])
+            ->get();
 
-        return $invoices ? $this->summarizeInvoices($invoices) : collect();
+        // If there are no conversations, return an empty collection
+        if ($conversations->isEmpty()) {
+            return collect();
+        }
+
+        // Prepare account-display pairs for the invoice query
+        $accountDisplayPairs = $conversations->map(function ($conversation) {
+            return ['account_id' => $conversation->account_id, 'display_id' => $conversation->display_id];
+        })->unique(function ($item) {
+            return $item['account_id'].'-'.$item['display_id'];
+        });
+
+        // Prepare account IDs and display IDs lists
+        $accountIds = $accountDisplayPairs->pluck('account_id');
+        $displayIds = $accountDisplayPairs->pluck('display_id');
+
+        // Retrieve the invoices based on account IDs and conversation display IDs for the current year and month
+        $invoices = Invoice::createdYearAndMonth($year, $month)
+            ->whereIn('chatwoot_account_id', $accountIds)
+            ->whereIn('chatwoot_conversation_id', $displayIds)
+            ->get();
+
+        // Return the summarized invoices or an empty collection
+        return $invoices->isNotEmpty() ? $this->summarizeInvoices($invoices) : collect();
     }
 
     // Helper methods

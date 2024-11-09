@@ -9,7 +9,7 @@ class Event extends BaseModel
     protected $casts = [
         'id' => 'string',
         'data' => 'json',
-        'created' => 'integer',
+        'created' => 'timestamp',
         'object' => 'string',
         'object_id' => 'string',
         'livemode' => 'boolean',

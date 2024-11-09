@@ -17,14 +17,14 @@ class Invoice extends BaseModel
     protected $casts = [
         'id' => 'string',
         'data' => 'json',
-        'created' => 'datetime',
+        'created' => 'timestamp',
         'currency' => 'string',
         'status' => 'string',
         'paid' => 'boolean',
         'total' => 'integer',
         'livemode' => 'boolean',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'created_at' => 'timestamp',
+        'updated_at' => 'timestamp',
     ];
 
     public function customer()
